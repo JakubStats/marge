@@ -55,7 +55,7 @@ minspan<-NULL        # A set minimum span value.
 mod<-marge(X_pred,Y,N,n,id,family,corstr,pen,tols_score,M,minspan,print.disp,nb,is.gee)
 }
 \references{
-Stoklosa, J. and Warton, D.I. (2017). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, in review.
+Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
 }
 \author{
 Jakub Stoklosa and David I. Warton

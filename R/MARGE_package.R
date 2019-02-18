@@ -31,7 +31,7 @@ library(BayesTree);
 #' }
 #' @source The Blue Mountains presence-absence data for the speices \emph{Leptospermum trinervium} were obtained from \url{http://www.bionet.nsw.gov.au/}. Environmental data for Blue Mountains region: DRYAD entry doi:10.5061/dryad.985s5.
 #' @author Jakub Stoklosa and David I. Warton
-#' @references Stoklosa, J. and Warton, D.I. (2017). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, in review.
+#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
 #' @examples ## Load the data.
 #'
 #' data(leptrine)
@@ -91,7 +91,7 @@ tp1<-function(x,t,p=1){((x-t)^p)*(x>t);}
 #' @return \code{tp2} returns a vector of values that have been transformed using a truncated p-th power function (negative part) for a specified knot value.
 #' @author Jakub Stoklosa and David I. Warton
 #' @references Friedman, J. (1991). Multivariate adaptive regression splines. \emph{The Annals of Statistics}, 19, 1-67.
-#' @references Stoklosa, J. and Warton, D.I. (2017). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, in review.
+#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
 #' @export
 #' @seealso \code{\link{tp1}}
 #' @examples data(leptrine)
@@ -118,7 +118,7 @@ tp2<-function(x,t,p=1){((t-x)^p)*(x<t);}
 #' @references Friedman, J. (1991). Multivariate adaptive regression splines. \emph{The Annals of Statistics}, 19, 1-67.
 #' @references Milborrow, S. (2017a). Notes on the \code{earth} package. Package vignette. Available at: \url{http://127.0.0.1:31355/library/earth/doc/earth-notes.pdf}.
 #' @references Milborrow, S. (2017b). \code{earth}: Multivariate Adaptive Regression Splines. R package version 4.4.7. Available at \url{http://CRAN.R-project.org/package=earth.}
-#' @references Stoklosa, J. and Warton, D.I. (2017). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, in review.
+#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
 #' @export
 #' @seealso \code{\link{stat_out_score_null}} and \code{\link{stat_out_score_glm_null}}
 stat_out<-function(Y,B1,TSS,GCV.null,pen=2,...)
@@ -159,7 +159,7 @@ stat_out<-function(Y,B1,TSS,GCV.null,pen=2,...)
 #' @return \code{stat_out_score_null} returns a list of values (mainly products of matrices) that make up the final score statistic calculation (required for another function).
 #' @author Jakub Stoklosa and David I. Warton.
 #' @references Stoklosa, J., Gibb, H. and Warton, D.I. (2014). Fast forward selection for generalized estimating equations with a large number of predictor variables. \emph{Biometrics}, 70, 110-120.
-#' @references Stoklosa, J. and Warton, D.I. (2017). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, in review.
+#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
 #' @export
 #' @seealso \code{\link{stat_out}} and \code{\link{stat_out_score_glm_null}}
 stat_out_score_null<-function(Y,N,n,id,family="gaussian",corstr="independence",B_null,nb=F,is.gee=F,...)
@@ -269,7 +269,7 @@ stat_out_score_null<-function(Y,N,n,id,family="gaussian",corstr="independence",B
 #' @return \code{stat_out_score_glm_null} returns a list of values (mainly products of matrices) that make up the final score statistic calculation (required for another function).
 #' @author Jakub Stoklosa and David I. Warton.
 #' @references Stoklosa, J., Gibb, H. and Warton, D.I. (2014). Fast forward selection for generalized estimating equations with a large number of predictor variables. \emph{Biometrics}, 70, 110-120.
-#' @references Stoklosa, J. and Warton, D.I. (2017). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, in review.
+#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
 #' @export
 #' @seealso \code{\link{stat_out}} and \code{\link{stat_out_score_glm_null}}
 stat_out_score_glm_null<-function(Y,family="gaussian",B_null,nb=F,...)
@@ -330,7 +330,7 @@ stat_out_score_glm_null<-function(Y,family="gaussian",B_null,nb=F,...)
 #' @return \code{score_fun_glm} returns a calculated score statistic for the null and alternative model when fitting a GLM.
 #' @author Jakub Stoklosa and David I. Warton.
 #' @references Stoklosa, J., Gibb, H. and Warton, D.I. (2014). Fast forward selection for generalized estimating equations with a large number of predictor variables. \emph{Biometrics}, 70, 110-120.
-#' @references Stoklosa, J. and Warton, D.I. (2017). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, in review.
+#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
 #' @export
 #' @seealso \code{\link{score_fun_gee}}
 score_fun_glm<-function(Y,N,VS.est_list,A_list,B1_list,mu.est,V.est,B1,XA,nb=F,...)
@@ -391,7 +391,7 @@ score_fun_glm<-function(Y,N,VS.est_list,A_list,B1_list,mu.est,V.est,B1,XA,nb=F,.
 #' @return \code{score_fun_gee} returns a calculated score statistic for the null and alternative model when fitting a GEE.
 #' @author Jakub Stoklosa and David I. Warton
 #' @references Stoklosa, J., Gibb, H. and Warton, D.I. (2014). Fast forward selection for generalized estimating equations with a large number of predictor variables. \emph{Biometrics}, 70, 110-120.
-#' @references Stoklosa, J. and Warton, D.I. (2017). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, in review.
+#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
 #' @export
 #' @seealso \code{\link{score_fun_glm}}
 score_fun_gee<-function(Y,N,n_vec,VS.est_list,AWA.est_list,J2_list,Sigma2_list,J11.inv,JSigma11,mu.est,V.est,B1,XA,nb=F,...)
@@ -461,7 +461,7 @@ score_fun_gee<-function(Y,N,n_vec,VS.est_list,AWA.est_list,J2_list,Sigma2_list,J
 #' @author Jakub Stoklosa and David I. Warton.
 #' @references Liang, K. Y. and Zeger, S. L. (1986). Longitudinal aata analysis using generalized linear models. \emph{Biometrika}, 73, 13-22.
 #' @references Stoklosa, J., Gibb, H. and Warton, D.I. (2014). Fast forward selection for generalized estimating equations with a large number of predictor variables. \emph{Biometrics}, 70, 110-120.
-#' @references Stoklosa, J. and Warton, D.I. (2017). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, in review.
+#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
 #' @export
 sand_fun<-function(Y,X,N,n_vec,mu.est,V.est,nb=T,omega=1,...)
   {
@@ -507,7 +507,7 @@ sand_fun<-function(Y,X,N,n_vec,mu.est,V.est,nb=T,omega=1,...)
 #' @references Friedman, J. (1991). Multivariate adaptive regression splines. \emph{The Annals of Statistics}, 19, 1-67.
 #' @references Milborrow, S. (2017a). Notes on the \code{earth} package. Package vignette. Available at: \url{http://127.0.0.1:31355/library/earth/doc/earth-notes.pdf}.
 #' @references Milborrow, S. (2017b). \code{earth}: Multivariate Adaptive Regression Splines. R package version 4.4.7. Available at \url{http://CRAN.R-project.org/package=earth.}
-#' @references Stoklosa, J. and Warton, D.I. (2017). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, in review.
+#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
 #' @export
 #' @seealso \code{\link{backward_sel_WIC}}
 backward_sel<-function(Y,B_new,pen=2,GCV.null=0.001,...)
@@ -547,7 +547,7 @@ backward_sel<-function(Y,B_new,pen=2,GCV.null=0.001,...)
 #' @return \code{backward_sel_WIC} returns the Wald statistic from the fitted model (the penalty is apllied later on).
 #' @author Jakub Stoklosa and David I. Warton
 #' @references Stoklosa, J. Gibb, H. Warton, D.I. Fast forward selection for Generalized Estimating Equations With a Large Number of Predictor Variables. \emph{Biometrics}, 70, 110-120.
-#' @references Stoklosa, J. and Warton, D.I. (2017). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, in review.
+#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
 #' @export
 #' @seealso \code{\link{backward_sel}}
 backward_sel_WIC<-function(Y,N,n,B_new,id,family="gaussian",corstr="independence",nb=F,is.gee=F,...)
@@ -603,7 +603,7 @@ backward_sel_WIC<-function(Y,N,n,B_new,id,family="gaussian",corstr="independence
 #' @return \code{max_span} returns a vector of trauncated predictor variable values.
 #' @author Jakub Stoklosa and David I. Warton.
 #' @references Friedman, J. (1991). Multivariate adaptive regression splines. \emph{The Annals of Statistics}, 19, 1-67.
-#' @references Stoklosa, J. and Warton, D.I. (2017). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, in review.
+#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
 #' @export
 max_span<-function(X_pred,q,alpha=0.05)
   {
@@ -630,7 +630,7 @@ max_span<-function(X_pred,q,alpha=0.05)
 #' @return \code{min_span} returns a vector of trauncated predictor variable values.
 #' @author Jakub Stoklosa and David I. Warton.
 #' @references Friedman, J. (1991). Multivariate adaptive regression splines. \emph{The Annals of Statistics}, 19, 1-67.
-#' @references Stoklosa, J. and Warton, D.I. (2017). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, in review.
+#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
 #' @export
 min_span<-function(X_red,q,minspan=NULL,alpha=0.05)
   {
@@ -684,7 +684,7 @@ min_span<-function(X_red,q,minspan=NULL,alpha=0.05)
 #' @references Friedman, J. (1991). Multivariate adaptive regression splines. \emph{The Annals of Statistics}, 19, 1-67.
 #' @references Milborrow, S. (2017a). Notes on the \code{earth} package. Package vignette. Available at: \url{http://127.0.0.1:31355/library/earth/doc/earth-notes.pdf}.
 #' @references Milborrow, S. (2017b). \code{earth}: Multivariate Adaptive Regression Splines. R package version 4.4.7. Available at \url{http://CRAN.R-project.org/package=earth.}
-#' @references Stoklosa, J. and Warton, D.I. (2017). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, in review.
+#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
 #' @export
 #' @seealso \code{\link{marge}}
 #' @examples ## Load the "leptrine" presence-absence data.
@@ -1515,7 +1515,7 @@ mars_ls<-function(X_pred,Y,pen=2,tols=0.00001,M=21,minspan=NULL,print.disp=F,fam
 #' @author Jakub Stoklosa and David I. Warton.
 #' @references Friedman, J. (1991). Multivariate adaptive regression splines. \emph{The Annals of Statistics}, 19, 1-67.
 #' @references Stoklosa, J., Gibb, H. and Warton, D.I. (2014). Fast forward selection for generalized estimating equations with a large number of predictor variables. \emph{Biometrics}, 70, 110-120.
-#' @references Stoklosa, J. and Warton, D.I. (2017). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, in review.
+#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
 #' @export
 #' @seealso \code{\link{mars_ls}} and \code{\link{backward_sel_WIC}}
 #' @importFrom gamlss gamlss
@@ -2485,7 +2485,7 @@ getNumberPart<-function(x)
 #' @return \code{eta.p} : the fitted linear predictor using the new (test) data.
 #' @return \code{basis_new} : the model matrix for the new (test) data.
 #' @author Jakub Stoklosa and David I. Warton.
-#' @references Stoklosa, J. and Warton, D.I. (2017). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, in review.
+#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
 #' @export
 #' @importFrom stringr str_extract_all
 #' @examples ## Load the "leptrine" presence-absence data.
