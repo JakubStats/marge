@@ -1,7 +1,7 @@
 ---
-title: 'MARGE: Tutorial using presence-absence data'
+title: 'MARGE: Tutorial using presence-absence data and the `marge` `R`-package'
 author: "Jakub Stoklosa & David I. Warton"
-date: "18th February 2019"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
  pdf_document: default
  html_document: default
