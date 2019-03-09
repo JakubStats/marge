@@ -16,7 +16,7 @@ library(BayesTree);
 
 #' @title Blue Mountains presence-absence data for the plant species \emph{Leptospermum trinervium}.
 #' @description These data are binary (presence-absence) data collected on plant species for 8,678 sites located in the Blue Mountains region. It also contains environmental predictor variables collected at each site. There are are 1,751 absences and 6,927 presences. The `leptrine` data consists of training and test sets, such that \eqn{N} = 4,339. The nine environmental predictor variables given here have all been standardized.
-#' @format A list containg two \code{matrices}: the training data with 4339 observations and 9 columns, and the test data with 4339 observations and 10 columns (it includes a column of zeroes for the intercept term). The columns are defined as follows:
+#' @format A list containing two \code{matrices}: the training data with 4339 observations and 9 columns, and the test data with 4339 observations and 10 columns (it includes a column of zeroes for the intercept term). The columns are defined as follows:
 #' \describe{
 #'  \item{\code{RAIN_DRY_QTR}}{Recorded rainfall for the driest quater for each site.}
 #'  \item{\code{FC}}{Recorded number of fire counts for each site.}
