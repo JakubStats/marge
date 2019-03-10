@@ -4,7 +4,7 @@
 \name{leptrine}
 \alias{leptrine}
 \title{Blue Mountains presence-absence data for the plant species \emph{Leptospermum trinervium}.}
-\format{A list containg two \code{matrices}: the training data with 4339 observations and 9 columns, and the test data with 4339 observations and 10 columns (it includes a column of zeroes for the intercept term). The columns are defined as follows:
+\format{A list containing two \code{matrices}: the training data with 4339 observations and 9 columns, and the test data with 4339 observations and 10 columns (it includes a column of zeroes for the intercept term). The columns are defined as follows:
 \describe{
  \item{\code{RAIN_DRY_QTR}}{Recorded rainfall for the driest quater for each site.}
  \item{\code{FC}}{Recorded number of fire counts for each site.}
