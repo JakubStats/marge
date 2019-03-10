@@ -26,7 +26,7 @@ A function that calculates parts of the score statistic for GLMs only (it is use
 \references{
 Stoklosa, J., Gibb, H. and Warton, D.I. (2014). Fast forward selection for generalized estimating equations with a large number of predictor variables. \emph{Biometrics}, 70, 110-120.
 
-Stoklosa, J. and Warton, D.I. (2017). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, in review.
+Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
 }
 \seealso{
 \code{\link{stat_out}} and \code{\link{stat_out_score_glm_null}}

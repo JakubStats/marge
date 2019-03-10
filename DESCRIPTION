@@ -10,4 +10,4 @@ Depends: R (>= 3.4.0), mvabund, MASS, gamlss, geepack, gsubfn, stringr, BayesTre
 Imports: stats, graphics
 License: GPL-2
 LazyData: TRUE
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1

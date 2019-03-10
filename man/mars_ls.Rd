@@ -78,7 +78,7 @@ Milborrow, S. (2017a). Notes on the \code{earth} package. Package vignette. Avai
 
 Milborrow, S. (2017b). \code{earth}: Multivariate Adaptive Regression Splines. R package version 4.4.7. Available at \url{http://CRAN.R-project.org/package=earth.}
 
-Stoklosa, J. and Warton, D.I. (2017). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, in review.
+Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
 }
 \seealso{
 \code{\link{marge}}
