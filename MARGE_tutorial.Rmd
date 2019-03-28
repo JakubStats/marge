@@ -132,9 +132,9 @@ mu_bart <- apply(pnorm(model_bart$yhat.test), 2, mean)
 var_bart <- mu_bart*(1 - mu_bart)
 PSE_pred_bart<-mean((dat1_t$Y - mu_bart)^2/var_bart, na.rm = TRUE)
 
-mu_gam<-H(predict(model_gam, newdata = dat1_t))
-var_gam<-mu_gam*(1 - mu_gam)
-PSE_pred_gam <- mean((dat1_t$Y - mu_gam)^2/var_gam, na.rm = TRUE)
+mu_gam <- H(predict(model_gam, newdata = dat1_t))
+var_gam <- mu_gam*(1 - mu_gam)
+PSE_pred_gam <- mean((dat1_t$Y - mu_gam)^2 / var_gam, na.rm = TRUE)
 
 mu_own <- H(pred_own_y$eta.p)
 var_own <- mu_own*(1-mu_own)
@@ -144,8 +144,8 @@ mu_marge_2 <- H(pred_marge_2_y$eta.p)
 mu_marge_log <- H(pred_marge_log_y$eta.p)
 var_marge_2 <- mu_marge_2*(1 - mu_marge_2)
 var_marge_log <- mu_marge_log*(1 - mu_marge_log)
-PSE_pred_marge_2 <- mean((dat1_t$Y - mu_marge_2)^2/var_marge_2, na.rm = TRUE)
-PSE_pred_marge_log <- mean((dat1_t$Y - mu_marge_log)^2/var_marge_log, na.rm = TRUE)
+PSE_pred_marge_2 <- mean((dat1_t$Y - mu_marge_2)^2 / var_marge_2, na.rm = TRUE)
+PSE_pred_marge_log <- mean((dat1_t$Y - mu_marge_log)^2 / var_marge_log, na.rm = TRUE)
 
 PSE_pred_list <- c(PSE_pred_bart, PSE_pred_gam, PSE_pred_own, 
                    PSE_pred_marge_2, PSE_pred_marge_log)
