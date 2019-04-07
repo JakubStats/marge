@@ -18,9 +18,9 @@ backward_sel_WIC(Y, N, n, B_new, id, family = "gaussian",
 
 \item{id}{: the ID for each individual in the cluster.}
 
-\item{family}{: the specified "exponential" family for the GLM. The default is \code{family="gaussian"}.}
+\item{family}{: the specified "exponential" family for the GLM. The default is \code{family = "gaussian"}.}
 
-\item{corstr}{:the specified "working correlation" structure. The default is \code{corstr="independence"}.}
+\item{corstr}{:the specified "working correlation" structure. The default is \code{corstr = "independence"}.}
 
 \item{nb}{: a logical argument, is the model a negative binomial model? The default is \code{FALSE}.}
 

@@ -22,10 +22,10 @@ Truncated p-th power function (positive part).
 \examples{
 data(leptrine)
 
-dat1<-leptrine[[1]]
-X_pred<-dat1[,1]   # One predicotr used.
+dat1 <- leptrine[[1]]
+X_pred <- dat1[, 1]   # One predicotr used.
 
-tp1(X_pred,1)      # Knot value set at x=1.
+tp1(X_pred, 1)      # Knot value set at x = 1.
 }
 \references{
 Friedman, J. (1991). Multivariate adaptive regression splines. \emph{The Annals of Statistics}, 19, 1-67.

@@ -18,11 +18,11 @@ mars_ls(X_pred, Y, pen = 2, tols = 1e-05, M = 21, minspan = NULL,
 
 \item{M}{: a set threshold for the number of basis functions to be used. The default is 21.}
 
-\item{minspan}{: a set minimum span value. The default is \code{minspan=NULL}.}
+\item{minspan}{: a set minimum span value. The default is \code{minspan = NULL}.}
 
 \item{print.disp}{: a logical argument, do you want to print the output? The default is \code{FALSE}.}
 
-\item{family}{: the specified "exponential" family if a GLM is used (only applied on the final model fit). The default is \code{family="gaussian"}.}
+\item{family}{: the specified "exponential" family if a GLM is used (only applied on the final model fit). The default is \code{family = "gaussian"}.}
 
 \item{nb}{: a logical argument, is the model a negative binomial model? The default is \code{FALSE}.}
 
@@ -48,35 +48,35 @@ MARS estimation function for independent Gaussian response data. If non-Gaussian
 Note that no argument is provided for an "additive structure only" model but one could just use the \code{gam()} function from \code{mgcv} instead.
 }
 \examples{
-## Load the "leptrine" presence-absence data.
+# Load the "leptrine" presence-absence data.
 
 data(leptrine)
 
-dat1<-leptrine[[1]]  # Training data.
-Y<-dat1$Y            # Response variable.
+dat1 <- leptrine[[1]]  # Training data.
+Y <- dat1$Y            # Response variable.
 
-X_pred<-dat1[,-c(3:10)]  # Design matrix using only two (of nine) predictors.
+X_pred <- dat1[, -c(3:10)]  # Design matrix using only two (of nine) predictors.
 
-## Set MARS tunning parameters.
+# Set MARS tunning parameters.
 
-family<-"binomial"   # The selected "exponential" family.
-nb<-FALSE            # Is this a negative binomial model?
-tols<-0.0001         # A set tolerence (stopping condition) in the forward pass for MARS.
-M<-21                # A set threshold for the maximum number of basis functions to be used.
-print.disp<-FALSE    # Print ALL the output?
-pen<-2               # Penalty to be used in GCV.
-minspan<-NULL        # A set minimum span value.
+family <- "binomial"   # The selected "exponential" family.
+nb <- FALSE            # Is this a negative binomial model?
+tols <- 0.0001         # A set tolerence (stopping condition) in the forward pass for MARS.
+M <- 21                # A set threshold for the maximum number of basis functions to be used.
+print.disp <- FALSE    # Print ALL the output?
+pen <- 2               # Penalty to be used in GCV.
+minspan <- NULL        # A set minimum span value.
 
-## Fit the MARS models (about ~ 20 secs.)
+# Fit the MARS models (about ~ 20 secs.)
 
-mod<-mars_ls(X_pred,Y,pen,tols,M,minspan,print.disp,family,nb)
+mod <- mars_ls(X_pred, Y, pen, tols, M, minspan, print.disp, family, nb)
 }
 \references{
 Friedman, J. (1991). Multivariate adaptive regression splines. \emph{The Annals of Statistics}, 19, 1-67.
 
 Milborrow, S. (2017a). Notes on the \code{earth} package. Package vignette. Available at: \url{http://127.0.0.1:31355/library/earth/doc/earth-notes.pdf}.
 
-Milborrow, S. (2017b). \code{earth}: Multivariate Adaptive Regression Splines. R package version 4.4.7. Available at \url{http://CRAN.R-project.org/package=earth.}
+Milborrow, S. (2017b). \code{earth}: Multivariate Adaptive Regression Splines. R package version 4.4.7. Available at \url{http://CRAN.R-project.org/package = earth.}
 
 Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
 }

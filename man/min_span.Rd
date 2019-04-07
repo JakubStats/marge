@@ -11,7 +11,7 @@ min_span(X_red, q, minspan = NULL, alpha = 0.05)
 
 \item{q}{: the number of predictor variables used.}
 
-\item{minspan}{: the set minimum span value. The default is \code{minspan=NULL}.}
+\item{minspan}{: the set minimum span value. The default is \code{minspan = NULL}.}
 
 \item{alpha}{: see Friedman (1991) equation (43). The default is 0.05.}
 }
