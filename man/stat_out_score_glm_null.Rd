@@ -9,7 +9,7 @@ stat_out_score_glm_null(Y, family = "gaussian", B_null, nb = F, ...)
 \arguments{
 \item{Y}{: the response variable.}
 
-\item{family}{: the specified "exponential" family for the GLM. The default is \code{family="gaussian"}.}
+\item{family}{: the specified "exponential" family for the GLM. The default is \code{family = "gaussian"}.}
 
 \item{B_null}{: model matrix under the null model.}
 

@@ -19,9 +19,9 @@ marge(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
 
 \item{id}{: a vector which identifies the clusters. The length of \code{id} should be the same as the number of observations. Data are assumed to be sorted so that observations on a cluster are contiguous rows for all entities in the formula.}
 
-\item{family}{: the specified family for the GLM/GEE. The default is \code{family="gaussian"}. The current available families are: "gaussian", "binomial", "poisson" and the "negative binomial" (to get that use family="poisson" and nb=T).}
+\item{family}{: the specified family for the GLM/GEE. The default is \code{family = "gaussian"}. The current available families are: "gaussian", "binomial", "poisson" and the "negative binomial" (to get that use family = "poisson" and nb = T).}
 
-\item{corstr}{: the specified "working correlation" structure for the GEE. The default is \code{corstr="independence"}.}
+\item{corstr}{: the specified "working correlation" structure for the GEE. The default is \code{corstr = "independence"}.}
 
 \item{pen}{: a set penalty used for the GCV (note: MARGE doesn't actually use this). The default is 2.}
 
@@ -29,7 +29,7 @@ marge(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
 
 \item{M}{: a set threshold for the number of basis functions to be used. The default is 21.}
 
-\item{minspan}{: a set minimum span value. The default is \code{minspan=NULL}.}
+\item{minspan}{: a set minimum span value. The default is \code{minspan = NULL}.}
 
 \item{print.disp}{: a logical argument, do you want to print the output? The default is \code{FALSE}.}
 
@@ -61,32 +61,33 @@ MARS fitting function for generalized linear models (GLM) and generalized estima
 For further details please look at the \code{mars_ls} function - there are more details on the general MARS algorithm. MARGE will produce output for two penalties: 2 and log(N). A figure is automatically generated plotting WIC against the no. of parameters.
 }
 \examples{
-## Load the "leptrine" presence-absence data.
+# Load the "leptrine" presence-absence data.
 
 data(leptrine)
 
-dat1<-leptrine[[1]]  # Training data.
-Y<-dat1$Y            # Response variable.
-N<-length(Y)         # Sample size (number of clusters).
-n<-1                 # Cluster size.
-id<-rep(1:N,each=n)  # The ID of each cluster.
+dat1 <- leptrine[[1]]  # Training data.
+Y <- dat1$Y            # Response variable.
+N <- length(Y)         # Sample size (number of clusters).
+n <- 1                 # Cluster size.
+id <- rep(1:N, each = n)  # The ID of each cluster.
 
-X_pred<-dat1[,-c(3:10)] # Design matrix using only two (of nine) predictors.
+X_pred <- dat1[, -c(3:10)] # Design matrix using only two (of nine) predictors.
 
-## Set MARGE tunning parameters.
+# Set MARGE tunning parameters.
 
-family<-"binomial"   # The selected "exponential" family for the GLM/GEE.
-is.gee<-FALSE        # Is the model a GEE?
-nb<-FALSE            # Is this a negative binomial model?
-tols_score<-0.0001   # A set tolerence (stopping condition) in forward pass for MARGE.
-M<-21                # A set threshold for the maximum number of basis functions to be used.
-print.disp<-FALSE    # Print ALL the output?
-pen<-2               # Penalty to be used in GCV.
-minspan<-NULL        # A set minimum span value.
+family <- "binomial"   # The selected "exponential" family for the GLM/GEE.
+is.gee <- FALSE        # Is the model a GEE?
+nb <- FALSE            # Is this a negative binomial model?
+tols_score <- 0.0001   # A set tolerence (stopping condition) in forward pass for MARGE.
+M <- 21                # A set threshold for the maximum number of basis functions to be used.
+print.disp <- FALSE    # Print ALL the output?
+pen <- 2               # Penalty to be used in GCV.
+minspan <- NULL        # A set minimum span value.
 
-## Fit the MARGE models (about ~ 30 secs.)
+# Fit the MARGE models (about ~ 30 secs.)
 
-mod<-marge(X_pred,Y,N,n,id,family,corstr,pen,tols_score,M,minspan,print.disp,nb,is.gee)
+mod <- marge(X_pred, Y, N, n, id, family, corstr, pen, tols_score,
+             M, minspan, print.disp, nb, is.gee)
 }
 \references{
 Friedman, J. (1991). Multivariate adaptive regression splines. \emph{The Annals of Statistics}, 19, 1-67.

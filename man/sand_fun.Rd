@@ -21,7 +21,7 @@ sand_fun(Y, X, N, n_vec, mu.est, V.est, nb = T, omega = 1, ...)
 
 \item{nb}{: a logical argument, is the model a negative binomial model? The default is \code{FALSE}.}
 
-\item{omega}{: a regulariztion constant that is applied if your data is of high dimension (n>N). The default is \code{omega=1}.}
+\item{omega}{: a regulariztion constant that is applied if your data is of high dimension (n>N). The default is \code{omega = 1}.}
 
 \item{...}{: further arguments passed to or from other methods.}
 }

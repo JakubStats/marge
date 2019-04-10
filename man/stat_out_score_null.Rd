@@ -16,9 +16,9 @@ stat_out_score_null(Y, N, n, id, family = "gaussian",
 
 \item{id}{: the ID for each individual in the cluster.}
 
-\item{family}{: the specified "exponential" family for GLMs. The default is \code{family="gaussian"}.}
+\item{family}{: the specified "exponential" family for GLMs. The default is \code{family = "gaussian"}.}
 
-\item{corstr}{: the specified "working correlation" structure. The default is \code{corstr="independence"}.}
+\item{corstr}{: the specified "working correlation" structure. The default is \code{corstr = "independence"}.}
 
 \item{B_null}{: model matrix under the null model.}
 

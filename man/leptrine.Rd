@@ -4,7 +4,7 @@
 \name{leptrine}
 \alias{leptrine}
 \title{Blue Mountains presence-absence data for the plant species \emph{Leptospermum trinervium}.}
-\format{A list containing two \code{matrices}: the training data with 4339 observations and 9 columns, and the test data with 4339 observations and 10 columns (it includes a column of zeroes for the intercept term). The columns are defined as follows:
+\format{A list containing two \code{matrices}: the training data with 4,339 observations and 9 columns, and the test data with 4,339 observations and 10 columns (it includes a column of zeroes for the intercept term). The columns are defined as follows:
 \describe{
  \item{\code{RAIN_DRY_QTR}}{Recorded rainfall for the driest quater for each site.}
  \item{\code{FC}}{Recorded number of fire counts for each site.}
@@ -24,35 +24,36 @@ The Blue Mountains presence-absence data for the speices \emph{Leptospermum trin
 leptrine
 }
 \description{
-These data are binary (presence-absence) data collected on plant species for 8,678 sites located in the Blue Mountains region. It also contains environmental predictor variables collected at each site. There are are 1,751 absences and 6,927 presences. The `leptrine` data consists of training and test sets, such that \eqn{N} = 4,339. The nine environmental predictor variables given here have all been standardized.
+These data are binary (presence-absence) data collected on plant species for 8,678 sites located in the Blue Mountains region. It also contains environmental predictor variables collected at each site. There are are 1,751 absences and 6,927 presences. The `leptrine` data consists of training and test sets, such that \eqn{N}  =  4,339. The nine environmental predictor variables given here have all been standardized.
 }
 \examples{
-## Load the data.
+# Load the data.
 
 data(leptrine)
 
-dat1<-leptrine[[1]]  # Training data.
-Y<-dat1$Y            # Response variable.
-N<-length(Y)         # Sample size (number of clusters).
-n<-1                 # Cluster size.
-id<-rep(1:N,each=n)  # The ID of each cluster.
+dat1 <- leptrine[[1]]  # Training data.
+Y <- dat1$Y            # Response variable.
+N <- length(Y)         # Sample size (number of clusters).
+n <- 1                 # Cluster size.
+id <- rep(1:N, each = n)  # The ID of each cluster.
 
-X_pred<-dat1[,-c(3:10)]  # Design matrix using only two (of nine) predictors.
+X_pred <- dat1[, -c(3:10)]  # Design matrix using only two (of nine) predictors.
 
-## Set MARGE tunning parameters.
+# Set MARGE tunning parameters.
 
-family<-"binomial"   # The selected "exponential" family for the GLM/GEE.
-is.gee<-FALSE        # Is the model a GEE?
-nb<-FALSE            # Is this a negative binomial model?
-tols_score<-0.0001   # A set tolerence (stopping condition) in forward pass for MARGE.
-M<-21                # A set threshold for the maximum number of basis functions to be used.
-print.disp<-FALSE    # Print ALL the output?
-pen<-2               # Penalty to be used in GCV.
-minspan<-NULL        # A set minimum span value.
+family <- "binomial"   # The selected "exponential" family for the GLM/GEE.
+is.gee <- FALSE        # Is the model a GEE?
+nb <- FALSE            # Is this a negative binomial model?
+tols_score <- 0.0001   # A set tolerence (stopping condition) in forward pass for MARGE.
+M <- 21                # A set threshold for the maximum number of basis functions to be used.
+print.disp <- FALSE    # Print ALL the output?
+pen <- 2               # Penalty to be used in GCV.
+minspan <- NULL        # A set minimum span value.
 
-## Fit the MARGE models (about ~ 30 secs.)
+# Fit the MARGE models (about ~ 30 secs.)
 
-mod<-marge(X_pred,Y,N,n,id,family,corstr,pen,tols_score,M,minspan,print.disp,nb,is.gee)
+mod <- marge(X_pred, Y, N, n, id, family, corstr, pen, tols_score,
+             M, minspan, print.disp, nb, is.gee)
 }
 \references{
 Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
