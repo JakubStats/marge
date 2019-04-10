@@ -1,7 +1,7 @@
 ---
-title: 'MARGE: Tutorial using presence-absence data'
-author: "Jakub Stoklosa & David Warton"
-date: "1st June 2017"
+title: 'MARGE: Tutorial using presence-absence data and the `marge` `R`-package'
+author: "Jakub Stoklosa & David I. Warton"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
  pdf_document: default
  html_document: default
@@ -11,11 +11,11 @@ output:
 knitr::opts_chunk$set(echo=TRUE)
 ```
 
-This tutorial documents fitting multivariate adaptive regression splines using generalized estimating equations (MARGE) via the `marge` R-package. We also fit some addtional models and compare them with MARGE using a predictive squared error (PSE) on test data. Computationanl times for each model fit are also reported,
+This tutorial documents fitting multivariate adaptive regression splines using generalized estimating equations (MARGE) via the `marge` R-package. We also fit some addtional models and compare them with MARGE using a predictive squared error (PSE) on test data. Computationanl times for each model fit are also reported.
 
 For more specific details on the MARGE algorithm see:
 
-Stoklosa, J. and Warton, D.I. (2016). A generalized estimating equation approach to multivariate adaptive regression splines. *Journal of Computational and Graphical Statistics*, in review.
+Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. *Journal of Computational and Graphical Statistics*, **27**, pp. 245--253.
 
 Also, see ```?marge``` for futher details on the fitting function, input arguments and output.
 
@@ -147,7 +147,7 @@ PSE_pred_marge_log<-mean((dat1_t$Y-mu_marge_log)^2/var_marge_log,na.rm=TRUE)
 PSE_pred_list<-c(PSE_pred_bart,PSE_pred_gam,PSE_pred_own,PSE_pred_marge_2,PSE_pred_marge_log)
 ```
 
-#### Display results - these PSE values should match the results given in Table 3 of Stoklosa and Warton (2016), except for BART (which should be pretty close).
+#### Display results - these PSE values should match the results given in Table 3 of Stoklosa and Warton (2018), except for BART (which should be pretty close).
 
 ```{r res, message=FALSE, warning=FALSE}
 res1<-PSE_pred_list
