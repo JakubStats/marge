@@ -24,7 +24,7 @@ The Blue Mountains presence-absence data for the speices \emph{Leptospermum trin
 leptrine
 }
 \description{
-These data are binary (presence-absence) data collected on plant species for 8,678 sites located in the Blue Mountains region. It also contains environmental predictor variables collected at each site. There are are 1,751 absences and 6,927 presences. The `leptrine` data consists of training and test sets, such that \eqn{N}  =  4,339. The nine environmental predictor variables given here have all been standardized.
+These data are binary (presence-absence) data collected on plant species for 8,678 sites located in the Blue Mountains region. It also contains environmental predictor variables collected at each site. There are are 1,751 absences and 6,927 presences. The `leptrine` data consists of training and test sets, such that \eqn{N} = 4,339. The nine environmental predictor variables given here have all been standardized.
 }
 \examples{
 # Load the data.
