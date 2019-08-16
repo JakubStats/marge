@@ -30,7 +30,7 @@ tp1(X_pred, 1)      # Knot value set at x = 1.
 \references{
 Friedman, J. (1991). Multivariate adaptive regression splines. \emph{The Annals of Statistics}, 19, 1-67.
 
-Stoklosa, J. and Warton, D.I. (2017). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, in review.
+Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, in review.
 }
 \seealso{
 \code{\link{tp2}}
