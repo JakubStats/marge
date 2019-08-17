@@ -21,7 +21,7 @@ Also, see ```?marge``` for futher details on the fitting function, input argumen
 
 We use the `leptrine` data set which is provided within the `marge` R-package and annalysed in Stoklosa and Warton (2016). These data are binary (presence-absence) data collected on plant species for 8,678 sites located in the Blue Mountains region. These data contain nine environmental predictor variables collected at each site. Our objective is to predict the presence of the species *Leptospermum trinervium* using the environmental predictor variables. There are are 1,751 absences and 6,927 presences. The `leptrine` data consists of training and test sets, such that $N_{train}$ = 4,339. The nine environmental predictor variables have been standardized. See ```?leptrine``` for futher details.
 
-Below we fit a MARS model, a generlaized additive model (GAM), a Bayesian additive regression tree (BART) model and MARGE (with two different penalties, $\lambda=2$ and $\lambda=\log(N)$). We record the computational times (in seconds) and calculate the predictive squared errors (PSE) on test data.
+Below we fit a MARS model, a generlaized additive model (GAM), a Bayesian additive regression tree (BART) model and MARGE (with two different penalties, $\lambda = 2$ and $\lambda = \log(N)$). We record the computational times (in seconds) and calculate the predictive squared errors (PSE) on test data.
 
 #### Load the `marge`, `mgcv` and `BayesTree` R-packages.
 
@@ -134,18 +134,18 @@ PSE_pred_bart<-mean((dat1_t$Y - mu_bart)^2/var_bart, na.rm = TRUE)
 
 mu_gam <- H(predict(model_gam, newdata = dat1_t))
 var_gam <- mu_gam*(1 - mu_gam)
-PSE_pred_gam <- mean((dat1_t$Y - mu_gam)^2 / var_gam, na.rm = TRUE)
+PSE_pred_gam <- mean((dat1_t$Y - mu_gam)^2/var_gam, na.rm = TRUE)
 
 mu_own <- H(pred_own_y$eta.p)
-var_own <- mu_own*(1-mu_own)
+var_own <- mu_own*(1 - mu_own)
 PSE_pred_own <- mean((dat1_t$Y - mu_own)^2/var_own,na.rm = TRUE)
 
 mu_marge_2 <- H(pred_marge_2_y$eta.p)
 mu_marge_log <- H(pred_marge_log_y$eta.p)
 var_marge_2 <- mu_marge_2*(1 - mu_marge_2)
 var_marge_log <- mu_marge_log*(1 - mu_marge_log)
-PSE_pred_marge_2 <- mean((dat1_t$Y - mu_marge_2)^2 / var_marge_2, na.rm = TRUE)
-PSE_pred_marge_log <- mean((dat1_t$Y - mu_marge_log)^2 / var_marge_log, na.rm = TRUE)
+PSE_pred_marge_2 <- mean((dat1_t$Y - mu_marge_2)^2/var_marge_2, na.rm = TRUE)
+PSE_pred_marge_log <- mean((dat1_t$Y - mu_marge_log)^2/var_marge_log, na.rm = TRUE)
 
 PSE_pred_list <- c(PSE_pred_bart, PSE_pred_gam, PSE_pred_own, 
                    PSE_pred_marge_2, PSE_pred_marge_log)

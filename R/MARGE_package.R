@@ -80,7 +80,7 @@ library(BayesTree)
 #' X_pred <- dat1[, 1]   # One predicotr used.
 #'
 #' tp1(X_pred, 1)      # Knot value set at x = 1.
-tp1 <- function(x, t, p = 1) ((x - t)^p)*(x>t)
+tp1 <- function(x, t, p = 1) ((x - t)^p)*(x > t)
 
 #' tp2
 #'
@@ -101,7 +101,7 @@ tp1 <- function(x, t, p = 1) ((x - t)^p)*(x>t)
 #' X_pred <- dat1[, 1]    # One predicotr used.
 #'
 #' tp2(X_pred, 1)       # Knot value set at x = 1.
-tp2 <- function(x, t, p = 1) ((t - x)^p)*(x<t)
+tp2 <- function(x, t, p = 1) ((t - x)^p)*(x < t)
 
 #' stat_out
 #'
@@ -213,7 +213,7 @@ stat_out_score_null <- function(Y, N, n, id, family = "gaussian", corstr = "inde
     k <- sum(n_vec[1:i])
     if (corstr == "independence") R_alpha <- diag(1, nrow = n_vec[i], ncol = n_vec[i])
     if (corstr == "exchangeable") R_alpha <- matrix(c(rep(alpha.est, n_vec[i]*n_vec[i])), ncol = n_vec[i]) + diag(c(1 - alpha.est), ncol = n_vec[i], nrow = n_vec[i])
-    if (corstr == "ar1") R_alpha <- alpha.est^outer(1:n_vec[i], 1:n_vec[i], function(x, y) abs(x-y))
+    if (corstr == "ar1") R_alpha <- alpha.est^outer(1:n_vec[i], 1:n_vec[i], function(x, y) abs(x - y))
 
     V.est_i <- diag(sqrt(V.est[(sum(n_vec1[1:i]) + 1):k]), nrow = n_vec[i], ncol = n_vec[i])%*%R_alpha%*%diag(sqrt(V.est[(sum(n_vec1[1:i]) + 1):k]), nrow = n_vec[i], ncol = n_vec[i])
     V.est_i_inv <- chol2inv(chol(V.est_i))
@@ -609,7 +609,7 @@ min_span <- function(X_red, q, minspan = NULL, alpha = 0.05){
   cc <- 1
 
   while(okA){
-    if ((cc + minspan)  >length(x)){
+    if ((cc + minspan) >length(x)){
       break
       okA <- F
     }
@@ -1298,8 +1298,8 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
     variable.lowest <- utils::tail(which(GCV1 == max(GCV1, na.rm = T)), n = 1)
     var.low.vec <- c(var.low.vec, colnames(B_new)[variable.lowest + 1])
 
-    if (i != (ncol(B) - 1)) GCV_mat[(i+1), colnames(B_new)[-1]] <- GCV1
-    if (i == (ncol(B) - 1)) GCV_mat[(i+1), 1] <- GCV1
+    if (i != (ncol(B) - 1)) GCV_mat[(i + 1), colnames(B_new)[-1]] <- GCV1
+    if (i == (ncol(B) - 1)) GCV_mat[(i + 1), 1] <- GCV1
 
     B_new <- as.matrix(B_new[, -(variable.lowest + 1)])
   }
@@ -2378,7 +2378,7 @@ predict.marge <- function(object, newdata, X_pred, is.marge = F, pen = "2", ...)
             cut2 = cut3 = as.numeric(cut1[-cut00])
           }
         }
-        if (length(cut1)>1 & (abs(cut1[1]) == abs(cut1[2]))){
+        if (length(cut1) > 1 & (abs(cut1[1]) == abs(cut1[2]))){
           var_num0 <- which(colnames(fitted_dat) == (noquote(var_name)))
           cut00 <- min(cut1)[1]
           cut01 <- abs(signif (as.numeric(cut1[cut00]), 4))
@@ -2420,7 +2420,7 @@ predict.marge <- function(object, newdata, X_pred, is.marge = F, pen = "2", ...)
           if (lenv1 == 2) cut1 <- abs(cut1)
           if (lenv1 == 3) cut1 <- cut1
 
-          if (length(cut1)>1 & (cut1[1] != cut1[2])){
+          if (length(cut1) > 1 & (cut1[1] != cut1[2])){
             if (cut1[1] < 0 | cut1[2] < 0){
               var_num0 <- which(colnames(fitted_dat) == (noquote(var_name)))
               cut00 <- which(cut1 < 0)
