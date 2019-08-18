@@ -71,7 +71,7 @@ library(BayesTree)
 #' @return \code{tp1} returns a vector of values that have been transformed using a truncated p-th power function (positive part) for a specified knot value.
 #' @author Jakub Stoklosa and David I. Warton
 #' @references Friedman, J. (1991). Multivariate adaptive regression splines. \emph{The Annals of Statistics}, 19, 1-67.
-#' @references Stoklosa, J. and Warton, D.I. (2017). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, in review.
+#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, in review.
 #' @export
 #' @seealso \code{\link{tp2}}
 #' @examples data(leptrine)
@@ -80,7 +80,7 @@ library(BayesTree)
 #' X_pred <- dat1[, 1]   # One predicotr used.
 #'
 #' tp1(X_pred, 1)      # Knot value set at x = 1.
-tp1 <- function(x, t, p = 1) ((x - t)^p)*(x>t)
+tp1 <- function(x, t, p = 1) ((x - t)^p)*(x > t)
 
 #' tp2
 #'
@@ -101,7 +101,7 @@ tp1 <- function(x, t, p = 1) ((x - t)^p)*(x>t)
 #' X_pred <- dat1[, 1]    # One predicotr used.
 #'
 #' tp2(X_pred, 1)       # Knot value set at x = 1.
-tp2 <- function(x, t, p = 1) ((t - x)^p)*(x<t)
+tp2 <- function(x, t, p = 1) ((t - x)^p)*(x < t)
 
 #' stat_out
 #'
@@ -213,7 +213,7 @@ stat_out_score_null <- function(Y, N, n, id, family = "gaussian", corstr = "inde
     k <- sum(n_vec[1:i])
     if (corstr == "independence") R_alpha <- diag(1, nrow = n_vec[i], ncol = n_vec[i])
     if (corstr == "exchangeable") R_alpha <- matrix(c(rep(alpha.est, n_vec[i]*n_vec[i])), ncol = n_vec[i]) + diag(c(1 - alpha.est), ncol = n_vec[i], nrow = n_vec[i])
-    if (corstr == "ar1") R_alpha <- alpha.est^outer(1:n_vec[i], 1:n_vec[i], function(x, y) abs(x-y) )
+    if (corstr == "ar1") R_alpha <- alpha.est^outer(1:n_vec[i], 1:n_vec[i], function(x, y) abs(x - y))
 
     V.est_i <- diag(sqrt(V.est[(sum(n_vec1[1:i]) + 1):k]), nrow = n_vec[i], ncol = n_vec[i])%*%R_alpha%*%diag(sqrt(V.est[(sum(n_vec1[1:i]) + 1):k]), nrow = n_vec[i], ncol = n_vec[i])
     V.est_i_inv <- chol2inv(chol(V.est_i))
@@ -533,7 +533,11 @@ backward_sel_WIC <- function(Y, N, n, B_new, id, family = "gaussian", corstr = "
     if (nb == T){
       sink(tempfile())
       fit <- gamlss::gamlss(Y ~ B_new - 1, family = "NBI", trace = FALSE)
+<<<<<<< HEAD
       if (n == 1){wald1 <- ((as.matrix(summary(fit))[, 3])[-c(1, nrow(as.matrix(summary(fit))))])^2}
+=======
+      if (n == 1) wald1 <- ((as.matrix(summary(fit))[, 3])[-c(1, nrow(as.matrix(summary(fit))))])^2
+>>>>>>> 88bfa160d36744eb777d330b36f73199f69f94fc
       if (n > 1){ # Used for the Arthropod data example.
         n_vec <- rep(n, N)
         mu.est <- as.matrix(stats::fitted.values(fit))
@@ -609,7 +613,7 @@ min_span <- function(X_red, q, minspan = NULL, alpha = 0.05){
   cc <- 1
 
   while(okA){
-    if ((cc + minspan)>length(x)){
+    if ((cc + minspan) >length(x)){
       break
       okA <- F
     }
@@ -754,7 +758,7 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
 
       # This next bit is an indicator to check if the new variable can interact with any other variable already in the set. 0 = no and >0, possible.
 
-      if (ncol(B)>1) in.set <- sum(!var_name_vec%in%var_name)
+      if (ncol(B) > 1) in.set <- sum(!var_name_vec%in%var_name)
       if (ncol(B) == 1) in.set <- 0
 
       # Loop 3 of algorithm considers ALL the knot locations (after trim) of the chosen variable in the current loop. The stratergy is simple for
@@ -1163,7 +1167,7 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
       GCVq2 <- meas_model$GCVq1
       RSSq2 <- meas_model$RSSq1
 
-      if (GCVq2 < (-10) | (round(RSSq2, 4) > (1-tols))){
+      if (GCVq2 < (-10) | (round(RSSq2, 4) > (1 - tols))){
         writeLines("MARS Tolerance criteria met 1. \n")
         var.mod_temp <- c(var.mod_temp, NA)
         min_knot_vec_temp <- c(min_knot_vec_temp, NA)
@@ -1298,8 +1302,8 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
     variable.lowest <- utils::tail(which(GCV1 == max(GCV1, na.rm = T)), n = 1)
     var.low.vec <- c(var.low.vec, colnames(B_new)[variable.lowest + 1])
 
-    if (i != (ncol(B) - 1)) GCV_mat[(i+1), colnames(B_new)[-1]] <- GCV1
-    if (i == (ncol(B) - 1)) GCV_mat[(i+1), 1] <- GCV1
+    if (i != (ncol(B) - 1)) GCV_mat[(i + 1), colnames(B_new)[-1]] <- GCV1
+    if (i == (ncol(B) - 1)) GCV_mat[(i + 1), 1] <- GCV1
 
     B_new <- as.matrix(B_new[, -(variable.lowest + 1)])
   }
@@ -1911,7 +1915,7 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
       meas_model0 <- stat_out(Y, B_temp, TSS, GCV.null, pen)
       GCVq2 <- meas_model0$GCVq1
 
-      if (GCVq2<(-10) | round(score2, 4) <= 0){
+      if (GCVq2 < (-10) | round(score2, 4) <= 0){
         writeLines("** MARGE tolerance criteria met 1** \n")
         var.mod_temp <- c(var.mod_temp, NA)
         min_knot_vec_temp <- c(min_knot_vec_temp, NA)
@@ -1982,7 +1986,7 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
     if (score_term[k + 1] >= tols_score){
       if (int == T){
         mod_struct <- c(mod_struct, rep(c(rep(2, int.count1/trunc.type)), trunc.type))
-        int.count <- int.count+1
+        int.count <- int.count + 1
       }
       if (int == F) mod_struct <- c(mod_struct, rep(1, trunc.type))
 
@@ -2378,7 +2382,7 @@ predict.marge <- function(object, newdata, X_pred, is.marge = F, pen = "2", ...)
             cut2 = cut3 = as.numeric(cut1[-cut00])
           }
         }
-        if (length(cut1)>1 & (abs(cut1[1]) == abs(cut1[2]))){
+        if (length(cut1) > 1 & (abs(cut1[1]) == abs(cut1[2]))){
           var_num0 <- which(colnames(fitted_dat) == (noquote(var_name)))
           cut00 <- min(cut1)[1]
           cut01 <- abs(signif (as.numeric(cut1[cut00]), 4))
@@ -2420,7 +2424,7 @@ predict.marge <- function(object, newdata, X_pred, is.marge = F, pen = "2", ...)
           if (lenv1 == 2) cut1 <- abs(cut1)
           if (lenv1 == 3) cut1 <- cut1
 
-          if (length(cut1)>1 & (cut1[1] != cut1[2])){
+          if (length(cut1) > 1 & (cut1[1] != cut1[2])){
             if (cut1[1] < 0 | cut1[2] < 0){
               var_num0 <- which(colnames(fitted_dat) == (noquote(var_name)))
               cut00 <- which(cut1 < 0)
