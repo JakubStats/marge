@@ -533,11 +533,7 @@ backward_sel_WIC <- function(Y, N, n, B_new, id, family = "gaussian", corstr = "
     if (nb == T){
       sink(tempfile())
       fit <- gamlss::gamlss(Y ~ B_new - 1, family = "NBI", trace = FALSE)
-<<<<<<< HEAD
-      if (n == 1){wald1 <- ((as.matrix(summary(fit))[, 3])[-c(1, nrow(as.matrix(summary(fit))))])^2}
-=======
       if (n == 1) wald1 <- ((as.matrix(summary(fit))[, 3])[-c(1, nrow(as.matrix(summary(fit))))])^2
->>>>>>> 88bfa160d36744eb777d330b36f73199f69f94fc
       if (n > 1){ # Used for the Arthropod data example.
         n_vec <- rep(n, N)
         mu.est <- as.matrix(stats::fitted.values(fit))
@@ -2366,7 +2362,7 @@ predict.marge <- function(object, newdata, X_pred, is.marge = F, pen = "2", ...)
         if (lenv1 == 2) cut1 <- abs(cut1)
         if (lenv1 == 3) cut1 <- cut1
 
-        if (length(cut1)>1 & cut1[1] != cut1[2]){
+        if (length(cut1) >1 & cut1[1] != cut1[2]){
           if (cut1[1] < 0 | cut1[2] < 0){
             var_num0 <- which(colnames(fitted_dat) == (noquote(var_name)))
             cut00 <- which(cut1 < 0)
