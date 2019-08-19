@@ -2362,7 +2362,7 @@ predict.marge <- function(object, newdata, X_pred, is.marge = F, pen = "2", ...)
         if (lenv1 == 2) cut1 <- abs(cut1)
         if (lenv1 == 3) cut1 <- cut1
 
-        if (length(cut1) >1 & cut1[1] != cut1[2]){
+        if (length(cut1) > 1 & cut1[1] != cut1[2]){
           if (cut1[1] < 0 | cut1[2] < 0){
             var_num0 <- which(colnames(fitted_dat) == (noquote(var_name)))
             cut00 <- which(cut1 < 0)
