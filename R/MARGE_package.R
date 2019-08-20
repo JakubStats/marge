@@ -342,8 +342,8 @@ score_fun_glm <- function(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B1,
       B.est <- t(((mu.est))*VS.est_i)%*%XA
     }
 
-    if (N<1500) score <- (B.est)%*%MASS::ginv(inv.XVX_22)%*%t(B.est)
-    if (N>1500) score <- (B.est)%*%chol2inv(chol(inv.XVX_22))%*%t(B.est)
+    if (N < 1500) score <- (B.est)%*%MASS::ginv(inv.XVX_22)%*%t(B.est)
+    if (N > 1500) score <- (B.est)%*%chol2inv(chol(inv.XVX_22))%*%t(B.est)
   }
 
   list(score = score)
@@ -609,7 +609,7 @@ min_span <- function(X_red, q, minspan = NULL, alpha = 0.05){
   cc <- 1
 
   while(okA){
-    if ((cc + minspan) >length(x)){
+    if ((cc + minspan) > length(x)){
       break
       okA <- F
     }
@@ -1138,7 +1138,7 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
         }
 
         pp <- ncol(B_temp)
-        if (trunc.type == 2) colnames(B_temp)[((pp-1):pp)] <- var_name_list1[[1]]
+        if (trunc.type == 2) colnames(B_temp)[((pp - 1):pp)] <- var_name_list1[[1]]
         if (trunc.type == 1) colnames(B_temp)[pp] <- var_name_list1[[1]]
       }
 
