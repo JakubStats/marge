@@ -122,7 +122,7 @@ t4 <- difftime(end, start, units = "secs")
 #### Calculate the predictive squared error (PSE) on test data using each fitted model.
 
 ```{r preds, message=FALSE, warning=FALSE, results='hide'}
-H <- function(a){1 / (1 + exp(-a))} # An inverse logit function (required for PSE below).
+H <- function(a) {1 / (1 + exp(-a))} # An inverse logit function (required for PSE below).
 
 pred_own_y <- predict(model_own, X_predt, X_pred)
 pred_marge_2_y <- predict(model_marge, X_predt, X_pred, TRUE, "2")

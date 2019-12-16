@@ -122,12 +122,12 @@ tp2 <- function(x, t, p = 1) ((t - x)^p)*(x < t)
 #' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
 #' @export
 #' @seealso \code{\link{stat_out_score_null}} and \code{\link{stat_out_score_glm_null}}
-stat_out <- function(Y, B1, TSS, GCV.null, pen = 2, ...){
+stat_out <- function(Y, B1, TSS, GCV.null, pen = 2, ...) {
   N <- length(Y)
   reg <- stats::lm.fit(B1, Y)
 
   if (sum(is.na(reg$coef)) > 0) RSS1 = RSSq1 = GCV1 = GCVq1 = NA
-  if (sum(is.na(reg$coef)) == 0){
+  if (sum(is.na(reg$coef)) == 0) {
     df1a <- ncol(B1) + pen*(ncol(B1) - 1)/2  # This matches the earth() package, SAS and Friedman (1991) penalty.
 
     RSS1 <- sum((Y - stats::fitted(reg))^2)
@@ -161,15 +161,15 @@ stat_out <- function(Y, B1, TSS, GCV.null, pen = 2, ...){
 #' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
 #' @export
 #' @seealso \code{\link{stat_out}} and \code{\link{stat_out_score_glm_null}}
-stat_out_score_null <- function(Y, N, n, id, family = "gaussian", corstr = "independence", B_null, nb = F, is.gee = F, ...){
+stat_out_score_null <- function(Y, N, n, id, family = "gaussian", corstr = "independence", B_null, nb = F, is.gee = F, ...) {
   n_vec <- rep(n, N)
 
-  if (is.gee == T){
-    if (family == "gaussian"){
+  if (is.gee == T) {
+    if (family == "gaussian") {
       ests <- geepack::geeglm(Y ~ B_null - 1, id = id, corstr = corstr)
       alpha.est <- ests$geese$alpha
     }
-    if (family != "gaussian"){
+    if (family != "gaussian") {
       ests <- geepack::geeglm(Y ~ B_null - 1, id = id, family = family, corstr = corstr)
       alpha.est <- ests$geese$alpha
     }
@@ -177,12 +177,12 @@ stat_out_score_null <- function(Y, N, n, id, family = "gaussian", corstr = "inde
     mu.est <- as.matrix(stats::fitted.values(ests))
   }
 
-  if (is.gee == F){
-    if (nb == T){
+  if (is.gee == F) {
+    if (nb == T) {
       ests <- gamlss::gamlss(Y ~ B_null - 1, family = "NBI", trace = FALSE)
       mu.est <- as.matrix(stats::fitted.values(ests))
     }
-    if (nb == F){
+    if (nb == F) {
       if (family == "gaussian") ests <- stats::glm.fit(B_null, Y)
       if (family == "binomial") ests <- stats::glm.fit(B_null, Y, family = binomial(link = "logit"))
       if (family == "poisson") ests <- stats::glm.fit(B_null, Y, family = poisson(link = "log"))
@@ -193,7 +193,7 @@ stat_out_score_null <- function(Y, N, n, id, family = "gaussian", corstr = "inde
 
   if (family == "gaussian") V.est <- rep(1, nrow(mu.est))
   if (family == "binomial") V.est <- mu.est*(1 - mu.est)
-  if (family == "poisson"){
+  if (family == "poisson") {
     if (nb == F) V.est <- mu.est
     if (nb == T) V.est <- mu.est*(1 + mu.est*(exp(ests$sigma.coef)))
   }
@@ -209,7 +209,7 @@ stat_out_score_null <- function(Y, N, n, id, family = "gaussian", corstr = "inde
   J11 <- matrix(0, nrow = p, ncol = p)
   Sigma11 <- matrix(0, nrow = p, ncol = p)
 
-  for(i in 1:N){
+  for(i in 1:N) {
     k <- sum(n_vec[1:i])
     if (corstr == "independence") R_alpha <- diag(1, nrow = n_vec[i], ncol = n_vec[i])
     if (corstr == "exchangeable") R_alpha <- matrix(c(rep(alpha.est, n_vec[i]*n_vec[i])), ncol = n_vec[i]) + diag(c(1 - alpha.est), ncol = n_vec[i], nrow = n_vec[i])
@@ -262,12 +262,12 @@ stat_out_score_null <- function(Y, N, n, id, family = "gaussian", corstr = "inde
 #' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
 #' @export
 #' @seealso \code{\link{stat_out}} and \code{\link{stat_out_score_glm_null}}
-stat_out_score_glm_null <- function(Y, family = "gaussian", B_null, nb = F, ...){
-  if (nb == T){
+stat_out_score_glm_null <- function(Y, family = "gaussian", B_null, nb = F, ...) {
+  if (nb == T) {
     ests <- gamlss::gamlss(Y ~ B_null - 1, family = "NBI", trace = FALSE)
     mu.est <- as.matrix(stats::fitted.values(ests))
   }
-  if (nb == F){
+  if (nb == F) {
     if (family == "gaussian") ests <- stats::glm.fit(B_null, Y)
     if (family == "binomial") ests <- stats::glm.fit(B_null, Y, family = binomial(link = "logit"))
     if (family == "poisson") ests <- stats::glm.fit(B_null, Y, family = poisson(link = "log"))
@@ -276,19 +276,19 @@ stat_out_score_glm_null <- function(Y, family = "gaussian", B_null, nb = F, ...)
 
   if (family == "gaussian") V.est <- rep(1, nrow(mu.est))
   if (family == "binomial") V.est <- mu.est*(1 - mu.est)
-  if (family == "poisson"){
+  if (family == "poisson") {
     if (nb == F) V.est <- mu.est
     if (nb == T) V.est <- mu.est*(1 + mu.est*(exp(ests$sigma.coef)))
   }
 
   VS.est_list <- (c(Y) - c(mu.est))/V.est
 
-  if (nb == F){
+  if (nb == F) {
     A_list <- chol2inv(chol((t(B_null)%*%diag(c(V.est))%*%B_null)))
     B1_list <- t(B_null)%*%diag(c(V.est))
   }
 
-  if (nb == T){
+  if (nb == T) {
     A_list <- chol2inv(chol((t(B_null)%*%diag(c(mu.est^2/V.est))%*%B_null)))
     B1_list <- t(B_null)%*%diag(c(mu.est^2/V.est))
   }
@@ -317,26 +317,26 @@ stat_out_score_glm_null <- function(Y, family = "gaussian", B_null, nb = F, ...)
 #' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
 #' @export
 #' @seealso \code{\link{score_fun_gee}}
-score_fun_glm <- function(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B1, XA, nb = F, ...){
+score_fun_glm <- function(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B1, XA, nb = F, ...) {
   reg <- try(stats::lm.fit(B1, Y), silent = TRUE)  # This is not the model fit!! It just checks whether any issues occur for a simple linear regression model.
 
   if (class(reg)[1] == "try-error") score <- NA
 
   if (class(reg)[1] != "try-error" & sum(is.na(reg$coef)) > 0) score <- NA
 
-  if (class(reg)[1] != "try-error" & sum(is.na(reg$coef)) == 0){
+  if (class(reg)[1] != "try-error" & sum(is.na(reg$coef)) == 0) {
     VS.est_i <- unlist(VS.est_list)
     A_list_i <- unlist(A_list)
     B1_list_i <- unlist(B1_list)
 
     B_list_i <- B1_list_i%*%XA
 
-    if (nb == F){
+    if (nb == F) {
       D_list_i <- t(XA)%*%(XA*c(V.est))
       inv.XVX_22 <- (D_list_i - t(B_list_i)%*%A_list_i%*%B_list_i)
       B.est <- t(V.est*VS.est_i)%*%XA
     }
-    if (nb == T){
+    if (nb == T) {
       D_list_i <- t(XA)%*%(XA*c((mu.est^2/V.est)))
       inv.XVX_22 <- (D_list_i - t(B_list_i)%*%A_list_i%*%B_list_i)
       B.est <- t(((mu.est))*VS.est_i)%*%XA
@@ -374,14 +374,14 @@ score_fun_glm <- function(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B1,
 #' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
 #' @export
 #' @seealso \code{\link{score_fun_glm}}
-score_fun_gee <- function(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma2_list, J11.inv, JSigma11, mu.est, V.est, B1, XA, nb = F, ...){
+score_fun_gee <- function(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma2_list, J11.inv, JSigma11, mu.est, V.est, B1, XA, nb = F, ...) {
   reg <- try(stats::lm.fit(B1, Y), silent = TRUE)  # This is not the model fit!! It just checks whether any issues occur for a simple linear regression model.
 
   if (class(reg)[1] == "try-error") score <- NA
 
   if (class(reg)[1] != "try-error" & sum(is.na(reg$coef)) > 0) score <- NA
 
-  if (class(reg)[1] != "try-error" & sum(is.na(reg$coef)) == 0){
+  if (class(reg)[1] != "try-error" & sum(is.na(reg$coef)) == 0) {
     p <- ncol(XA)
     p1 <- ncol(B1) - ncol(XA)
 
@@ -394,7 +394,7 @@ score_fun_gee <- function(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma
     J21 <- matrix(0, nrow = p, ncol = p1)
     Sigma21 <- matrix(0, nrow = p, ncol = p1)
 
-    for(i in 1:N){
+    for(i in 1:N) {
       k <- sum(n_vec[1:i])
 
       VS.est_i <- VS.est_list[[i]]
@@ -440,7 +440,7 @@ score_fun_gee <- function(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma
 #' @references Stoklosa, J., Gibb, H. and Warton, D.I. (2014). Fast forward selection for generalized estimating equations with a large number of predictor variables. \emph{Biometrics}, 70, 110-120.
 #' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
 #' @export
-sand_fun <- function(Y, X, N, n_vec, mu.est, V.est, nb = T, omega = 1, ...){
+sand_fun <- function(Y, X, N, n_vec, mu.est, V.est, nb = T, omega = 1, ...) {
   n <- max(n_vec)
   n_vec1 <- c(0, n_vec)
   p <- ncol(X)
@@ -449,7 +449,7 @@ sand_fun <- function(Y, X, N, n_vec, mu.est, V.est, nb = T, omega = 1, ...){
   C.est <- matrix(0, nrow = p, ncol = p)
   R_u <- matrix(0, nrow = n, ncol = n)
 
-  for(i in 1:N){
+  for(i in 1:N) {
     k <- sum(n_vec[1:i])
     V.est_i <- diag(sqrt(V.est[(sum(n_vec1[1:i]) + 1):k]), nrow = n_vec[i], ncol = n_vec[i])%*%diag(n)%*%diag(sqrt(V.est[(sum(n_vec1[1:i]) + 1):k]), nrow = n_vec[i], ncol = n_vec[i])
     if (nb == FALSE) D.est_i <- diag((V.est[(sum(n_vec1[1:i]) + 1):k]), nrow = n_vec[i], ncol = n_vec[i])%*%X[(sum(n_vec1[1:i]) + 1):k, ]
@@ -486,12 +486,12 @@ sand_fun <- function(Y, X, N, n_vec, mu.est, V.est, nb = T, omega = 1, ...){
 #' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
 #' @export
 #' @seealso \code{\link{backward_sel_WIC}}
-backward_sel <- function(Y, B_new, pen = 2, GCV.null = 0.001, ...){
+backward_sel <- function(Y, B_new, pen = 2, GCV.null = 0.001, ...) {
   N <- length(Y)
 
   GCV1 <- c()
 
-  for(j in 1:(ncol(B_new) - 1)){
+  for(j in 1:(ncol(B_new) - 1)) {
     B_new1 <- as.matrix(B_new[, -(j + 1)])
     mod1 <- stats::lm.fit(B_new1, Y)
     RSS_back <- sum((Y - stats::fitted(mod1))^2)
@@ -524,17 +524,17 @@ backward_sel <- function(Y, B_new, pen = 2, GCV.null = 0.001, ...){
 #' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
 #' @export
 #' @seealso \code{\link{backward_sel}}
-backward_sel_WIC <- function(Y, N, n, B_new, id, family = "gaussian", corstr = "independence", nb = F, is.gee = F, ...){
-  if (is.gee == F){
-    if (nb == F){
+backward_sel_WIC <- function(Y, N, n, B_new, id, family = "gaussian", corstr = "independence", nb = F, is.gee = F, ...) {
+  if (is.gee == F) {
+    if (nb == F) {
       fit <- stats::glm(c(t(Y)) ~ B_new - 1, family = family)
       wald1 <- (summary(fit)[12]$coef[-1, 3])^2
     }
-    if (nb == T){
+    if (nb == T) {
       sink(tempfile())
       fit <- gamlss::gamlss(Y ~ B_new - 1, family = "NBI", trace = FALSE)
       if (n == 1) wald1 <- ((as.matrix(summary(fit))[, 3])[-c(1, nrow(as.matrix(summary(fit))))])^2
-      if (n > 1){ # Used for the Arthropod data example.
+      if (n > 1) { # Used for the Arthropod data example.
         n_vec <- rep(n, N)
         mu.est <- as.matrix(stats::fitted.values(fit))
         V.est <- mu.est*(1 + mu.est*(exp(fit$sigma.coef)))
@@ -544,12 +544,12 @@ backward_sel_WIC <- function(Y, N, n, B_new, id, family = "gaussian", corstr = "
     }
   }
 
-  if (is.gee == T){
-    if (family == "gaussian"){
+  if (is.gee == T) {
+    if (family == "gaussian") {
       fit <- geepack::geeglm(Y ~ B_new - 1, id = id, corstr = corstr)
       wald1 <- (summary(fit)[6]$coef[-1, 3])^2
     }
-    if (family != "gaussian"){
+    if (family != "gaussian") {
       fit <- geepack::geeglm(Y ~ B_new - 1, id = id, family = family, corstr = corstr)
       wald1 <- (summary(fit)[6]$coef[-1, 3])^2
     }
@@ -571,7 +571,7 @@ backward_sel_WIC <- function(Y, N, n, B_new, id, family = "gaussian", corstr = "
 #' @references Friedman, J. (1991). Multivariate adaptive regression splines. \emph{The Annals of Statistics}, 19, 1-67.
 #' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
 #' @export
-max_span <- function(X_pred, q, alpha = 0.05){
+max_span <- function(X_pred, q, alpha = 0.05) {
   N <- length(unique(X_pred))
   x <- sort(unique(X_pred))
 
@@ -597,7 +597,7 @@ max_span <- function(X_pred, q, alpha = 0.05){
 #' @references Friedman, J. (1991). Multivariate adaptive regression splines. \emph{The Annals of Statistics}, 19, 1-67.
 #' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
 #' @export
-min_span <- function(X_red, q, minspan = NULL, alpha = 0.05){
+min_span <- function(X_red, q, minspan = NULL, alpha = 0.05) {
   N <- length((X_red))
   x <- sort((X_red))
 
@@ -608,8 +608,8 @@ min_span <- function(X_red, q, minspan = NULL, alpha = 0.05){
   x_new <- min(x, na.rm = T)
   cc <- 1
 
-  while(okA){
-    if ((cc + minspan) > length(x)){
+  while(okA) {
+    if ((cc + minspan) > length(x)) {
       break
       okA <- F
     }
@@ -671,7 +671,7 @@ min_span <- function(X_red, q, minspan = NULL, alpha = 0.05){
 #' # Fit the MARS models (about ~ 20 secs.)
 #'
 #' mod <- mars_ls(X_pred, Y, pen, tols, M, minspan, print.disp, family, nb)
-mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, print.disp = F, family = "gaussian", nb = F, ...){
+mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, print.disp = F, family = "gaussian", nb = F, ...) {
   N <- length(Y)    # Sample size.
   q <- ncol(X_pred)  # No. of predictor variables.
 
@@ -709,7 +709,7 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
 
   # Starting with loop 1 of algorithm considers terms (M). If model exceeds no. of set M we then terminate the loop.
 
-  while(ok){
+  while(ok) {
     if (breakFlag == T) break
 
     var.mod_temp <- c()
@@ -730,7 +730,7 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
     # Note that variables can be repeated in the model, but cannot interact with itself (it doesn't
     # really makes sense for it too anyway)!
 
-    for(v in 1:q){
+    for(v in 1:q) {
       var_name <- colnames(X_pred)[v]
       X <- round(X_pred[, v], 4)           # Round to 4 digits (to match earth()). X starts the new basis.
 
@@ -760,7 +760,7 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
       # Loop 3 of algorithm considers ALL the knot locations (after trim) of the chosen variable in the current loop. The stratergy is simple for
       # each knot find the lack-of-fit measures, and compare these with seperate fitted additive and interactions models.
 
-      for(t in 1:length(X_red)){
+      for(t in 1:length(X_red)) {
         b1_new <- matrix(tp1(X, X_red[t]), ncol = 1)  # Pairs of truncated power basis functions, positive and negative functions (first or both must be considered).
         b2_new <- matrix(tp2(X, X_red[t]), ncol = 1)
 
@@ -775,7 +775,7 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
 
         # Find statistics for additive models only here, in fact this is only used once after initial entry of first variable, and used again if first variable was chosen.
 
-        if (in.set == 0){
+        if (in.set == 0) {
           B_new_both_add <- cbind(B, b1_new, b2_new)   # Additive model with both truncated functions.
           B_new_one_add <- cbind(B, b1_new)         # Additive model with one truncated function (positive part).
 
@@ -793,14 +793,14 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
 
         # Find LOF measures for all basis with interactions. Need to also fit additive models (they are candidates too)!
 
-        if (in.set > 0){
+        if (in.set > 0) {
           var_name_struct <- which(((var_name != var_name_vec)*mod_struct) == 1)  # This ensures that an interaction with the same variable is not included in the new basis.
           colnames(B)[1] <- c("")
           B2 <- as.matrix(B[, var_name_struct])
           if (k != 1 & (sum(!var_name_vec[-1]%in%var_name) > 0)) B2 <- as.matrix(B2[, -1])
           if (ncol(B2) == 0) B2 <- as.matrix(B[, 1])
 
-          for(nn in 1:ncol(B2)){
+          for(nn in 1:ncol(B2)) {
             B2a <- matrix(rep(B2[, nn], 2), ncol = 2)  # This is a basis function for potential parent basis. Need both part (hinges) here.
             B2b <- matrix(B2[, nn], ncol = 1)
             B_new_both_int <- cbind(B, B2a*cbind(b1_new, b2_new))
@@ -841,80 +841,80 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
       # which trunctions to include for each parent basis in the set - i.e., one truncated function or both. All must be tested/checked for FUBR (NA) results!!!
       # We apply the parsimonious principle here in case of tied measures - i.e., choose: additive model > interaction model, and one variable model > two variable model.
 
-      if (sum(!(apply(RSSq_knot_both_int_mat, 1, is.na))) == 0 & sum(!(apply(RSSq_knot_one_int_mat, 1, is.na))) == 0){  # Look at both truncation types (check for NA). This says interactions were FUBR because of an NA present in both.
+      if (sum(!(apply(RSSq_knot_both_int_mat, 1, is.na))) == 0 & sum(!(apply(RSSq_knot_one_int_mat, 1, is.na))) == 0) {  # Look at both truncation types (check for NA). This says interactions were FUBR because of an NA present in both.
         int <- F
-        if (sum(!is.na(RSSq_knot_both_add_mat)) > 0 & sum(!is.na(RSSq_knot_one_add_mat)) > 0){   # This says that an additive model for both one and two trunc types were OK.
-          if (utils::tail(max(RSSq_knot_both_add_mat, na.rm = T), n = 1) > utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1)){
+        if (sum(!is.na(RSSq_knot_both_add_mat)) > 0 & sum(!is.na(RSSq_knot_one_add_mat)) > 0) {   # This says that an additive model for both one and two trunc types were OK.
+          if (utils::tail(max(RSSq_knot_both_add_mat, na.rm = T), n = 1) > utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1)) {
             trunc.type <- 2
             RSSq_knot <- RSSq_knot_both_add_mat
             min_knot1 <- utils::tail(which(utils::tail(max(round(RSSq_knot, 6), na.rm = T), n = 1) == round(RSSq_knot, 6), arr.ind = T), n = 1)[1]
           }
-          if (utils::tail(max(RSSq_knot_both_add_mat, na.rm = T), n = 1) <= utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1)){
+          if (utils::tail(max(RSSq_knot_both_add_mat, na.rm = T), n = 1) <= utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1)) {
             trunc.type <- 1
             RSSq_knot <- RSSq_knot_one_add_mat
             min_knot1 <- utils::tail(which(utils::tail(max(round(RSSq_knot, 6), na.rm = T), n = 1) == round(RSSq_knot, 6), arr.ind = T), n = 1)[1]
           }
         }
-        if (sum(!is.na(RSSq_knot_both_add_mat)) == 0 & sum(!is.na(RSSq_knot_one_add_mat)) > 0){  # This says additive for one trunc type was FUBR.
+        if (sum(!is.na(RSSq_knot_both_add_mat)) == 0 & sum(!is.na(RSSq_knot_one_add_mat)) > 0) {  # This says additive for one trunc type was FUBR.
           trunc.type <- 1           # For example, additive and both gave FUBR resutls, so use only the one (+) truncated function in the set.
           RSSq_knot <- RSSq_knot_one_add_mat
           min_knot1 <- utils::tail(which.max(round(RSSq_knot, 6)), n = 1)  # We look for max because recall: GCVq1 <- 1-GCV1/GCV.null and RSSq1 <- 1-RSS1/TSS. Want these to be max. Tail used in case of ties.
         }
-        if (sum(!is.na(RSSq_knot_both_add_mat)) > 0 & sum(!is.na(RSSq_knot_one_add_mat)) == 0){ # This says additive for both trunc type was OK.
+        if (sum(!is.na(RSSq_knot_both_add_mat)) > 0 & sum(!is.na(RSSq_knot_one_add_mat)) == 0) { # This says additive for both trunc type was OK.
           trunc.type <- 2
           RSSq_knot <- RSSq_knot_one_add_mat
           min_knot1 <- utils::tail(which.max(round(RSSq_knot, 6)), n = 1)
         }
-        if (sum(!is.na(RSSq_knot_both_add_mat)) == 0 & sum(!is.na(RSSq_knot_one_add_mat)) == 0){  # This says everything (both additive trunc type) were FUBR.
+        if (sum(!is.na(RSSq_knot_both_add_mat)) == 0 & sum(!is.na(RSSq_knot_one_add_mat)) == 0) {  # This says everything (both additive trunc type) were FUBR.
           breakFlag <- T
           break
         }
       }
 
-      if (sum(!(apply(RSSq_knot_both_int_mat, 1, is.na))) == 0 & sum(!(apply(RSSq_knot_one_int_mat, 1, is.na))) > 0){  # This says interactions when using both trunc type were FUBR.
-        if (sum(!is.na(RSSq_knot_both_add_mat)) == 0){
+      if (sum(!(apply(RSSq_knot_both_int_mat, 1, is.na))) == 0 & sum(!(apply(RSSq_knot_one_int_mat, 1, is.na))) > 0) {  # This says interactions when using both trunc type were FUBR.
+        if (sum(!is.na(RSSq_knot_both_add_mat)) == 0) {
           trunc.type <- 1
-          if (sum(!is.na(RSSq_knot_one_add_mat)) == 0){
+          if (sum(!is.na(RSSq_knot_one_add_mat)) == 0) {
             int <- T
             RSSq_knot <- RSSq_knot_one_int_mat
             min_knot1 <- utils::tail(which(utils::tail(max(round(RSSq_knot, 6), na.rm = T), n = 1) == round(RSSq_knot, 6), arr.ind = T), n = 1)[1]
             best.var <- utils::tail(which(utils::tail(max(round(RSSq_knot, 6), na.rm = T), n = 1) == round(RSSq_knot, 6), arr.ind = T), n = 1)[2]
           }
-          if (utils::tail(max(RSSq_knot_one_int_mat, na.rm = T), n = 1) > utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1)){ # This says interactions using one trunc type were superior over the additive model.
+          if (utils::tail(max(RSSq_knot_one_int_mat, na.rm = T), n = 1) > utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1)) { # This says interactions using one trunc type were superior over the additive model.
             int <- T
             RSSq_knot <- RSSq_knot_one_int_mat
             min_knot1 <- utils::tail(which(utils::tail(max(round(RSSq_knot, 6), na.rm = T), n = 1) == round(RSSq_knot, 6), arr.ind = T), n = 1)[1]
             best.var <- utils::tail(which(utils::tail(max(round(RSSq_knot, 6), na.rm = T), n = 1) == round(RSSq_knot, 6), arr.ind = T), n = 1)[2]
           }
-          if (utils::tail(max(RSSq_knot_one_int_mat, na.rm = T), n = 1) <= utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1)){
+          if (utils::tail(max(RSSq_knot_one_int_mat, na.rm = T), n = 1) <= utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1)) {
             int <- F
             RSSq_knot <- RSSq_knot_one_add_mat
             min_knot1 <- utils::tail(which.max(round(RSSq_knot, 6)), n = 1)
           }
         }
-        if (sum(!is.na(RSSq_knot_both_add_mat)) > 0){
-          if (utils::tail(max(RSSq_knot_one_int_mat, na.rm = T), n = 1) > utils::tail(max(RSSq_knot_both_add_mat, na.rm = T), n = 1)){
+        if (sum(!is.na(RSSq_knot_both_add_mat)) > 0) {
+          if (utils::tail(max(RSSq_knot_one_int_mat, na.rm = T), n = 1) > utils::tail(max(RSSq_knot_both_add_mat, na.rm = T), n = 1)) {
             trunc.type <- 1
-            if (utils::tail(max(RSSq_knot_one_int_mat, na.rm = T), n = 1) > utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1)){
+            if (utils::tail(max(RSSq_knot_one_int_mat, na.rm = T), n = 1) > utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1)) {
               int <- T
               RSSq_knot <- RSSq_knot_one_int_mat
               min_knot1 <- utils::tail(which(utils::tail(max(round(RSSq_knot, 6), na.rm = T), n = 1) == round(RSSq_knot, 6), arr.ind = T), n = 1)[1]
               best.var <- utils::tail(which(utils::tail(max(round(RSSq_knot, 6), na.rm = T), n = 1) == round(RSSq_knot, 6), arr.ind = T), n = 1)[2]
             }
-            if (utils::tail(max(RSSq_knot_one_int_mat, na.rm = T)) <= utils::tail(max(RSSq_knot_one_add_mat, na.rm = T))){
+            if (utils::tail(max(RSSq_knot_one_int_mat, na.rm = T)) <= utils::tail(max(RSSq_knot_one_add_mat, na.rm = T))) {
               int <- F
               RSSq_knot <- RSSq_knot_one_add_mat
               min_knot1 <- utils::tail(which.max(round(RSSq_knot, 6)), n = 1)
             }
           }
-          if (utils::tail(max(RSSq_knot_one_int_mat, na.rm = T), n = 1) <= utils::tail(max(RSSq_knot_both_add_mat, na.rm = T), n = 1)){
+          if (utils::tail(max(RSSq_knot_one_int_mat, na.rm = T), n = 1) <= utils::tail(max(RSSq_knot_both_add_mat, na.rm = T), n = 1)) {
             int <- F
-            if (utils::tail(max(RSSq_knot_both_add_mat, na.rm = T), n = 1) > utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1)){
+            if (utils::tail(max(RSSq_knot_both_add_mat, na.rm = T), n = 1) > utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1)) {
               trunc.type <- 2
               RSSq_knot <- RSSq_knot_both_add_mat
               min_knot1 <- utils::tail(which(utils::tail(max(round(RSSq_knot, 6), na.rm = T), n = 1) == round(RSSq_knot, 6), arr.ind = T), n = 1)[1]
             }
-            if (utils::tail(max(RSSq_knot_both_add_mat, na.rm = T), n = 1) <= utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1)){
+            if (utils::tail(max(RSSq_knot_both_add_mat, na.rm = T), n = 1) <= utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1)) {
               trunc.type <- 1
               RSSq_knot <- RSSq_knot_one_add_mat
               min_knot1 <- utils::tail(which(utils::tail(max(round(RSSq_knot, 6), na.rm = T), n = 1) == round(RSSq_knot, 6), arr.ind = T), n = 1)[1]
@@ -923,52 +923,52 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
         }
       }
 
-      if (sum(!(apply(RSSq_knot_both_int_mat, 1, is.na))) > 0 & sum(!(apply(RSSq_knot_one_int_mat, 1, is.na))) == 0){ # This says interactions for one trunc. type was FUBR.
-        if (sum(!is.na(RSSq_knot_both_add_mat)) == 0){  # Check if additive for only one trunc type was OK.
-          if (sum(!is.na(RSSq_knot_one_add_mat)) == 0){
+      if (sum(!(apply(RSSq_knot_both_int_mat, 1, is.na))) > 0 & sum(!(apply(RSSq_knot_one_int_mat, 1, is.na))) == 0) { # This says interactions for one trunc. type was FUBR.
+        if (sum(!is.na(RSSq_knot_both_add_mat)) == 0) {  # Check if additive for only one trunc type was OK.
+          if (sum(!is.na(RSSq_knot_one_add_mat)) == 0) {
             int <- T
             trunc.type <- 2
             RSSq_knot <- RSSq_knot_both_int_mat
             min_knot1 <- utils::tail(which(utils::tail(max(round(RSSq_knot, 6), na.rm = T), n = 1) == round(RSSq_knot, 6), arr.ind = T), n = 1)[1]
             best.var <- utils::tail(which(utils::tail(max(round(RSSq_knot, 6), na.rm = T), n = 1) == round(RSSq_knot, 6), arr.ind = T), n = 1)[2]
           }
-          if (utils::tail(max(RSSq_knot_both_int_mat, na.rm = T), n = 1) > utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1)){  # Compare interaction (with both) with additive (with one).
+          if (utils::tail(max(RSSq_knot_both_int_mat, na.rm = T), n = 1) > utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1)) {  # Compare interaction (with both) with additive (with one).
             int <- T
             trunc.type <- 2
             RSSq_knot <- RSSq_knot_both_int_mat
             min_knot1 <- utils::tail(which(utils::tail(max(round(RSSq_knot, 6), na.rm = T), n = 1) == round(RSSq_knot, 6), arr.ind = T), n = 1)[1]
             best.var <- utils::tail(which(utils::tail(max(round(RSSq_knot, 6), na.rm = T), n = 1) == round(RSSq_knot, 6), arr.ind = T), n = 1)[2]
           }
-          if (utils::tail(max(RSSq_knot_both_int_mat, na.rm = T), n = 1) <= utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1)){
+          if (utils::tail(max(RSSq_knot_both_int_mat, na.rm = T), n = 1) <= utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1)) {
             int <- F
             trunc.type <- 1
             RSSq_knot <- RSSq_knot_one_add_mat
             min_knot1 <- utils::tail(which.max(round(RSSq_knot, 6)), n = 1)
           }
         }
-        if (sum(!is.na(RSSq_knot_both_add_mat)) > 0){
-          if (utils::tail(max(RSSq_knot_both_int_mat, na.rm = T), n = 1) > utils::tail(max(RSSq_knot_both_add_mat, na.rm = T), n = 1)){
+        if (sum(!is.na(RSSq_knot_both_add_mat)) > 0) {
+          if (utils::tail(max(RSSq_knot_both_int_mat, na.rm = T), n = 1) > utils::tail(max(RSSq_knot_both_add_mat, na.rm = T), n = 1)) {
             trunc.type <- 1
-            if (utils::tail(max(RSSq_knot_both_int_mat, na.rm = T), n = 1) > utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1)){
+            if (utils::tail(max(RSSq_knot_both_int_mat, na.rm = T), n = 1) > utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1)) {
               int <- T
               RSSq_knot <- RSSq_knot_both_int_mat
               min_knot1 <- utils::tail(which(utils::tail(max(round(RSSq_knot, 6), na.rm = T), n = 1) == round(RSSq_knot, 6), arr.ind = T), n = 1)[1]
               best.var <- utils::tail(which(utils::tail(max(round(RSSq_knot, 6), na.rm = T), n = 1) == round(RSSq_knot, 6), arr.ind = T), n = 1)[2]
             }
-            if (utils::tail(max(RSSq_knot_both_int_mat, na.rm = T)) <= utils::tail(max(RSSq_knot_one_add_mat, na.rm = T))){
+            if (utils::tail(max(RSSq_knot_both_int_mat, na.rm = T)) <= utils::tail(max(RSSq_knot_one_add_mat, na.rm = T))) {
               int <- F
               RSSq_knot <- RSSq_knot_one_add_mat
               min_knot1 <- utils::tail(which.max(round(RSSq_knot, 6)), n = 1)
             }
           }
-          if (utils::tail(max(RSSq_knot_both_int_mat, na.rm = T), n = 1) <= utils::tail(max(RSSq_knot_both_add_mat, na.rm = T), n = 1)){
+          if (utils::tail(max(RSSq_knot_both_int_mat, na.rm = T), n = 1) <= utils::tail(max(RSSq_knot_both_add_mat, na.rm = T), n = 1)) {
             int <- F
-            if (utils::tail(max(RSSq_knot_both_add_mat, na.rm = T), n = 1) > utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1)){
+            if (utils::tail(max(RSSq_knot_both_add_mat, na.rm = T), n = 1) > utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1)) {
               trunc.type <- 2
               RSSq_knot <- RSSq_knot_both_add_mat
               min_knot1 <- utils::tail(which.max(round(RSSq_knot, 6)), n = 1)
             }
-            if (utils::tail(max(RSSq_knot_both_add_mat, na.rm = T), n = 1) <= utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1)){
+            if (utils::tail(max(RSSq_knot_both_add_mat, na.rm = T), n = 1) <= utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1)) {
               trunc.type <- 1
               RSSq_knot <- RSSq_knot_one_add_mat
               min_knot1 <- utils::tail(which.max(round(RSSq_knot, 6)), n = 1)
@@ -977,31 +977,31 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
         }
       }
 
-      if (sum(!(apply(RSSq_knot_both_int_mat, 1, is.na))) > 0 & sum(!(apply(RSSq_knot_one_int_mat, 1, is.na))) > 0){ # This says interactions for one trunc. and both type was OK.
-        if (utils::tail(max(RSSq_knot_both_int_mat, na.rm = T), n = 1) > utils::tail(max(RSSq_knot_one_int_mat, na.rm = T), n = 1)){
-          if (sum(!is.na(RSSq_knot_both_add_mat)) > 0){
-            if (utils::tail(max(RSSq_knot_both_add_mat, na.rm = T), n = 1) >= utils::tail(max(RSSq_knot_both_int_mat, na.rm = T), n = 1)){
+      if (sum(!(apply(RSSq_knot_both_int_mat, 1, is.na))) > 0 & sum(!(apply(RSSq_knot_one_int_mat, 1, is.na))) > 0) { # This says interactions for one trunc. and both type was OK.
+        if (utils::tail(max(RSSq_knot_both_int_mat, na.rm = T), n = 1) > utils::tail(max(RSSq_knot_one_int_mat, na.rm = T), n = 1)) {
+          if (sum(!is.na(RSSq_knot_both_add_mat)) > 0) {
+            if (utils::tail(max(RSSq_knot_both_add_mat, na.rm = T), n = 1) >= utils::tail(max(RSSq_knot_both_int_mat, na.rm = T), n = 1)) {
               int <- F
-              if (utils::tail(max(RSSq_knot_both_add_mat, na.rm = T), n = 1) > utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1)){
+              if (utils::tail(max(RSSq_knot_both_add_mat, na.rm = T), n = 1) > utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1)) {
                 trunc.type <- 2
                 RSSq_knot <- RSSq_knot_both_add_mat
                 min_knot1 <- utils::tail(which.max(round(RSSq_knot, 6)), n = 1)
               }
-              if (utils::tail(max(RSSq_knot_both_add_mat, na.rm = T), n = 1) <= utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1)){
+              if (utils::tail(max(RSSq_knot_both_add_mat, na.rm = T), n = 1) <= utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1)) {
                 trunc.type <- 1
                 RSSq_knot <- RSSq_knot_one_add_mat
                 min_knot1 <- utils::tail(which.max(round(RSSq_knot, 6)))
               }
             }
-            if (utils::tail(max(RSSq_knot_both_add_mat, na.rm = T), n = 1) < utils::tail(max(RSSq_knot_both_int_mat, na.rm = T), n = 1)){
-              if (utils::tail(max(RSSq_knot_both_int_mat, na.rm = T), n = 1) > utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1)){
+            if (utils::tail(max(RSSq_knot_both_add_mat, na.rm = T), n = 1) < utils::tail(max(RSSq_knot_both_int_mat, na.rm = T), n = 1)) {
+              if (utils::tail(max(RSSq_knot_both_int_mat, na.rm = T), n = 1) > utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1)) {
                 int <- T
                 trunc.type <- 2
                 RSSq_knot <- RSSq_knot_both_int_mat
                 min_knot1 <- utils::tail(which(utils::tail(max(round(RSSq_knot, 6), na.rm = T), n = 1) == round(RSSq_knot, 6), arr.ind = T), n = 1)[1]
                 best.var <- utils::tail(which(utils::tail(max(round(RSSq_knot, 6), na.rm = T), n = 1) == round(RSSq_knot, 6), arr.ind = T), n = 1)[2]
               }
-              if (utils::tail(max(RSSq_knot_both_int_mat, na.rm = T), n = 1) <= utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1)){
+              if (utils::tail(max(RSSq_knot_both_int_mat, na.rm = T), n = 1) <= utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1)) {
                 int <- F
                 trunc.type <- 1
                 RSSq_knot <- RSSq_knot_one_add_mat
@@ -1009,21 +1009,21 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
               }
             }
           }
-          if (sum(!is.na(RSSq_knot_both_add_mat)) == 0){
-            if (sum(!is.na(RSSq_knot_one_add_mat)) == 0){
+          if (sum(!is.na(RSSq_knot_both_add_mat)) == 0) {
+            if (sum(!is.na(RSSq_knot_one_add_mat)) == 0) {
               int <- T
               trunc.type <- 2
               RSSq_knot <- RSSq_knot_both_int_mat
               min_knot1 <- utils::tail(which(utils::tail(max(round(RSSq_knot, 6), na.rm = T), n = 1) == round(RSSq_knot, 6), arr.ind = T), n = 1)[1]
               best.var <- utils::tail(which(utils::tail(max(round(RSSq_knot, 6), na.rm = T), n = 1) == round(RSSq_knot, 6), arr.ind = T), n = 1)[2]
             }
-            if (utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1) >= utils::tail(max(RSSq_knot_both_int_mat, na.rm = T), n = 1)){
+            if (utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1) >= utils::tail(max(RSSq_knot_both_int_mat, na.rm = T), n = 1)) {
               int <- F
               trunc.type <- 1
               RSSq_knot <- RSSq_knot_one_add_mat
               min_knot1 <- utils::tail(which.max(round(RSSq_knot, 6)), n = 1)
             }
-            if (utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1) < utils::tail(max(RSSq_knot_both_int_mat, na.rm = T), n = 1)){
+            if (utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1) < utils::tail(max(RSSq_knot_both_int_mat, na.rm = T), n = 1)) {
               int <- T
               trunc.type <- 2
               RSSq_knot <- RSSq_knot_both_int_mat
@@ -1032,52 +1032,52 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
             }
           }
         }
-        if (utils::tail(max(RSSq_knot_both_int_mat, na.rm = T), n = 1) <= utils::tail(max(RSSq_knot_one_int_mat, na.rm = T), n = 1)){
-          if (sum(!is.na(RSSq_knot_both_add_mat)) > 0){
-            if (utils::tail(max(RSSq_knot_both_add_mat, na.rm = T), n = 1) >= utils::tail(max(RSSq_knot_one_int_mat, na.rm = T), n = 1)){
+        if (utils::tail(max(RSSq_knot_both_int_mat, na.rm = T), n = 1) <= utils::tail(max(RSSq_knot_one_int_mat, na.rm = T), n = 1)) {
+          if (sum(!is.na(RSSq_knot_both_add_mat)) > 0) {
+            if (utils::tail(max(RSSq_knot_both_add_mat, na.rm = T), n = 1) >= utils::tail(max(RSSq_knot_one_int_mat, na.rm = T), n = 1)) {
               int <- F
-              if (utils::tail(max(RSSq_knot_both_add_mat, na.rm = T), n = 1) > utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1)){
+              if (utils::tail(max(RSSq_knot_both_add_mat, na.rm = T), n = 1) > utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1)) {
                 trunc.type <- 2
                 RSSq_knot <- RSSq_knot_both_add_mat
                 min_knot1 <- utils::tail(which.max(round(RSSq_knot, 6)), n = 1)
               }
-              if (utils::tail(max(RSSq_knot_both_add_mat, na.rm = T), n = 1) <= utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1)){
+              if (utils::tail(max(RSSq_knot_both_add_mat, na.rm = T), n = 1) <= utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1)) {
                 trunc.type <- 1
                 RSSq_knot <- RSSq_knot_one_add_mat
                 min_knot1 <- utils::tail(which.max(round(RSSq_knot, 6)), n = 1)
               }
             }
-            if (utils::tail(max(RSSq_knot_both_add_mat, na.rm = T), n = 1) < utils::tail(max(RSSq_knot_one_int_mat, na.rm = T), n = 1)){
+            if (utils::tail(max(RSSq_knot_both_add_mat, na.rm = T), n = 1) < utils::tail(max(RSSq_knot_one_int_mat, na.rm = T), n = 1)) {
               trunc.type <- 1
-              if (utils::tail(max(RSSq_knot_one_int_mat, na.rm = T), n = 1) > utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1)){
+              if (utils::tail(max(RSSq_knot_one_int_mat, na.rm = T), n = 1) > utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1)) {
                 int <- T
                 RSSq_knot <- RSSq_knot_one_int_mat
                 min_knot1 <- utils::tail(which(utils::tail(max(round(RSSq_knot, 6), na.rm = T), n = 1) == round(RSSq_knot, 6), arr.ind = T), n = 1)[1]
                 best.var <- utils::tail(which(utils::tail(max(round(RSSq_knot, 6), na.rm = T), n = 1) == round(RSSq_knot, 6), arr.ind = T), n = 1)[2]
               }
-              if (utils::tail(max(RSSq_knot_one_int_mat, na.rm = T), n = 1) <= utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1)){
+              if (utils::tail(max(RSSq_knot_one_int_mat, na.rm = T), n = 1) <= utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1)) {
                 int <- F
                 RSSq_knot <- RSSq_knot_one_add_mat
                 min_knot1 <- utils::tail(which.max(round(RSSq_knot, 6)), n = 1)
               }
             }
           }
-          if (sum(!is.na(RSSq_knot_both_add_mat)) == 0){
-            if (sum(!is.na(RSSq_knot_one_add_mat)) == 0){
+          if (sum(!is.na(RSSq_knot_both_add_mat)) == 0) {
+            if (sum(!is.na(RSSq_knot_one_add_mat)) == 0) {
               int <- T
               trunc.type <- 1
               RSSq_knot <- RSSq_knot_one_int_mat
               min_knot1 <- utils::tail(which(utils::tail(max(round(RSSq_knot, 6), na.rm = T), n = 1) == round(RSSq_knot, 6), arr.ind = T), n = 1)[1]
               best.var <- utils::tail(which(utils::tail(max(round(RSSq_knot, 6), na.rm = T), n = 1) == round(RSSq_knot, 6), arr.ind = T), n = 1)[2]
             }
-            if (sum(!is.na(RSSq_knot_one_add_mat)) > 0){
+            if (sum(!is.na(RSSq_knot_one_add_mat)) > 0) {
               trunc.type <- 1
-              if (utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1) >= utils::tail(max(RSSq_knot_one_int_mat, na.rm = T), n = 1)){
+              if (utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1) >= utils::tail(max(RSSq_knot_one_int_mat, na.rm = T), n = 1)) {
                 int <- F
                 RSSq_knot <- RSSq_knot_one_add_mat
                 min_knot1 <- utils::tail(which.max(round(RSSq_knot, 6)))
               }
-              if (utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1) < utils::tail(max(RSSq_knot_one_int_mat, na.rm = T), n = 1)){
+              if (utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1) < utils::tail(max(RSSq_knot_one_int_mat, na.rm = T), n = 1)) {
                 int <- T
                 RSSq_knot <- RSSq_knot_one_int_mat
                 min_knot1 <- utils::tail(which(utils::tail(max(round(RSSq_knot, 6), na.rm = T), n = 1) == round(RSSq_knot, 6), arr.ind = T), n = 1)[1]
@@ -1096,7 +1096,7 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
       B_name1 <- paste("(", var_name, "-", signif (X_red[min_knot1], 4), ")", sep = "")
       B_name2 <- paste("(", signif (X_red[min_knot1], 4), "-", var_name, ")", sep = "")
 
-      if (int == T){
+      if (int == T) {
         mod_struct1 <- which(mod_struct == 1)
         colnames(B)[1] <- c("")
         var_name1 <- which(var_name_vec != var_name)
@@ -1109,7 +1109,7 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
         B2 <- as.matrix(B2[, -1])
         var_name2 <- var_name2[-1]
 
-        if (trunc.type == 2){
+        if (trunc.type == 2) {
           B2a <- matrix(rep(B2[, best.var], 2), ncol = 2)
           B_temp <- cbind(B, B2a*cbind(b1_new, b2_new))
           B_new <- B2a*cbind(b1_new, b2_new)
@@ -1117,7 +1117,7 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
           colnames(B_new) <- rep(var_name3, 2)
         }
 
-        if (trunc.type == 1){
+        if (trunc.type == 1) {
           B2b <- matrix(B2[, best.var], ncol = 1)
           B_temp <- cbind(B, B2b*b1_new)     # Interaction model with one truncated function (i.e., the positive part).
           B_new <- B2b*b1_new
@@ -1131,7 +1131,7 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
         if (trunc.type == 1) B_names <- B_names
 
         var_name_list1 <- list()
-        for(ll in 1:ncol(B_new)){
+        for(ll in 1:ncol(B_new)) {
           colnames(B_new)[ll] <- paste(var_name, colnames(B_new)[ll], sep = ":")
           var_name_list1 <- c(var_name_list1, list(colnames(B_new)[ll]))
           int.count1 <- int.count1 + 1
@@ -1142,16 +1142,16 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
         if (trunc.type == 1) colnames(B_temp)[pp] <- var_name_list1[[1]]
       }
 
-      if (int == F){
+      if (int == F) {
         var_name_list1 <- list()
-        if (trunc.type == 2){
+        if (trunc.type == 2) {
           B_temp <- cbind(B, b1_new, b2_new) # Additive model with both truncated functions.
           B_new <- cbind(b1_new, b2_new)
           B_names <- c(B_name1, B_name2)
           var_name_list1 <- c(var_name_list1, list(var_name))
           var_name_list1 <- c(var_name_list1, list(var_name))  # Repeat it because there are new basis function selected.
         }
-        if (trunc.type == 1){
+        if (trunc.type == 1) {
           B_temp <- cbind(B, b1_new) # Additive model with one truncated function (positive part).
           B_new <- b1_new
           B_names <- B_name1
@@ -1163,7 +1163,7 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
       GCVq2 <- meas_model$GCVq1
       RSSq2 <- meas_model$RSSq1
 
-      if (GCVq2 < (-10) | (round(RSSq2, 4) > (1 - tols))){
+      if (GCVq2 < (-10) | (round(RSSq2, 4) > (1 - tols))) {
         writeLines("MARS Tolerance criteria met 1. \n")
         var.mod_temp <- c(var.mod_temp, NA)
         min_knot_vec_temp <- c(min_knot_vec_temp, NA)
@@ -1180,14 +1180,14 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
         RSSq_term_temp <- c(RSSq_term_temp, NA)
         GCVq_term_temp <- c(GCVq_term_temp, NA)
 
-        if (length(var.mod_temp) == q){
+        if (length(var.mod_temp) == q) {
           breakFlag <- TRUE
           break
         }
         if (length(var.mod_temp) != q) next
       }
 
-      if (GCVq2 >= (-10) | (round(RSSq2, 4) <= (1 - tols))){
+      if (GCVq2 >= (-10) | (round(RSSq2, 4) <= (1 - tols))) {
         RSSq_term_temp <- c(RSSq_term_temp, RSSq2)
         GCVq_term_temp <- c(GCVq_term_temp, GCVq2)
       }
@@ -1231,14 +1231,14 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
     trunc.type_vec <- c(trunc.type_vec, trunc.type)
     is.int_vec <- c(is.int_vec, int)
 
-    if (abs(RSSq_term[k]-RSSq_term[k + 1]) < tols){
+    if (abs(RSSq_term[k]-RSSq_term[k + 1]) < tols) {
       if (print.disp == T) writeLines("\n ** MARS tolerance criteria met 2** \n")
       breakFlag <- TRUE
       break
     }
 
-    if (abs(RSSq_term[k] - RSSq_term[k + 1]) >= tols){
-      if (int == T){
+    if (abs(RSSq_term[k] - RSSq_term[k + 1]) >= tols) {
+      if (int == T) {
         mod_struct <- c(mod_struct, rep(c(rep(2, int.count1/trunc.type)), trunc.type))
         int.count <- int.count + 1
       }
@@ -1251,12 +1251,12 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
       m <- m + 2
     }
 
-    if (nrow(B) <= (ncol(B) + 2)){ # To avoid p>N issues!
+    if (nrow(B) <= (ncol(B) + 2)) { # To avoid p>N issues!
       if (print.disp == T) writeLines("\n ** MARS parameter dimension exceeds N ** \n")
       ok <- F
     }
 
-    if (m >= M){   # If model exceeds no. of set terms, terminate it.
+    if (m >= M) {   # If model exceeds no. of set terms, terminate it.
       if (print.disp == T) writeLines("\n ** MARS exceeded max no. of set terms ** \n")
       ok <- F
     }
@@ -1292,7 +1292,7 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
   var.low.vec <- c(colnames(B_new)[variable.lowest + 1])
   B_new <- as.matrix(B_new[, -(variable.lowest + 1)])
 
-  for(i in 2:(ncol(B) - 1)){
+  for(i in 2:(ncol(B) - 1)) {
     GCV1 <- backward_sel(Y, B_new, pen, GCV.null)
 
     variable.lowest <- utils::tail(which(GCV1 == max(GCV1, na.rm = T)), n = 1)
@@ -1306,20 +1306,20 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
 
   number.rm1 <- which(max(GCV_mat, na.rm = T) == GCV_mat, arr.ind = TRUE)[1] - 1
 
-  if (number.rm1 == 0){
+  if (number.rm1 == 0) {
     if (print.disp == T) writeLines("\n ** Forward pass model was chosen after pruning/backward selection for MARS** \n")
     B_final <- B
   }
 
-  if (number.rm1 == (nrow(GCV_mat) - 1)){
+  if (number.rm1 == (nrow(GCV_mat) - 1)) {
     if (print.disp == T) writeLines("\n ** Intercept model was chosen after pruning/backward selection for MARS** \n")
     B_final <- as.matrix(B[, 1])
   }
 
-  if (!(number.rm1 == 0) & !(number.rm1 == (nrow(GCV_mat) - 1))){
+  if (!(number.rm1 == 0) & !(number.rm1 == (nrow(GCV_mat) - 1))) {
     number.rm2 <- c()
     var.low.vec_red <- var.low.vec[1:number.rm1]
-    for(k in 1:length(var.low.vec_red)){
+    for(k in 1:length(var.low.vec_red)) {
       number.rm2 <- c(number.rm2, which(var.low.vec_red[k] == colnames(B)))
     }
     B_final <- B[, -c(number.rm2)]
@@ -1327,7 +1327,7 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
 
   if (ncol(B_final) == 1) colnames(B_final) <- "Intercept"
 
-  if (print.disp == T){
+  if (print.disp == T) {
     writeLines("\n Forward pass (MARS) output: \n")
     forw.info <- cbind(round(GCVq_term, 4), round(RSSq_term, 4), pred.name_vec, cut_vec, trunc.type_vec, is.int_vec)
     colnames(forw.info) <- c("GCVq", "RSSq", "Predictor name", "Cut term (knot)", "No. of new parent terms", "Interaction?")
@@ -1338,14 +1338,14 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
 
   if (nb == F) final_mod <- stats::glm(Y ~ B_final - 1, family = family)
 
-  if (nb == T){
+  if (nb == T) {
     est.many <- mvabund::manyglm(Y ~ B_final - 1, family = "negative.binomial", maxiter = 1000, maxiter2 = 100)
     final_mod <- MASS::glm.nb(c(t(Y)) ~ B_final - 1, method = "glm.fit2", init.theta = est.many$theta)
   }
 
   final_stats <- stat_out(Y, B_final, TSS, GCV.null, pen)
 
-  if (print.disp == T){
+  if (print.disp == T) {
     writeLines("\n -- Final model was chosen (after pruning/backward selection) for MARS -- \n")
     final_mat <- t(t(colnames(as.matrix(B_final))))
     colnames(final_mat) <- "Selected variables in the final model:"
@@ -1434,7 +1434,7 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
 #'
 #' mod <- marge(X_pred, Y, N, n, id, family, corstr, pen, tols_score,
 #'              M, minspan, print.disp, nb, is.gee)
-marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian", corstr = "independence", pen = 2, tols_score = 0.00001, M = 21, minspan = NULL, print.disp = F, nb = F, is.gee = F, ...){
+marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian", corstr = "independence", pen = 2, tols_score = 0.00001, M = 21, minspan = NULL, print.disp = F, nb = F, is.gee = F, ...) {
   NN <- length(Y)    # Total sample size = N*n.
 
   q <- ncol(X_pred)  # No. of predictor variables.
@@ -1469,7 +1469,7 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
   ok <- T
   int.count <- 0
 
-  while(ok){
+  while(ok) {
     if (breakFlag == T) break
 
     var.mod_temp <- c()
@@ -1487,7 +1487,7 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
 
     # Obtain/calculate the null stats here (speeds things up).
 
-    if (is.gee == T | n > 1){
+    if (is.gee == T | n > 1) {
       B_null_stats <- stat_out_score_null(Y, N, n, id, family, corstr, B, nb, is.gee)
 
       VS.est_list <- B_null_stats$VS.est_list
@@ -1499,7 +1499,7 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
       mu.est <- B_null_stats$mu.est
       V.est <- B_null_stats$V.est
     }
-    if (is.gee == F & n == 1){
+    if (is.gee == F & n == 1) {
       B_null_stats <- stat_out_score_glm_null(Y, family, B, nb)
 
       VS.est_list <- B_null_stats$VS.est_list
@@ -1509,7 +1509,7 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
       V.est <- B_null_stats$V.est
     }
 
-    for(v in 1:q){
+    for(v in 1:q) {
       var_name <- colnames(X_pred)[v]
       X <- round(X_pred[, v], 4)
 
@@ -1528,7 +1528,7 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
       if (ncol(B) > 1) in.set <- sum(!var_name_vec%in%var_name)
       if (ncol(B) == 1) in.set <- 0
 
-      for(t in 1:length(X_red)){
+      for(t in 1:length(X_red)) {
         b1_new <- matrix(tp1(X, X_red[t]), ncol = 1)  # Pairs of truncated functions.
         b2_new <- matrix(tp2(X, X_red[t]), ncol = 1)
 
@@ -1537,7 +1537,7 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
         score_knot_one_int <- c()
         score_knot_one_add <- c()
 
-        if (in.set == 0){
+        if (in.set == 0) {
           B_new_both_add <- cbind(B, b1_new, b2_new)   # Additive model with both truncated functions.
           B_new_one_add <- cbind(B, b1_new)         # Additive model with one truncated function (positive part).
 
@@ -1552,14 +1552,14 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
           score_knot_both_int = score_knot_one_int = -100000   # Interaction set is impossible since there is nothing to interact with, so let the LOF measure be a huge negative number.
         }
 
-        if (in.set > 0){
+        if (in.set > 0) {
           var_name_struct <- which(((var_name != var_name_vec)*mod_struct) == 1)
           colnames(B)[1] <- c("")
           B2 <- as.matrix(B[, var_name_struct])
           if (k != 1 & (sum(!var_name_vec[-1]%in%var_name) > 0)) B2 <- as.matrix(B2[, -1])
           if (ncol(B2) == 0) B2 <- as.matrix(B[, 1])
 
-          for(nn in 1:ncol(B2)){
+          for(nn in 1:ncol(B2)) {
             B2a <- matrix(rep(B2[, nn], 2), ncol = 2)
             B2b <- matrix(B2[, nn], ncol = 1)
             B_new_both_int <- cbind(B, B2a*cbind(b1_new, b2_new))
@@ -1594,83 +1594,83 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
 
       # See the LM code above in regards to what the conditions below actually do.
 
-      if (sum(!(apply(score_knot_both_int_mat, 1, is.na))) == 0 & sum(!(apply(score_knot_one_int_mat, 1, is.na))) == 0){
+      if (sum(!(apply(score_knot_both_int_mat, 1, is.na))) == 0 & sum(!(apply(score_knot_one_int_mat, 1, is.na))) == 0) {
         int <- F
-        if (sum(!is.na(score_knot_both_add_mat)) > 0 & sum(!is.na(score_knot_one_add_mat)) > 0){
-          if (utils::tail(max(score_knot_both_add_mat, na.rm = T), n = 1) > utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1)){
+        if (sum(!is.na(score_knot_both_add_mat)) > 0 & sum(!is.na(score_knot_one_add_mat)) > 0) {
+          if (utils::tail(max(score_knot_both_add_mat, na.rm = T), n = 1) > utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1)) {
             trunc.type <- 2
             score_knot <- score_knot_both_add_mat
             min_knot1 <- utils::tail(which(utils::tail(max(round(score_knot, 6), na.rm = T), n = 1) == round(score_knot, 6), arr.ind = T), n = 1)[1]
           }
-          if (utils::tail(max(score_knot_both_add_mat, na.rm = T), n = 1) <= utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1)){
+          if (utils::tail(max(score_knot_both_add_mat, na.rm = T), n = 1) <= utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1)) {
             trunc.type <- 1
             score_knot <- score_knot_one_add_mat
             min_knot1 <- utils::tail(which(utils::tail(max(round(score_knot, 6), na.rm = T), n = 1) == round(score_knot, 6), arr.ind = T), n = 1)[1]
           }
         }
-        if (sum(!is.na(score_knot_both_add_mat)) == 0 & sum(!is.na(score_knot_one_add_mat)) > 0){
+        if (sum(!is.na(score_knot_both_add_mat)) == 0 & sum(!is.na(score_knot_one_add_mat)) > 0) {
           trunc.type <- 1
           score_knot <- score_knot_one_add_mat
           min_knot1 <- utils::tail(which.max(round(score_knot, 6)), n = 1)
         }
-        if (sum(!is.na(score_knot_both_add_mat)) > 0 & sum(!is.na(score_knot_one_add_mat)) == 0){
+        if (sum(!is.na(score_knot_both_add_mat)) > 0 & sum(!is.na(score_knot_one_add_mat)) == 0) {
           trunc.type <- 2
           score_knot <- score_knot_one_add_mat
           min_knot1 <- utils::tail(which.max(round(score_knot, 6)), n = 1)
         }
-        if (sum(!is.na(score_knot_both_add_mat)) == 0 & sum(!is.na(score_knot_one_add_mat)) == 0){
+        if (sum(!is.na(score_knot_both_add_mat)) == 0 & sum(!is.na(score_knot_one_add_mat)) == 0) {
           breakFlag <- T
           break
         }
       }
 
-      if (sum(!(apply(score_knot_both_int_mat, 1, is.na))) == 0 & sum(!(apply(score_knot_one_int_mat, 1, is.na))) > 0){
-        if (sum(!is.na(score_knot_both_add_mat)) == 0){
+      if (sum(!(apply(score_knot_both_int_mat, 1, is.na))) == 0 & sum(!(apply(score_knot_one_int_mat, 1, is.na))) > 0) {
+        if (sum(!is.na(score_knot_both_add_mat)) == 0) {
           trunc.type <- 1
-          if (sum(!is.na(score_knot_one_add_mat)) == 0){
+          if (sum(!is.na(score_knot_one_add_mat)) == 0) {
             int <- T
             score_knot <- score_knot_one_int_mat
             min_knot1 <- utils::tail(which(utils::tail(max(round(score_knot, 6), na.rm = T), n = 1) == round(score_knot, 6), arr.ind = T), n = 1)[1]
             best.var <- utils::tail(which(utils::tail(max(round(score_knot, 6), na.rm = T), n = 1) == round(score_knot, 6), arr.ind = T), n = 1)[2]
           }
-          if (sum(!is.na(score_knot_one_add_mat)) > 0){
-            if (utils::tail(max(score_knot_one_int_mat, na.rm = T), n = 1) > utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1)){
+          if (sum(!is.na(score_knot_one_add_mat)) > 0) {
+            if (utils::tail(max(score_knot_one_int_mat, na.rm = T), n = 1) > utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1)) {
               int <- T
               score_knot <- score_knot_one_int_mat
               min_knot1 <- utils::tail(which(utils::tail(max(round(score_knot, 6), na.rm = T), n = 1) == round(score_knot, 6), arr.ind = T), n = 1)[1]
               best.var <- utils::tail(which(utils::tail(max(round(score_knot, 6), na.rm = T), n = 1) == round(score_knot, 6), arr.ind = T), n = 1)[2]
             }
-            if (utils::tail(max(score_knot_one_int_mat, na.rm = T), n = 1) <= utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1)){
+            if (utils::tail(max(score_knot_one_int_mat, na.rm = T), n = 1) <= utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1)) {
               int <- F
               score_knot <- score_knot_one_add_mat
               min_knot1 <- utils::tail(which.max(round(score_knot, 6)), n = 1)
             }
           }
         }
-        if (sum(!is.na(score_knot_both_add_mat)) > 0){
-          if (utils::tail(max(score_knot_one_int_mat, na.rm = T), n = 1) > utils::tail(max(score_knot_both_add_mat, na.rm = T), n = 1)){
+        if (sum(!is.na(score_knot_both_add_mat)) > 0) {
+          if (utils::tail(max(score_knot_one_int_mat, na.rm = T), n = 1) > utils::tail(max(score_knot_both_add_mat, na.rm = T), n = 1)) {
             trunc.type <- 1
-            if (utils::tail(max(score_knot_one_int_mat, na.rm = T), n = 1) > utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1)){
+            if (utils::tail(max(score_knot_one_int_mat, na.rm = T), n = 1) > utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1)) {
               int <- T
               score_knot <- score_knot_one_int_mat
               min_knot1 <- utils::tail(which(utils::tail(max(round(score_knot, 6), na.rm = T), n = 1) == round(score_knot, 6), arr.ind = T), n = 1)[1]
               best.var <- utils::tail(which(utils::tail(max(round(score_knot, 6), na.rm = T), n = 1) == round(score_knot, 6), arr.ind = T), n = 1)[2]
             }
-            if (utils::tail(max(score_knot_one_int_mat, na.rm = T), n = 1) <= utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1)){
+            if (utils::tail(max(score_knot_one_int_mat, na.rm = T), n = 1) <= utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1)) {
               int <- F
               score_knot <- score_knot_one_add_mat
               min_knot1 <- utils::tail(which(utils::tail(max(round(score_knot, 6), na.rm = T), n = 1) == round(score_knot, 6), arr.ind = T), n = 1)[1]
               best.var <- utils::tail(which(utils::tail(max(round(score_knot, 6), na.rm = T), n = 1) == round(score_knot, 6), arr.ind = T), n = 1)[2]
             }
           }
-          if (utils::tail(max(score_knot_one_int_mat, na.rm = T)) <= utils::tail(max(score_knot_both_add_mat, na.rm = T))){
+          if (utils::tail(max(score_knot_one_int_mat, na.rm = T)) <= utils::tail(max(score_knot_both_add_mat, na.rm = T))) {
             int <- F
-            if (utils::tail(max(score_knot_both_add_mat, na.rm = T), n = 1) <= utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1)){
+            if (utils::tail(max(score_knot_both_add_mat, na.rm = T), n = 1) <= utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1)) {
               trunc.type <- 1
               score_knot <- score_knot_one_add_mat
               min_knot1 <- utils::tail(which.max(round(score_knot, 6)), n = 1)
             }
-            if (utils::tail(max(score_knot_both_add_mat, na.rm = T), n = 1) > utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1)){
+            if (utils::tail(max(score_knot_both_add_mat, na.rm = T), n = 1) > utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1)) {
               trunc.type <- 2
               score_knot <- score_knot_both_add_mat
               min_knot1 <- utils::tail(which.max(round(score_knot, 6)), n = 1)
@@ -1679,52 +1679,52 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
         }
       }
 
-      if (sum(!(apply(score_knot_both_int_mat, 1, is.na))) > 0 & sum(!(apply(score_knot_one_int_mat, 1, is.na))) == 0){
-        if (sum(!is.na(score_knot_both_add_mat)) == 0){
-          if (sum(!is.na(score_knot_one_add_mat)) == 0){
+      if (sum(!(apply(score_knot_both_int_mat, 1, is.na))) > 0 & sum(!(apply(score_knot_one_int_mat, 1, is.na))) == 0) {
+        if (sum(!is.na(score_knot_both_add_mat)) == 0) {
+          if (sum(!is.na(score_knot_one_add_mat)) == 0) {
             int <- T
             trunc.type <- 2
             score_knot <- score_knot_both_int_mat
             min_knot1 <- utils::tail(which(utils::tail(max(round(score_knot, 6), na.rm = T), n = 1) == round(score_knot, 6), arr.ind = T), n = 1)[1]
             best.var <- utils::tail(which(utils::tail(max(round(score_knot, 6), na.rm = T), n = 1) == round(score_knot, 6), arr.ind = T), n = 1)[2]
           }
-          if (utils::tail(max(score_knot_both_int_mat, na.rm = T), n = 1) > utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1)){
+          if (utils::tail(max(score_knot_both_int_mat, na.rm = T), n = 1) > utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1)) {
             int <- T
             trunc.type <- 2
             score_knot <- score_knot_both_int_mat
             min_knot1 <- utils::tail(which(utils::tail(max(round(score_knot, 6), na.rm = T), n = 1) == round(score_knot, 6), arr.ind = T), n = 1)[1]
             best.var <- utils::tail(which(utils::tail(max(round(score_knot, 6), na.rm = T), n = 1) == round(score_knot, 6), arr.ind = T), n = 1)[2]
           }
-          if (utils::tail(max(score_knot_both_int_mat, na.rm = T), n = 1) <= utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1)){
+          if (utils::tail(max(score_knot_both_int_mat, na.rm = T), n = 1) <= utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1)) {
             int <- F
             trunc.type <- 1
             score_knot <- score_knot_one_add_mat
             min_knot1 <- utils::tail(which.max(round(score_knot, 6)), n = 1)
           }
         }
-        if (sum(!is.na(score_knot_both_add_mat)) > 0){
-          if (utils::tail(max(score_knot_both_int_mat, na.rm = T), n = 1) > utils::tail(max(score_knot_both_add_mat, na.rm = T), n = 1)){
+        if (sum(!is.na(score_knot_both_add_mat)) > 0) {
+          if (utils::tail(max(score_knot_both_int_mat, na.rm = T), n = 1) > utils::tail(max(score_knot_both_add_mat, na.rm = T), n = 1)) {
             trunc.type <- 2
-            if (utils::tail(max(score_knot_both_int_mat, na.rm = T), n = 1) > utils::tail(max(score_knot_both_add_mat, na.rm = T), n = 1)){
+            if (utils::tail(max(score_knot_both_int_mat, na.rm = T), n = 1) > utils::tail(max(score_knot_both_add_mat, na.rm = T), n = 1)) {
               int <- T
               score_knot <- score_knot_both_int_mat
               min_knot1 <- utils::tail(which(utils::tail(max(round(score_knot, 6), na.rm = T), n = 1) == round(score_knot, 6), arr.ind = T), n = 1)[1]
               best.var <- utils::tail(which(utils::tail(max(round(score_knot, 6), na.rm = T), n = 1) == round(score_knot, 6), arr.ind = T), n = 1)[2]
             }
-            if (utils::tail(max(score_knot_both_int_mat, na.rm = T), n = 1) <= utils::tail(max(score_knot_both_add_mat, na.rm = T), n = 1)){
+            if (utils::tail(max(score_knot_both_int_mat, na.rm = T), n = 1) <= utils::tail(max(score_knot_both_add_mat, na.rm = T), n = 1)) {
               int <- F
               score_knot <- score_knot_both_add_mat
               min_knot1 <- utils::tail(which(utils::tail(max(round(score_knot, 6), na.rm = T), n = 1) == round(score_knot, 6), arr.ind = T), n = 1)[1]
             }
           }
-          if (utils::tail(max(score_knot_both_int_mat, na.rm = T), n = 1) <= utils::tail(max(score_knot_both_add_mat, na.rm = T), n = 1)){
+          if (utils::tail(max(score_knot_both_int_mat, na.rm = T), n = 1) <= utils::tail(max(score_knot_both_add_mat, na.rm = T), n = 1)) {
             int <- F
-            if (utils::tail(max(score_knot_both_add_mat, na.rm = T), n = 1) <= utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1)){
+            if (utils::tail(max(score_knot_both_add_mat, na.rm = T), n = 1) <= utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1)) {
               trunc.type <- 1
               score_knot <- score_knot_one_add_mat
               min_knot1 <- utils::tail(which.max(round(score_knot, 6)), n = 1)
             }
-            if (utils::tail(max(score_knot_both_add_mat, na.rm = T), n = 1) > utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1)){
+            if (utils::tail(max(score_knot_both_add_mat, na.rm = T), n = 1) > utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1)) {
               trunc.type <- 2
               score_knot <- score_knot_both_add_mat
               min_knot1 <- utils::tail(which.max(round(score_knot, 6)), n = 1)
@@ -1733,31 +1733,31 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
         }
       }
 
-      if (sum(!(apply(score_knot_both_int_mat, 1, is.na))) > 0 & sum(!(apply(score_knot_one_int_mat, 1, is.na))) > 0){
-        if (utils::tail(max(score_knot_both_int_mat, na.rm = T), n = 1) > utils::tail(max(score_knot_one_int_mat, na.rm = T), n = 1)){
-          if (sum(!is.na(score_knot_both_add_mat)) > 0){
-            if (utils::tail(max(score_knot_both_add_mat, na.rm = T), n = 1) >= utils::tail(max(score_knot_both_int_mat, na.rm = T), n = 1)){
+      if (sum(!(apply(score_knot_both_int_mat, 1, is.na))) > 0 & sum(!(apply(score_knot_one_int_mat, 1, is.na))) > 0) {
+        if (utils::tail(max(score_knot_both_int_mat, na.rm = T), n = 1) > utils::tail(max(score_knot_one_int_mat, na.rm = T), n = 1)) {
+          if (sum(!is.na(score_knot_both_add_mat)) > 0) {
+            if (utils::tail(max(score_knot_both_add_mat, na.rm = T), n = 1) >= utils::tail(max(score_knot_both_int_mat, na.rm = T), n = 1)) {
               int <- F
-              if (utils::tail(max(score_knot_both_add_mat, na.rm = T), n = 1) > utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1)){
+              if (utils::tail(max(score_knot_both_add_mat, na.rm = T), n = 1) > utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1)) {
                 trunc.type <- 2
                 score_knot <- score_knot_both_add_mat
                 min_knot1 <- utils::tail(which.max(round(score_knot, 6)), n = 1)
               }
-              if (utils::tail(max(score_knot_both_add_mat, na.rm = T), n = 1) <= utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1)){
+              if (utils::tail(max(score_knot_both_add_mat, na.rm = T), n = 1) <= utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1)) {
                 trunc.type <- 1
                 score_knot <- score_knot_one_add_mat
                 min_knot1 <- utils::tail(which.max(round(score_knot, 6)))
               }
             }
-            if (utils::tail(max(score_knot_both_add_mat, na.rm = T), n = 1) < utils::tail(max(score_knot_both_int_mat, na.rm = T), n = 1)){
-              if (utils::tail(max(score_knot_both_int_mat, na.rm = T), n = 1) > utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1)){
+            if (utils::tail(max(score_knot_both_add_mat, na.rm = T), n = 1) < utils::tail(max(score_knot_both_int_mat, na.rm = T), n = 1)) {
+              if (utils::tail(max(score_knot_both_int_mat, na.rm = T), n = 1) > utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1)) {
                 int <- T
                 trunc.type <- 2
                 score_knot <- score_knot_both_int_mat
                 min_knot1 <- utils::tail(which(utils::tail(max(round(score_knot, 6), na.rm = T), n = 1) == round(score_knot, 6), arr.ind = T), n = 1)[1]
                 best.var <- utils::tail(which(utils::tail(max(round(score_knot, 6), na.rm = T), n = 1) == round(score_knot, 6), arr.ind = T), n = 1)[2]
               }
-              if (utils::tail(max(score_knot_both_int_mat, na.rm = T), n = 1) <= utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1)){
+              if (utils::tail(max(score_knot_both_int_mat, na.rm = T), n = 1) <= utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1)) {
                 int <- F
                 trunc.type <- 1
                 score_knot <- score_knot_one_add_mat
@@ -1765,14 +1765,14 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
               }
             }
           }
-          if (sum(!is.na(score_knot_both_add_mat)) == 0){
-            if (utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1) >= utils::tail(max(score_knot_both_int_mat, na.rm = T), n = 1)){
+          if (sum(!is.na(score_knot_both_add_mat)) == 0) {
+            if (utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1) >= utils::tail(max(score_knot_both_int_mat, na.rm = T), n = 1)) {
               int <- F
               trunc.type <- 1
               score_knot <- score_knot_one_add_mat
               min_knot1 <- utils::tail(which.max(round(score_knot, 6)), n = 1)
             }
-            if (utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1) < utils::tail(max(score_knot_both_int_mat, na.rm = T), n = 1)){
+            if (utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1) < utils::tail(max(score_knot_both_int_mat, na.rm = T), n = 1)) {
               int <- T
               trunc.type <- 2
               score_knot <- score_knot_both_int_mat
@@ -1781,51 +1781,51 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
             }
           }
         }
-        if (utils::tail(max(score_knot_both_int_mat, na.rm = T), n = 1) <= utils::tail(max(score_knot_one_int_mat, na.rm = T), n = 1)){
-          if (sum(!is.na(score_knot_both_add_mat)) > 0){
-            if (utils::tail(max(score_knot_both_add_mat, na.rm = T), n = 1) >= utils::tail(max(score_knot_one_int_mat, na.rm = T), n = 1)){
+        if (utils::tail(max(score_knot_both_int_mat, na.rm = T), n = 1) <= utils::tail(max(score_knot_one_int_mat, na.rm = T), n = 1)) {
+          if (sum(!is.na(score_knot_both_add_mat)) > 0) {
+            if (utils::tail(max(score_knot_both_add_mat, na.rm = T), n = 1) >= utils::tail(max(score_knot_one_int_mat, na.rm = T), n = 1)) {
               int <- F
-              if (utils::tail(max(score_knot_both_add_mat, na.rm = T), n = 1) <= utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1)){
+              if (utils::tail(max(score_knot_both_add_mat, na.rm = T), n = 1) <= utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1)) {
                 trunc.type <- 1
                 score_knot <- score_knot_one_add_mat
                 min_knot1 <- utils::tail(which.max(round(score_knot, 6)), n = 1)
               }
-              if (utils::tail(max(score_knot_both_add_mat, na.rm = T), n = 1) > utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1)){
+              if (utils::tail(max(score_knot_both_add_mat, na.rm = T), n = 1) > utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1)) {
                 trunc.type <- 2
                 score_knot <- score_knot_both_add_mat
                 min_knot1 <- utils::tail(which.max(round(score_knot, 6)), n = 1)
               }
             }
-            if (utils::tail(max(score_knot_both_add_mat, na.rm = T), n = 1) < utils::tail(max(score_knot_one_int_mat, na.rm = T), n = 1)){
+            if (utils::tail(max(score_knot_both_add_mat, na.rm = T), n = 1) < utils::tail(max(score_knot_one_int_mat, na.rm = T), n = 1)) {
               trunc.type <- 1
-              if (utils::tail(max(score_knot_one_int_mat, na.rm = T), n = 1) > utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1)){
+              if (utils::tail(max(score_knot_one_int_mat, na.rm = T), n = 1) > utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1)) {
                 int <- T
                 score_knot <- score_knot_one_int_mat
                 min_knot1 <- utils::tail(which(utils::tail(max(round(score_knot, 6), na.rm = T), n = 1) == round(score_knot, 6), arr.ind = T), n = 1)[1]
                 best.var <- utils::tail(which(utils::tail(max(round(score_knot, 6), na.rm = T), n = 1) == round(score_knot, 6), arr.ind = T), n = 1)[2]
               }
-              if (utils::tail(max(score_knot_one_int_mat, na.rm = T), n = 1) <= utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1)){
+              if (utils::tail(max(score_knot_one_int_mat, na.rm = T), n = 1) <= utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1)) {
                 int <- F
                 score_knot <- score_knot_one_add_mat
                 min_knot1 <- utils::tail(which.max(round(score_knot, 6)), n = 1)
               }
             }
           }
-          if (sum(!is.na(score_knot_both_add_mat)) == 0){
+          if (sum(!is.na(score_knot_both_add_mat)) == 0) {
             trunc.type <- 1
-            if (sum(!is.na(score_knot_one_add_mat)) == 0){
+            if (sum(!is.na(score_knot_one_add_mat)) == 0) {
               int <- T
               score_knot <- score_knot_one_int_mat
               min_knot1 <- utils::tail(which(utils::tail(max(round(score_knot, 6), na.rm = T), n = 1) == round(score_knot, 6), arr.ind = T), n = 1)[1]
               best.var <- utils::tail(which(utils::tail(max(round(score_knot, 6), na.rm = T), n = 1) == round(score_knot, 6), arr.ind = T), n = 1)[2]
             }
-            if (sum(!is.na(score_knot_one_add_mat)) > 0){
-              if (utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1) >= utils::tail(max(score_knot_one_int_mat, na.rm = T), n = 1)){
+            if (sum(!is.na(score_knot_one_add_mat)) > 0) {
+              if (utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1) >= utils::tail(max(score_knot_one_int_mat, na.rm = T), n = 1)) {
                 int <- F
                 score_knot <- score_knot_one_add_mat
                 min_knot1 <- utils::tail(which.max(round(score_knot, 6)))
               }
-              if (utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1) < utils::tail(max(score_knot_one_int_mat, na.rm = T), n = 1)){
+              if (utils::tail(max(score_knot_one_add_mat, na.rm = T), n = 1) < utils::tail(max(score_knot_one_int_mat, na.rm = T), n = 1)) {
                 int <- T
                 score_knot <- score_knot_one_int_mat
                 min_knot1 <- utils::tail(which(utils::tail(max(round(score_knot, 6), na.rm = T), n = 1) == round(score_knot, 6), arr.ind = T), n = 1)[1]
@@ -1844,7 +1844,7 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
       B_name1 <- paste("(", var_name, "-", signif (X_red[min_knot1], 4), ")", sep = "")
       B_name2 <- paste("(", signif (X_red[min_knot1], 4), "-", var_name, ")", sep = "")
 
-      if (int == T){
+      if (int == T) {
         mod_struct1 <- which(mod_struct == 1)
         colnames(B)[1] <- c("")
         var_name1 <- which(var_name_vec != var_name)
@@ -1857,7 +1857,7 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
         B2 <- as.matrix(B2[, -1])
         var_name2 <- var_name2[-1]
 
-        if (trunc.type == 2){
+        if (trunc.type == 2) {
           B2a <- matrix(rep(B2[, best.var], 2), ncol = 2)
           B_temp <- cbind(B, B2a*cbind(b1_new, b2_new))
           B_new <- B2a*cbind(b1_new, b2_new)
@@ -1865,7 +1865,7 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
           colnames(B_new) <- rep(var_name3, 2)
         }
 
-        if (trunc.type == 1){
+        if (trunc.type == 1) {
           B2b <- matrix(B2[, best.var], ncol = 1)
           B_temp <- cbind(B, B2b*b1_new)     # Interaction model with one truncated basis function (i.e., the positive part).
           B_new <- B2b*b1_new
@@ -1879,23 +1879,23 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
         if (trunc.type == 1) B_names <- B_names
 
         var_name_list1 <- list()
-        for(ll in 1:ncol(B_new)){
+        for(ll in 1:ncol(B_new)) {
           colnames(B_new)[ll] <- paste(var_name, colnames(B_new)[ll], sep = ":")
           var_name_list1 <- c(var_name_list1, list(colnames(B_new)[ll]))
           int.count1 <- int.count1 + 1
         }
       }
 
-      if (int == F){
+      if (int == F) {
         var_name_list1 <- list()
-        if (trunc.type == 2){
+        if (trunc.type == 2) {
           B_temp <- cbind(B, b1_new, b2_new) # Additive model with both truncated basis functions.
           B_new <- cbind(b1_new, b2_new)
           B_names <- c(B_name1, B_name2)
           var_name_list1 <- c(var_name_list1, list(var_name))
           var_name_list1 <- c(var_name_list1, list(var_name))  # Repeat it because there are two new truncated basis function in the set.
         }
-        if (trunc.type == 1){
+        if (trunc.type == 1) {
           B_temp <- cbind(B, b1_new) # Additive model with one truncated basis function (i.e., the positive part).
           B_new <- b1_new
           B_names <- B_name1
@@ -1911,7 +1911,7 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
       meas_model0 <- stat_out(Y, B_temp, TSS, GCV.null, pen)
       GCVq2 <- meas_model0$GCVq1
 
-      if (GCVq2 < (-10) | round(score2, 4) <= 0){
+      if (GCVq2 < (-10) | round(score2, 4) <= 0) {
         writeLines("** MARGE tolerance criteria met 1** \n")
         var.mod_temp <- c(var.mod_temp, NA)
         min_knot_vec_temp <- c(min_knot_vec_temp, NA)
@@ -1927,7 +1927,7 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
 
         score_term_temp <- c(score_term_temp, NA)
 
-        if (length(var.mod_temp) == q){
+        if (length(var.mod_temp) == q) {
           breakFlag <- TRUE
           break
         }
@@ -1973,14 +1973,14 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
     trunc.type_vec <- c(trunc.type_vec, trunc.type)
     is.int_vec <- c(is.int_vec, int)
 
-    if (score_term[k + 1] < tols_score){
+    if (score_term[k + 1] < tols_score) {
       if (print.disp == T) writeLines("\n ** MARGE tolerance criteria met 2** \n")
       breakFlag <- TRUE
       break
     }
 
-    if (score_term[k + 1] >= tols_score){
-      if (int == T){
+    if (score_term[k + 1] >= tols_score) {
+      if (int == T) {
         mod_struct <- c(mod_struct, rep(c(rep(2, int.count1/trunc.type)), trunc.type))
         int.count <- int.count + 1
       }
@@ -1994,12 +1994,12 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
       m <- m + 2
     }
 
-    if (nrow(B) <= (ncol(B) + 2)){ # To aviod the p>N, issue!
+    if (nrow(B) <= (ncol(B) + 2)) { # To aviod the p>N, issue!
       if (print.disp == T) writeLines("\n ** Parameter dimension exceeds N for MARGE ** \n")
       ok <- F
     }
 
-    if (m >= M){ # If model exceeds no. of set terms, terminate it.
+    if (m >= M) { # If model exceeds no. of set terms, terminate it.
       if (print.disp == T) writeLines("\n ** Exceeded max no. of set terms for MARGE ** \n")
       ok <- F
     }
@@ -2016,12 +2016,12 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
 
   WIC_vec_2 = WIC_vec_log = NA
 
-  if (is.gee == F){
+  if (is.gee == F) {
     if (nb == F) full.fit <- stats::glm(Y ~ B - 1, family = family)
     if (nb == T) full.fit <- gamlss::gamlss(Y ~ B - 1, family = "NBI", trace = FALSE)
   }
 
-  if (is.gee == T){
+  if (is.gee == T) {
     if (family == "gaussian") full.fit <- geepack::geeglm(Y ~ B - 1, id = id, corstr = corstr)
     if (family != "gaussian") full.fit <- geepack::geeglm(Y ~ B - 1, id = id, family = family, corstr = corstr)
   }
@@ -2063,8 +2063,8 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
   cnames_2 <- c(cnames_2, list(colnames(B_new_2)))
   cnames_log <- c(cnames_log, list(colnames(B_new_log)))
 
-  for(i in 2:(ncol(B) - 1)){
-    if (i != (ncol(B) - 1)){
+  for(i in 2:(ncol(B) - 1)) {
+    if (i != (ncol(B) - 1)) {
       wic1_2 <- backward_sel_WIC(Y, N, n, B_new_2, id, family, corstr, nb, is.gee)
       wic1_log <- backward_sel_WIC(Y, N, n, B_new_log, id, family, corstr, nb, is.gee)
 
@@ -2086,9 +2086,9 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
       B_new_log <- as.matrix(B_new_log[, -(variable.lowest_log + 1)])
     }
 
-    if (i == (ncol(B) - 1)){
-      if (is.gee == F){
-        if (nb == F){
+    if (i == (ncol(B) - 1)) {
+      if (is.gee == F) {
+        if (nb == F) {
           full.fit_2 <- stats::glm(Y ~ B_new_2 - 1, family = family)
           full.fit_log <- stats::glm(Y ~ B_new_log - 1, family = family)
           full.wald_2 <- (summary(full.fit_2)[12]$coef[-1, 3])^2
@@ -2097,7 +2097,7 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
           wic1_2 <- full.wald_2
           wic1_log <- full.wald_log
         }
-        if (nb == T){
+        if (nb == T) {
           full.fit_2 <- gamlss::gamlss(Y ~ B_new_2 - 1, family = "NBI", trace = FALSE)
           full.fit_log <- gamlss::gamlss(Y ~ B_new_log - 1, family = "NBI", trace = FALSE)
           sink(tempfile())
@@ -2110,15 +2110,15 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
         }
       }
 
-      if (is.gee == T){
-        if (family == "gaussian"){
+      if (is.gee == T) {
+        if (family == "gaussian") {
           full.fit_2 <- geepack::geeglm(Y ~ B_new_2 - 1, id = id, corstr = corstr)
           full.fit_log <- geepack::geeglm(Y ~ B_new_log - 1, id = id, corstr = corstr)
 
           full.wald_2 <- (summary(full.fit_2)[6]$coef[-1, 3])^2
           full.wald_log <- (summary(full.fit_log)[6]$coef[-1, 3])^2
         }
-        if (family != "gaussian"){
+        if (family != "gaussian") {
           full.fit_2 <- geepack::geeglm(Y ~ B_new_2 - 1, id = id, family = family, corstr = corstr)
           full.fit_log <- geepack::geeglm(Y ~ B_new_log - 1, id = id, family = family, corstr = corstr)
 
@@ -2158,7 +2158,7 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
   graphics::mtext(text = "WIC", line = 2, side = 2, cex = 2, las = 0)
   graphics::title(main = bquote(paste( ~ paste(lambda) ~ " =  log(N)")), cex.main = 2.2, line = 1.4)
 
-  if (print.disp == T){
+  if (print.disp == T) {
     writeLines("\n Forward pass output: \n")
     forw.info <- cbind(round(score_term, 4), pred.name_vec, cut_vec, trunc.type_vec, is.int_vec)
     colnames(forw.info) <- c("Score", "Predictor name", "Cut term (knot)", "No. of new parent terms", "Interaction?")
@@ -2167,21 +2167,21 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
 
   # Some final model output, WIC, GCV etc.
 
-  if (is.gee == T){
+  if (is.gee == T) {
     B_final <- as.matrix(B[, colnames(B)%in%cnames_2[[which.min(WIC_vec_2)]]])
     final_mod_2 <- geepack::geeglm(Y ~ B_final - 1, id = id, family = family, corstr = corstr)
 
     B_final <- as.matrix(B[, colnames(B)%in%cnames_log[[which.min(WIC_vec_log)]]])
     final_mod_log <- geepack::geeglm(Y ~ B_final - 1, id = id, family = family, corstr = corstr)
   }
-  if (is.gee == F){
-    if (nb == F){
+  if (is.gee == F) {
+    if (nb == F) {
       B_final <- as.matrix(B[, colnames(B)%in%cnames_2[[which.min(WIC_vec_2)]]])
       final_mod_2 <- stats::glm(Y ~ B_final - 1, family = family)
       B_final <- as.matrix(B[, colnames(B)%in%cnames_log[[which.min(WIC_vec_log)]]])
       final_mod_log <- stats::glm(Y ~ B_final - 1, family = family)
     }
-    if (nb == T){
+    if (nb == T) {
       B_final <- as.matrix(B[, colnames(B)%in%cnames_2[[which.min(WIC_vec_2)]]])
       final_mod.many_2 <- mvabund::manyglm(c(t(Y)) ~ B_final - 1, family = "negative.binomial", maxiter = 1000, maxiter2 = 100)
       final_mod_2 <- MASS::glm.nb(c(t(Y)) ~ B_final - 1, method = "glm.fit2", init.theta = final_mod.many_2$theta)
@@ -2206,7 +2206,7 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
   GCV1_2 <- RSS1_2/(NN*(1 - df1a_2/NN)^2)
   GCV1_log <- RSS1_log/(NN*(1 - df1a_log/NN)^2)
 
-  if (print.disp == T){
+  if (print.disp == T) {
     B_final <- as.matrix(B[, colnames(B)%in%cnames_2[[which.min(WIC_vec_2)]]])
     final_mod <- final_mod_2
     wic_mat <- wic_mat_2
@@ -2257,7 +2257,7 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
 #' @param x : a numerical value.
 #' @export
 #' @importFrom gsubfn strapply
-getNumberPart <- function(x){
+getNumberPart <- function(x) {
   pat <- "(-?(\\d*\\.*\\d+|\\d+\\.))"
   gsubfn::strapply(x, pattern = pat, FUN = as.numeric, simplify = TRUE, empty = NA)
 }
@@ -2315,8 +2315,8 @@ getNumberPart <- function(x){
 #' pred_marge_2_y <- predict(model_marge, X_predt, X_pred, TRUE, "2")
 #'
 #' pred_marge_log_y <- predict(model_marge, X_predt, X_pred, TRUE, "logN")
-predict.marge <- function(object, newdata, X_pred, is.marge = F, pen = "2", ...){
-  if (is.marge == T){
+predict.marge <- function(object, newdata, X_pred, is.marge = F, pen = "2", ...) {
+  if (is.marge == T) {
     if (pen == "2") mod <- object$final_mod[[1]]
     if (pen == "logN") mod <- object$final_mod[[2]]
   }
@@ -2325,7 +2325,7 @@ predict.marge <- function(object, newdata, X_pred, is.marge = F, pen = "2", ...)
 
   if (ncol(stats::model.matrix(mod)) == 1) basis_new <- stats::model.matrix(mod)
 
-  if (ncol(stats::model.matrix(mod)) != 1){
+  if (ncol(stats::model.matrix(mod)) != 1) {
     newdat_var <- colnames(newdata)[-1]  # Remove intercept term (1st column).
 
     fitted_dat <- round(X_pred, digits = 4) # Original input data (need the variable names).
@@ -2342,14 +2342,14 @@ predict.marge <- function(object, newdata, X_pred, is.marge = F, pen = "2", ...)
 
     basis_new <- rep(1, nrow(newdata))
 
-    for(ww in 1:qq1){
+    for(ww in 1:qq1) {
       var1 <- var_name_list[[ww]]
       qq2 <- length(var1)
 
-      if (qq2 == 1){  # For additive structures.
+      if (qq2 == 1) {  # For additive structures.
         var.vec_new1 <- c()
 
-        for(vv in 1:pp1){
+        for(vv in 1:pp1) {
           var.vec_new1 <- c(var.vec_new1, unique(unlist(stringr::str_extract_all(var1, newdat_var[vv]))))
         }
 
@@ -2362,8 +2362,8 @@ predict.marge <- function(object, newdata, X_pred, is.marge = F, pen = "2", ...)
         if (lenv1 == 2) cut1 <- abs(cut1)
         if (lenv1 == 3) cut1 <- cut1
 
-        if (length(cut1) > 1 & cut1[1] != cut1[2]){
-          if (cut1[1] < 0 | cut1[2] < 0){
+        if (length(cut1) > 1 & cut1[1] != cut1[2]) {
+          if (cut1[1] < 0 | cut1[2] < 0) {
             var_num0 <- which(colnames(fitted_dat) == (noquote(var_name)))
             cut00 <- which(cut1 < 0)
             cut01 <- abs(signif (as.numeric(cut1[cut00]), 4))
@@ -2372,13 +2372,13 @@ predict.marge <- function(object, newdata, X_pred, is.marge = F, pen = "2", ...)
 
             if (floor(abs(cut1[cut00])) == floor(abs(cut3))) cut2 <- abs(cut1[cut00])*sign(cut3)
           }
-          if (cut1[1] >= 0 & cut1[2] >= 0){
+          if (cut1[1] >= 0 & cut1[2] >= 0) {
             var_num0 <- which(colnames(fitted_dat) == (noquote(var_name)))
             cut00 <- which(cut1 == var_num0)
             cut2 = cut3 = as.numeric(cut1[-cut00])
           }
         }
-        if (length(cut1) > 1 & (abs(cut1[1]) == abs(cut1[2]))){
+        if (length(cut1) > 1 & (abs(cut1[1]) == abs(cut1[2]))) {
           var_num0 <- which(colnames(fitted_dat) == (noquote(var_name)))
           cut00 <- min(cut1)[1]
           cut01 <- abs(signif (as.numeric(cut1[cut00]), 4))
@@ -2399,15 +2399,15 @@ predict.marge <- function(object, newdata, X_pred, is.marge = F, pen = "2", ...)
         basis_new <- cbind(basis_new, round(b1_new, digits = 4))
       }
 
-      if (qq2 == 2){  # For interaction structures.
+      if (qq2 == 2) {  # For interaction structures.
         basis_new1 <- c()
 
-        for(yy in 1:qq2){
+        for(yy in 1:qq2) {
           var2 <- var1[yy]
 
           var.vec_new1 <- c()
 
-          for(vv in 1:pp1){
+          for(vv in 1:pp1) {
             var.vec_new1 <- c(var.vec_new1, unique(unlist(stringr::str_extract_all(var2, newdat_var[vv]))))
           }
 
@@ -2420,8 +2420,8 @@ predict.marge <- function(object, newdata, X_pred, is.marge = F, pen = "2", ...)
           if (lenv1 == 2) cut1 <- abs(cut1)
           if (lenv1 == 3) cut1 <- cut1
 
-          if (length(cut1) > 1 & (cut1[1] != cut1[2])){
-            if (cut1[1] < 0 | cut1[2] < 0){
+          if (length(cut1) > 1 & (cut1[1] != cut1[2])) {
+            if (cut1[1] < 0 | cut1[2] < 0) {
               var_num0 <- which(colnames(fitted_dat) == (noquote(var_name)))
               cut00 <- which(cut1 < 0)
               cut01 <- abs(signif (as.numeric(cut1[cut00]), 4))
@@ -2430,14 +2430,14 @@ predict.marge <- function(object, newdata, X_pred, is.marge = F, pen = "2", ...)
 
               if (floor(abs(cut1[cut00])) == floor(abs(cut3))) cut2 <- abs(cut1[cut00])*sign(cut3)
             }
-            if (cut1[1] >= 0 & cut1[2] >= 0){
+            if (cut1[1] >= 0 & cut1[2] >= 0) {
               var_num0 <- which(colnames(fitted_dat) == (noquote(var_name)))
               cut00 <- which(cut1 == var_num0)
               cut2 = cut3 = as.numeric(cut1[-cut00])
             }
           }
 
-          if (length(cut1) > 1 & (abs(cut1[1]) == abs(cut1[2]))){
+          if (length(cut1) > 1 & (abs(cut1[1]) == abs(cut1[2]))) {
             var_num0 <- which(colnames(fitted_dat) == (noquote(var_name)))
             cut00 <- min(cut1)[1]
             cut01 <- abs(signif (as.numeric(cut1[cut00]), 4))
