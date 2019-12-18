@@ -18,16 +18,16 @@ library(BayesTree)
 #' @description These data are binary (presence-absence) data collected on plant species for 8,678 sites located in the Blue Mountains region. It also contains environmental predictor variables collected at each site. There are are 1,751 absences and 6,927 presences. The `leptrine` data consists of training and test sets, such that \eqn{N} = 4,339. The nine environmental predictor variables given here have all been standardized.
 #' @format A list containing two \code{matrices}: the training data with 4,339 observations and 9 columns, and the test data with 4,339 observations and 10 columns (it includes a column of zeroes for the intercept term). The columns are defined as follows:
 #' \describe{
-#'  \item{\code{RAIN_DRY_QTR}}{Recorded rainfall for the driest quater for each site.}
-#'  \item{\code{FC}}{Recorded number of fire counts for each site.}
-#'  \item{\code{TMP_MIN}}{Recorded minimum temperatures for each site.}
-#'  \item{\code{TMP_SEAS}}{Recorded seasonal temperature for each site.}
-#'  \item{\code{TMP_MN_WARM_QTR}}{Recorded minimum temperature for the warmest quater for each site.}
-#'  \item{\code{RAIN_WET_QTR}}{Recorded rainfall for the westest quater for each site.}
-#'  \item{\code{TMP_MN_COLD_QTR}}{Recorded minimum temperature for the coldest quater for each site.}
-#'  \item{\code{TMP_MAX}}{Recorded maximum temperature for each site.}
-#'  \item{\code{TMP_MN}}{Recorded minimum temperature for each site.}
-#'  \item{\code{Y}}{Presence-absence for the plant species \emph{Leptospermum trinervium} for each site.}
+#' \item{\code{RAIN_DRY_QTR}}{Recorded rainfall for the driest quater for each site.}
+#' \item{\code{FC}}{Recorded number of fire counts for each site.}
+#' \item{\code{TMP_MIN}}{Recorded minimum temperatures for each site.}
+#' \item{\code{TMP_SEAS}}{Recorded seasonal temperature for each site.}
+#' \item{\code{TMP_MN_WARM_QTR}}{Recorded minimum temperature for the warmest quater for each site.}
+#' \item{\code{RAIN_WET_QTR}}{Recorded rainfall for the westest quater for each site.}
+#' \item{\code{TMP_MN_COLD_QTR}}{Recorded minimum temperature for the coldest quater for each site.}
+#' \item{\code{TMP_MAX}}{Recorded maximum temperature for each site.}
+#' \item{\code{TMP_MN}}{Recorded minimum temperature for each site.}
+#' \item{\code{Y}}{Presence-absence for the plant species \emph{Leptospermum trinervium} for each site.}
 #' }
 #' @source The Blue Mountains presence-absence data for the speices \emph{Leptospermum trinervium} were obtained from \url{http://www.bionet.nsw.gov.au/}. Environmental data for Blue Mountains region: DRYAD entry doi:10.5061/dryad.985s5.
 #' @author Jakub Stoklosa and David I. Warton
