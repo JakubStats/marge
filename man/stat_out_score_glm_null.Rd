@@ -24,9 +24,9 @@ stat_out_score_glm_null(Y, family = "gaussian", B_null, nb = F, ...)
 A function that calculates parts of the score statistic for GLMs only (it is used for the full path for forward selection).
 }
 \references{
-Stoklosa, J., Gibb, H. and Warton, D.I. (2014). Fast forward selection for generalized estimating equations with a large number of predictor variables. \emph{Biometrics}, 70, 110-120.
+Stoklosa, J., Gibb, H. and Warton, D.I. (2014). Fast forward selection for generalized estimating equations with a large number of predictor variables. \emph{Biometrics}, \strong{70}, 110--120.
 
-Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
+Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, 245--253.
 }
 \seealso{
 \code{\link{stat_out}} and \code{\link{stat_out_score_glm_null}}

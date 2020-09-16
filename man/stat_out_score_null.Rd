@@ -4,8 +4,18 @@
 \alias{stat_out_score_null}
 \title{stat_out_score_null}
 \usage{
-stat_out_score_null(Y, N, n, id, family = "gaussian",
-  corstr = "independence", B_null, nb = F, is.gee = F, ...)
+stat_out_score_null(
+  Y,
+  N,
+  n,
+  id,
+  family = "gaussian",
+  corstr = "independence",
+  B_null,
+  nb = F,
+  is.gee = F,
+  ...
+)
 }
 \arguments{
 \item{Y}{: the response variable.}
@@ -38,9 +48,9 @@ A function that calculates parts for the score statistic for GEEs (it is used fo
 The null model used here is by definition the current parent model. We compare the alternative model (a new basis function combined with the parent) with the null model. In the code used, only the null model is fit (the dispersion parameter is also estimated for GEE) and then the score statistic is obtained.
 }
 \references{
-Stoklosa, J., Gibb, H. and Warton, D.I. (2014). Fast forward selection for generalized estimating equations with a large number of predictor variables. \emph{Biometrics}, 70, 110-120.
+Stoklosa, J., Gibb, H. and Warton, D.I. (2014). Fast forward selection for generalized estimating equations with a large number of predictor variables. \emph{Biometrics}, \strong{70}, 110--120.
 
-Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
+Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, 245--253.
 }
 \seealso{
 \code{\link{stat_out}} and \code{\link{stat_out_score_glm_null}}

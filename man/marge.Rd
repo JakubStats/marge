@@ -4,9 +4,23 @@
 \alias{marge}
 \title{marge}
 \usage{
-marge(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
-  corstr = "independence", pen = 2, tols_score = 1e-05, M = 21,
-  minspan = NULL, print.disp = F, nb = F, is.gee = F, ...)
+marge(
+  X_pred,
+  Y,
+  N,
+  n = 1,
+  id = c(1:length(Y)),
+  family = "gaussian",
+  corstr = "independence",
+  pen = 2,
+  tols_score = 1e-05,
+  M = 21,
+  minspan = NULL,
+  print.disp = F,
+  nb = F,
+  is.gee = F,
+  ...
+)
 }
 \arguments{
 \item{X_pred}{: a matrix of the predictor variables. Note that this matrix should include a column of 1's for the intercept term.}
@@ -78,7 +92,7 @@ X_pred <- dat1[, -c(3:10)] # Design matrix using only two (of nine) predictors.
 family <- "binomial"   # The selected "exponential" family for the GLM/GEE.
 is.gee <- FALSE        # Is the model a GEE?
 nb <- FALSE            # Is this a negative binomial model?
-tols_score <- 0.0001   # A set tolerence (stopping condition) in forward pass for MARGE.
+tols_score <- 0.0001   # A set tolerance (stopping condition) in forward pass for MARGE.
 M <- 21                # A set threshold for the maximum number of basis functions to be used.
 print.disp <- FALSE    # Print ALL the output?
 pen <- 2               # Penalty to be used in GCV.
@@ -90,11 +104,11 @@ mod <- marge(X_pred, Y, N, n, id, family, corstr, pen, tols_score,
              M, minspan, print.disp, nb, is.gee)
 }
 \references{
-Friedman, J. (1991). Multivariate adaptive regression splines. \emph{The Annals of Statistics}, 19, 1-67.
+Friedman, J. (1991). Multivariate adaptive regression splines. \emph{The Annals of Statistics}, \strong{19}, 1--67.
 
-Stoklosa, J., Gibb, H. and Warton, D.I. (2014). Fast forward selection for generalized estimating equations with a large number of predictor variables. \emph{Biometrics}, 70, 110-120.
+Stoklosa, J., Gibb, H. and Warton, D.I. (2014). Fast forward selection for generalized estimating equations with a large number of predictor variables. \emph{Biometrics}, \strong{70}, 110--120.
 
-Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
+Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, 245--253.
 }
 \seealso{
 \code{\link{mars_ls}} and \code{\link{backward_sel_WIC}}

@@ -4,7 +4,8 @@
 \name{leptrine}
 \alias{leptrine}
 \title{Blue Mountains presence-absence data for the plant species \emph{Leptospermum trinervium}.}
-\format{A list containing two \code{matrices}: the training data with 4,339 observations and 9 columns, and the test data with 4,339 observations and 10 columns (it includes a column of zeroes for the intercept term). The columns are defined as follows:
+\format{
+A list containing two \code{matrices}: the training data with 4,339 observations and 9 columns, and the test data with 4,339 observations and 10 columns (it includes a column of zeroes for the intercept term). The columns are defined as follows:
 \describe{
 \item{\code{RAIN_DRY_QTR}}{Recorded rainfall for the driest quater for each site.}
 \item{\code{FC}}{Recorded number of fire counts for each site.}
@@ -16,9 +17,10 @@
 \item{\code{TMP_MAX}}{Recorded maximum temperature for each site.}
 \item{\code{TMP_MN}}{Recorded minimum temperature for each site.}
 \item{\code{Y}}{Presence-absence for the plant species \emph{Leptospermum trinervium} for each site.}
-}}
+}
+}
 \source{
-The Blue Mountains presence-absence data for the speices \emph{Leptospermum trinervium} were obtained from \url{http://www.bionet.nsw.gov.au/}. Environmental data for Blue Mountains region: DRYAD entry doi:10.5061/dryad.985s5.
+The Blue Mountains presence-absence data for the species \emph{Leptospermum trinervium} were obtained from \url{http://www.bionet.nsw.gov.au/}. Environmental data for Blue Mountains region: DRYAD entry doi:10.5061/dryad.985s5.
 }
 \usage{
 leptrine
@@ -44,7 +46,7 @@ X_pred <- dat1[, -c(3:10)]  # Design matrix using only two (of nine) predictors.
 family <- "binomial"   # The selected "exponential" family for the GLM/GEE.
 is.gee <- FALSE        # Is the model a GEE?
 nb <- FALSE            # Is this a negative binomial model?
-tols_score <- 0.0001   # A set tolerence (stopping condition) in forward pass for MARGE.
+tols_score <- 0.0001   # A set tolerance (stopping condition) in forward pass for MARGE.
 M <- 21                # A set threshold for the maximum number of basis functions to be used.
 print.disp <- FALSE    # Print ALL the output?
 pen <- 2               # Penalty to be used in GCV.
@@ -56,7 +58,7 @@ mod <- marge(X_pred, Y, N, n, id, family, corstr, pen, tols_score,
              M, minspan, print.disp, nb, is.gee)
 }
 \references{
-Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
+Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, 245--253.
 }
 \author{
 Jakub Stoklosa and David I. Warton

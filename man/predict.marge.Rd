@@ -4,8 +4,7 @@
 \alias{predict.marge}
 \title{predict.marge}
 \usage{
-\method{predict}{marge}(object, newdata, X_pred, is.marge = F,
-  pen = "2", ...)
+\method{predict}{marge}(object, newdata, X_pred, is.marge = F, pen = "2", ...)
 }
 \arguments{
 \item{object}{: the final selected MARS/MARGE model. Only works for \code{mars_ls} and \code{marge} model objects.}
@@ -51,7 +50,7 @@ X_predt <- dat1_t[, -c(4:11)]
 family <- "binomial"    # The selected "exponential" family for the GLM/GEE.
 is.gee <- FALSE         # Is the model a GEE?
 nb <- FALSE             # Is this a negative binomial model?
-tols_score <- 0.0001    # A set tolerence (stopping condition) in forward pass for MARGE.
+tols_score <- 0.0001    # A set tolerance (stopping condition) in forward pass for MARGE.
 M <- 21                 # A set threshold for the maximum number of basis functions to be used.
 print.disp <- FALSE     # Print ALL the output?
 pen <- 2                # Penalty to be used in GCV.
@@ -69,7 +68,7 @@ pred_marge_2_y <- predict(model_marge, X_predt, X_pred, TRUE, "2")
 pred_marge_log_y <- predict(model_marge, X_predt, X_pred, TRUE, "logN")
 }
 \references{
-Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
+Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, 245--253.
 }
 \author{
 Jakub Stoklosa and David I. Warton.

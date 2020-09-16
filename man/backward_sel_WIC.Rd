@@ -4,8 +4,18 @@
 \alias{backward_sel_WIC}
 \title{backward_sel_WIC}
 \usage{
-backward_sel_WIC(Y, N, n, B_new, id, family = "gaussian",
-  corstr = "independence", nb = F, is.gee = F, ...)
+backward_sel_WIC(
+  Y,
+  N,
+  n,
+  B_new,
+  id,
+  family = "gaussian",
+  corstr = "independence",
+  nb = F,
+  is.gee = F,
+  ...
+)
 }
 \arguments{
 \item{Y}{: the response variable.}
@@ -29,15 +39,15 @@ backward_sel_WIC(Y, N, n, B_new, id, family = "gaussian",
 \item{...}{: further arguments passed to or from other methods.}
 }
 \value{
-\code{backward_sel_WIC} returns the Wald statistic from the fitted model (the penalty is apllied later on).
+\code{backward_sel_WIC} returns the Wald statistic from the fitted model (the penalty is applied later on).
 }
 \description{
-Backward selection funciton for MARGE - uses the Wald information criterion (WIC).
+Backward selection function for MARGE - uses the Wald information criterion (WIC).
 }
 \references{
-Stoklosa, J. Gibb, H. Warton, D.I. Fast forward selection for Generalized Estimating Equations With a Large Number of Predictor Variables. \emph{Biometrics}, 70, 110-120.
+Stoklosa, J. Gibb, H. Warton, D.I. Fast forward selection for Generalized Estimating Equations With a Large Number of Predictor Variables. \emph{Biometrics}, \strong{70}, 110--120.
 
-Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
+Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, 245--253.
 }
 \seealso{
 \code{\link{backward_sel}}

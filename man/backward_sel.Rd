@@ -21,16 +21,16 @@ backward_sel(Y, B_new, pen = 2, GCV.null = 0.001, ...)
 \code{backward_sel} returns the GCV from the fitted model.
 }
 \description{
-Backward selection funciton for MARS that uses the generalized cross validation criterion (GCV).
+Backward selection function for MARS that uses the generalized cross validation criterion (GCV).
 }
 \references{
-Friedman, J. (1991). Multivariate adaptive regression splines. \emph{The Annals of Statistics}, 19, 1-67.
+Friedman, J. (1991). Multivariate adaptive regression splines. \emph{The Annals of Statistics}, \strong{19}, 1--67.
 
 Milborrow, S. (2017a). Notes on the \code{earth} package. Package vignette. Available at: \url{http://127.0.0.1:31355/library/earth/doc/earth-notes.pdf}.
 
 Milborrow, S. (2017b). \code{earth}: Multivariate Adaptive Regression Splines. R package version 4.4.7. Available at \url{http://CRAN.R-project.org/package = earth.}
 
-Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
+Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, 245--253.
 }
 \seealso{
 \code{\link{backward_sel_WIC}}

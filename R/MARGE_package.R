@@ -12,7 +12,6 @@ library(mvabund)
 library(stringr)
 library(gsubfn)
 library(gamlss)
-library(BayesTree)
 
 #' @title Blue Mountains presence-absence data for the plant species \emph{Leptospermum trinervium}.
 #' @description These data are binary (presence-absence) data collected on plant species for 8,678 sites located in the Blue Mountains region. It also contains environmental predictor variables collected at each site. There are are 1,751 absences and 6,927 presences. The `leptrine` data consists of training and test sets, such that \eqn{N} = 4,339. The nine environmental predictor variables given here have all been standardized.
@@ -29,10 +28,10 @@ library(BayesTree)
 #' \item{\code{TMP_MN}}{Recorded minimum temperature for each site.}
 #' \item{\code{Y}}{Presence-absence for the plant species \emph{Leptospermum trinervium} for each site.}
 #' }
-#' @source The Blue Mountains presence-absence data for the speices \emph{Leptospermum trinervium} were obtained from \url{http://www.bionet.nsw.gov.au/}. Environmental data for Blue Mountains region: DRYAD entry doi:10.5061/dryad.985s5.
+#' @source The Blue Mountains presence-absence data for the species \emph{Leptospermum trinervium} were obtained from \url{http://www.bionet.nsw.gov.au/}. Environmental data for Blue Mountains region: DRYAD entry doi:10.5061/dryad.985s5.
 #' @author Jakub Stoklosa and David I. Warton
 #' @importFrom stats binomial poisson
-#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
+#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, 245--253.
 #' @examples # Load the data.
 #'
 #' data(leptrine)
@@ -50,7 +49,7 @@ library(BayesTree)
 #' family <- "binomial"   # The selected "exponential" family for the GLM/GEE.
 #' is.gee <- FALSE        # Is the model a GEE?
 #' nb <- FALSE            # Is this a negative binomial model?
-#' tols_score <- 0.0001   # A set tolerence (stopping condition) in forward pass for MARGE.
+#' tols_score <- 0.0001   # A set tolerance (stopping condition) in forward pass for MARGE.
 #' M <- 21                # A set threshold for the maximum number of basis functions to be used.
 #' print.disp <- FALSE    # Print ALL the output?
 #' pen <- 2               # Penalty to be used in GCV.
@@ -71,15 +70,15 @@ library(BayesTree)
 #' @param p : the pth degree of the polynomial considered.
 #' @return \code{tp1} returns a vector of values that have been transformed using a truncated p-th power function (positive part) for a specified knot value.
 #' @author Jakub Stoklosa and David I. Warton
-#' @references Friedman, J. (1991). Multivariate adaptive regression splines. \emph{The Annals of Statistics}, 19, 1-67.
-#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, in review.
+#' @references Friedman, J. (1991). Multivariate adaptive regression splines. \emph{The Annals of Statistics}, \strong{19}, 1--67.
+#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, 245--253.
 #' @importFrom stats binomial poisson
 #' @export
 #' @seealso \code{\link{tp2}}
 #' @examples data(leptrine)
 #'
 #' dat1 <- leptrine[[1]]
-#' X_pred <- dat1[, 1]   # One predicotr used.
+#' X_pred <- dat1[, 1]   # One predictor used.
 #'
 #' tp1(X_pred, 1)      # Knot value set at x = 1.
 tp1 <- function(x, t, p = 1) ((x - t)^p)*(x > t)
@@ -93,22 +92,22 @@ tp1 <- function(x, t, p = 1) ((x - t)^p)*(x > t)
 #' @param p : the pth degree of the polynomial considered.
 #' @return \code{tp2} returns a vector of values that have been transformed using a truncated p-th power function (negative part) for a specified knot value.
 #' @author Jakub Stoklosa and David I. Warton
-#' @references Friedman, J. (1991). Multivariate adaptive regression splines. \emph{The Annals of Statistics}, 19, 1-67.
-#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
+#' @references Friedman, J. (1991). Multivariate adaptive regression splines. \emph{The Annals of Statistics}, \strong{19}, 1--67.
+#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, 245--253.
 #' @importFrom stats binomial poisson
 #' @export
 #' @seealso \code{\link{tp1}}
 #' @examples data(leptrine)
 #'
 #' dat1 <- leptrine[[1]]
-#' X_pred <- dat1[, 1]    # One predicotr used.
+#' X_pred <- dat1[, 1]    # One predictor used.
 #'
 #' tp2(X_pred, 1)       # Knot value set at x = 1.
 tp2 <- function(x, t, p = 1) ((t - x)^p)*(x < t)
 
 #' stat_out
 #'
-#' Fits a linear regresion model and calculates RSS/GCV measures (used for MARS linear models).
+#' Fits a linear regression model and calculates RSS/GCV measures (used for MARS linear models).
 #' @name stat_out
 #' @param Y : the response variable.
 #' @param B1 : the model matrix of predictor variables.
@@ -119,10 +118,10 @@ tp2 <- function(x, t, p = 1) ((t - x)^p)*(x < t)
 #' @details See the \code{earth} package for more details on the output measures calculated here.
 #' @return \code{stat_out} returns a list of values, consisting of: RSS, RSSq1, GCV1 and GCVq1 values for the fitted model.
 #' @author Jakub Stoklosa and David I. Warton
-#' @references Friedman, J. (1991). Multivariate adaptive regression splines. \emph{The Annals of Statistics}, 19, 1-67.
+#' @references Friedman, J. (1991). Multivariate adaptive regression splines. \emph{The Annals of Statistics}, \strong{19}, 1--67.
 #' @references Milborrow, S. (2017a). Notes on the \code{earth} package. Package vignette. Available at: \url{http://127.0.0.1:31355/library/earth/doc/earth-notes.pdf}.
 #' @references Milborrow, S. (2017b). \code{earth}: Multivariate Adaptive Regression Splines. R package version 4.4.7. Available at \url{http://CRAN.R-project.org/package = earth.}
-#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
+#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, 245--253.
 #' @importFrom stats binomial poisson
 #' @export
 #' @seealso \code{\link{stat_out_score_null}} and \code{\link{stat_out_score_glm_null}}
@@ -161,8 +160,8 @@ stat_out <- function(Y, B1, TSS, GCV.null, pen = 2, ...) {
 #' @details The null model used here is by definition the current parent model. We compare the alternative model (a new basis function combined with the parent) with the null model. In the code used, only the null model is fit (the dispersion parameter is also estimated for GEE) and then the score statistic is obtained.
 #' @return \code{stat_out_score_null} returns a list of values (mainly products of matrices) that make up the final score statistic calculation (required for another function).
 #' @author Jakub Stoklosa and David I. Warton.
-#' @references Stoklosa, J., Gibb, H. and Warton, D.I. (2014). Fast forward selection for generalized estimating equations with a large number of predictor variables. \emph{Biometrics}, 70, 110-120.
-#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
+#' @references Stoklosa, J., Gibb, H. and Warton, D.I. (2014). Fast forward selection for generalized estimating equations with a large number of predictor variables. \emph{Biometrics}, \strong{70}, 110--120.
+#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, 245--253.
 #' @importFrom stats binomial poisson
 #' @export
 #' @seealso \code{\link{stat_out}} and \code{\link{stat_out_score_glm_null}}
@@ -263,8 +262,8 @@ stat_out_score_null <- function(Y, N, n, id, family = "gaussian", corstr = "inde
 #' @param ... : further arguments passed to or from other methods.
 #' @return \code{stat_out_score_glm_null} returns a list of values (mainly products of matrices) that make up the final score statistic calculation (required for another function).
 #' @author Jakub Stoklosa and David I. Warton.
-#' @references Stoklosa, J., Gibb, H. and Warton, D.I. (2014). Fast forward selection for generalized estimating equations with a large number of predictor variables. \emph{Biometrics}, 70, 110-120.
-#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
+#' @references Stoklosa, J., Gibb, H. and Warton, D.I. (2014). Fast forward selection for generalized estimating equations with a large number of predictor variables. \emph{Biometrics}, \strong{70}, 110--120.
+#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, 245--253.
 #' @importFrom stats binomial poisson
 #' @export
 #' @seealso \code{\link{stat_out}} and \code{\link{stat_out_score_glm_null}}
@@ -311,16 +310,16 @@ stat_out_score_glm_null <- function(Y, family = "gaussian", B_null, nb = F, ...)
 #' @param VS.est_list : a product of matrices.
 #' @param A_list : a product of matrices.
 #' @param B1_list : a product of matrices.
-#' @param mu.est : esitmates of the fitted mean under the null model.
-#' @param V.est : esitmates of the fitted variance under the null model.
+#' @param mu.est : estimates of the fitted mean under the null model.
+#' @param V.est : estimates of the fitted variance under the null model.
 #' @param B1 : model matrix under the null model.
 #' @param XA : model matrix under the alternative model.
 #' @param nb : a logical argument, is the model a negative binomial model? The default is \code{FALSE}.
 #' @param ... : further arguments passed to or from other methods.
 #' @return \code{score_fun_glm} returns a calculated score statistic for the null and alternative model when fitting a GLM.
 #' @author Jakub Stoklosa and David I. Warton.
-#' @references Stoklosa, J., Gibb, H. and Warton, D.I. (2014). Fast forward selection for generalized estimating equations with a large number of predictor variables. \emph{Biometrics}, 70, 110-120.
-#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
+#' @references Stoklosa, J., Gibb, H. and Warton, D.I. (2014). Fast forward selection for generalized estimating equations with a large number of predictor variables. \emph{Biometrics}, \strong{70}, 110--120.
+#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, 245--253.
 #' @importFrom stats binomial poisson
 #' @export
 #' @seealso \code{\link{score_fun_gee}}
@@ -369,16 +368,16 @@ score_fun_glm <- function(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B1,
 #' @param Sigma2_list : a product of matrices.
 #' @param J11.inv : a product of matrices.
 #' @param JSigma11 : a product of matrices.
-#' @param mu.est : esitmates of the fitted mean under the null model.
-#' @param V.est : esitmates of the fitted variance under the null model.
+#' @param mu.est : estimates of the fitted mean under the null model.
+#' @param V.est : estimates of the fitted variance under the null model.
 #' @param B1 : model matrix under the null model.
 #' @param XA : model matrix under the alternative model.
 #' @param nb : a logical argument, is the model a negative binomial model? The default is \code{FALSE}.
 #' @param ... : further arguments passed to or from other methods.
 #' @return \code{score_fun_gee} returns a calculated score statistic for the null and alternative model when fitting a GEE.
 #' @author Jakub Stoklosa and David I. Warton
-#' @references Stoklosa, J., Gibb, H. and Warton, D.I. (2014). Fast forward selection for generalized estimating equations with a large number of predictor variables. \emph{Biometrics}, 70, 110-120.
-#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
+#' @references Stoklosa, J., Gibb, H. and Warton, D.I. (2014). Fast forward selection for generalized estimating equations with a large number of predictor variables. \emph{Biometrics}, \strong{70}, 110--120.
+#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, 245--253.
 #' @importFrom stats binomial poisson
 #' @export
 #' @seealso \code{\link{score_fun_glm}}
@@ -436,17 +435,17 @@ score_fun_gee <- function(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma
 #' @param X : the model matrix.
 #' @param N : the number of clusters.
 #' @param n_vec : a vector consisting of the number of cluster sizes.
-#' @param mu.est : esitmates of the fitted mean function under the null model.
-#' @param V.est : esitmates of the fitted variance function under the null model.
+#' @param mu.est : estimates of the fitted mean function under the null model.
+#' @param V.est : estimates of the fitted variance function under the null model.
 #' @param nb : a logical argument, is the model a negative binomial model? The default is \code{FALSE}.
-#' @param omega : a regulariztion constant that is applied if your data is of high dimension (n>N). The default is \code{omega = 1}.
+#' @param omega : a regularization constant that is applied if your data is of high dimension (n>N). The default is \code{omega = 1}.
 #' @param ... : further arguments passed to or from other methods.
 #' @return \code{sand_fun} returns the sandwich (or Pan's) standard error using estimates from the fitted GEE under an independent working correlation.
 #' @details This function was used for the Arthropod example.
 #' @author Jakub Stoklosa and David I. Warton.
-#' @references Liang, K. Y. and Zeger, S. L. (1986). Longitudinal aata analysis using generalized linear models. \emph{Biometrika}, 73, 13-22.
-#' @references Stoklosa, J., Gibb, H. and Warton, D.I. (2014). Fast forward selection for generalized estimating equations with a large number of predictor variables. \emph{Biometrics}, 70, 110-120.
-#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
+#' @references Liang, K. Y. and Zeger, S. L. (1986). Longitudinal aata analysis using generalized linear models. \emph{Biometrika}, 73, 13--22.
+#' @references Stoklosa, J., Gibb, H. and Warton, D.I. (2014). Fast forward selection for generalized estimating equations with a large number of predictor variables. \emph{Biometrics}, \strong{70}, 110--120.
+#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, 245--253.
 #' @importFrom stats binomial poisson
 #' @export
 sand_fun <- function(Y, X, N, n_vec, mu.est, V.est, nb = T, omega = 1, ...) {
@@ -480,7 +479,7 @@ sand_fun <- function(Y, X, N, n_vec, mu.est, V.est, nb = T, omega = 1, ...) {
 
 #' backward_sel
 #'
-#' Backward selection funciton for MARS that uses the generalized cross validation criterion (GCV).
+#' Backward selection function for MARS that uses the generalized cross validation criterion (GCV).
 #' @name backward_sel
 #' @param Y : the response variable.
 #' @param B_new : the model matrix.
@@ -489,10 +488,10 @@ sand_fun <- function(Y, X, N, n_vec, mu.est, V.est, nb = T, omega = 1, ...) {
 #' @param ... : further arguments passed to or from other methods.
 #' @return \code{backward_sel} returns the GCV from the fitted model.
 #' @author Jakub Stoklosa and David I. Warton
-#' @references Friedman, J. (1991). Multivariate adaptive regression splines. \emph{The Annals of Statistics}, 19, 1-67.
+#' @references Friedman, J. (1991). Multivariate adaptive regression splines. \emph{The Annals of Statistics}, \strong{19}, 1--67.
 #' @references Milborrow, S. (2017a). Notes on the \code{earth} package. Package vignette. Available at: \url{http://127.0.0.1:31355/library/earth/doc/earth-notes.pdf}.
 #' @references Milborrow, S. (2017b). \code{earth}: Multivariate Adaptive Regression Splines. R package version 4.4.7. Available at \url{http://CRAN.R-project.org/package = earth.}
-#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
+#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, 245--253.
 #' @importFrom stats binomial poisson
 #' @export
 #' @seealso \code{\link{backward_sel_WIC}}
@@ -516,7 +515,7 @@ backward_sel <- function(Y, B_new, pen = 2, GCV.null = 0.001, ...) {
 
 #' backward_sel_WIC
 #'
-#' Backward selection funciton for MARGE - uses the Wald information criterion (WIC).
+#' Backward selection function for MARGE - uses the Wald information criterion (WIC).
 #' @name backward_sel_WIC
 #' @param Y : the response variable.
 #' @param N : the number of clusters.
@@ -528,10 +527,10 @@ backward_sel <- function(Y, B_new, pen = 2, GCV.null = 0.001, ...) {
 #' @param nb : a logical argument, is the model a negative binomial model? The default is \code{FALSE}.
 #' @param is.gee : is this a GEE model? The default is \code{FALSE}.
 #' @param ... : further arguments passed to or from other methods.
-#' @return \code{backward_sel_WIC} returns the Wald statistic from the fitted model (the penalty is apllied later on).
+#' @return \code{backward_sel_WIC} returns the Wald statistic from the fitted model (the penalty is applied later on).
 #' @author Jakub Stoklosa and David I. Warton
-#' @references Stoklosa, J. Gibb, H. Warton, D.I. Fast forward selection for Generalized Estimating Equations With a Large Number of Predictor Variables. \emph{Biometrics}, 70, 110-120.
-#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
+#' @references Stoklosa, J. Gibb, H. Warton, D.I. Fast forward selection for Generalized Estimating Equations With a Large Number of Predictor Variables. \emph{Biometrics}, \strong{70}, 110--120.
+#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, 245--253.
 #' @importFrom stats binomial poisson
 #' @export
 #' @seealso \code{\link{backward_sel}}
@@ -577,10 +576,10 @@ backward_sel_WIC <- function(Y, N, n, B_new, id, family = "gaussian", corstr = "
 #' @param q : the number of predictors used.
 #' @param alpha : see Friedman (1991) equation (45). The default is 0.05.
 #' @details Note that this equation comes from Friedman (1991) equation (45).
-#' @return \code{max_span} returns a vector of trauncated predictor variable values.
+#' @return \code{max_span} returns a vector of truncated predictor variable values.
 #' @author Jakub Stoklosa and David I. Warton.
-#' @references Friedman, J. (1991). Multivariate adaptive regression splines. \emph{The Annals of Statistics}, 19, 1-67.
-#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
+#' @references Friedman, J. (1991). Multivariate adaptive regression splines. \emph{The Annals of Statistics}, \strong{19}, 1--67.
+#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, 245--253.
 #' @importFrom stats binomial poisson
 #' @export
 max_span <- function(X_pred, q, alpha = 0.05) {
@@ -604,10 +603,10 @@ max_span <- function(X_pred, q, alpha = 0.05) {
 #' @param minspan : the set minimum span value. The default is \code{minspan = NULL}.
 #' @param alpha : see Friedman (1991) equation (43). The default is 0.05.
 #' @details  This function selects a minimum span between the knots to mitigate runs of correlated noise in the input data and hence avoiding estimation issues, this equation comes from Friedman (1991) equation 43.
-#' @return \code{min_span} returns a vector of trauncated predictor variable values.
+#' @return \code{min_span} returns a vector of truncated predictor variable values.
 #' @author Jakub Stoklosa and David I. Warton.
-#' @references Friedman, J. (1991). Multivariate adaptive regression splines. \emph{The Annals of Statistics}, 19, 1-67.
-#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
+#' @references Friedman, J. (1991). Multivariate adaptive regression splines. \emph{The Annals of Statistics}, \strong{19}, 1--67.
+#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, 245--253.
 #' @importFrom stats binomial poisson
 #' @export
 min_span <- function(X_red, q, minspan = NULL, alpha = 0.05) {
@@ -656,10 +655,10 @@ min_span <- function(X_red, q, minspan = NULL, alpha = 0.05) {
 #' @return \code{y_pred} : the fitted values from the final selected model.
 #' @return \code{final_mod} : the final selected model matrix.
 #' @author Jakub Stoklosa and David I. Warton.
-#' @references Friedman, J. (1991). Multivariate adaptive regression splines. \emph{The Annals of Statistics}, 19, 1-67.
+#' @references Friedman, J. (1991). Multivariate adaptive regression splines. \emph{The Annals of Statistics}, \strong{19}, 1--67.
 #' @references Milborrow, S. (2017a). Notes on the \code{earth} package. Package vignette. Available at: \url{http://127.0.0.1:31355/library/earth/doc/earth-notes.pdf}.
 #' @references Milborrow, S. (2017b). \code{earth}: Multivariate Adaptive Regression Splines. R package version 4.4.7. Available at \url{http://CRAN.R-project.org/package = earth.}
-#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
+#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, 245--253.
 #' @importFrom stats binomial poisson
 #' @export
 #' @seealso \code{\link{marge}}
@@ -676,7 +675,7 @@ min_span <- function(X_red, q, minspan = NULL, alpha = 0.05) {
 #'
 #' family <- "binomial"   # The selected "exponential" family.
 #' nb <- FALSE            # Is this a negative binomial model?
-#' tols <- 0.0001         # A set tolerence (stopping condition) in the forward pass for MARS.
+#' tols <- 0.0001         # A set tolerance (stopping condition) in the forward pass for MARS.
 #' M <- 21                # A set threshold for the maximum number of basis functions to be used.
 #' print.disp <- FALSE    # Print ALL the output?
 #' pen <- 2               # Penalty to be used in GCV.
@@ -857,7 +856,7 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
 
       if (sum(!(apply(RSSq_knot_both_int_mat, 1, is.na))) == 0 & sum(!(apply(RSSq_knot_one_int_mat, 1, is.na))) == 0) {  # Look at both truncation types (check for NA). This says interactions were FUBR because of an NA present in both.
         int <- F
-        if (sum(!is.na(RSSq_knot_both_add_mat)) > 0 & sum(!is.na(RSSq_knot_one_add_mat)) > 0) {   # This says that an additive model for both one and two trunc types were OK.
+        if (sum(!is.na(RSSq_knot_both_add_mat)) > 0 & sum(!is.na(RSSq_knot_one_add_mat)) > 0) {   # This says that an additive model for both one and two trunc. types were OK.
           if (utils::tail(max(RSSq_knot_both_add_mat, na.rm = T), n = 1) > utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1)) {
             trunc.type <- 2
             RSSq_knot <- RSSq_knot_both_add_mat
@@ -872,7 +871,7 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
         if (sum(!is.na(RSSq_knot_both_add_mat)) == 0 & sum(!is.na(RSSq_knot_one_add_mat)) > 0) {  # This says additive for one trunc type was FUBR.
           trunc.type <- 1           # For example, additive and both gave FUBR resutls, so use only the one (+) truncated function in the set.
           RSSq_knot <- RSSq_knot_one_add_mat
-          min_knot1 <- utils::tail(which.max(round(RSSq_knot, 6)), n = 1)  # We look for max because recall: GCVq1 <- 1-GCV1/GCV.null and RSSq1 <- 1-RSS1/TSS. Want these to be max. Tail used in case of ties.
+          min_knot1 <- utils::tail(which.max(round(RSSq_knot, 6)), n = 1)  # We look for max because recall: GCVq1 <- 1 - GCV1/GCV.null and RSSq1 <- 1-RSS1/TSS. Want these to be max. Tail is used in case of ties.
         }
         if (sum(!is.na(RSSq_knot_both_add_mat)) > 0 & sum(!is.na(RSSq_knot_one_add_mat)) == 0) { # This says additive for both trunc type was OK.
           trunc.type <- 2
@@ -885,7 +884,7 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
         }
       }
 
-      if (sum(!(apply(RSSq_knot_both_int_mat, 1, is.na))) == 0 & sum(!(apply(RSSq_knot_one_int_mat, 1, is.na))) > 0) {  # This says interactions when using both trunc type were FUBR.
+      if (sum(!(apply(RSSq_knot_both_int_mat, 1, is.na))) == 0 & sum(!(apply(RSSq_knot_one_int_mat, 1, is.na))) > 0) {  # This says interactions when using both trunc. type were FUBR.
         if (sum(!is.na(RSSq_knot_both_add_mat)) == 0) {
           trunc.type <- 1
           if (sum(!is.na(RSSq_knot_one_add_mat)) == 0) {
@@ -894,7 +893,7 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
             min_knot1 <- utils::tail(which(utils::tail(max(round(RSSq_knot, 6), na.rm = T), n = 1) == round(RSSq_knot, 6), arr.ind = T), n = 1)[1]
             best.var <- utils::tail(which(utils::tail(max(round(RSSq_knot, 6), na.rm = T), n = 1) == round(RSSq_knot, 6), arr.ind = T), n = 1)[2]
           }
-          if (utils::tail(max(RSSq_knot_one_int_mat, na.rm = T), n = 1) > utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1)) { # This says interactions using one trunc type were superior over the additive model.
+          if (utils::tail(max(RSSq_knot_one_int_mat, na.rm = T), n = 1) > utils::tail(max(RSSq_knot_one_add_mat, na.rm = T), n = 1)) { # This says interactions using one trunc. type were superior over the additive model.
             int <- T
             RSSq_knot <- RSSq_knot_one_int_mat
             min_knot1 <- utils::tail(which(utils::tail(max(round(RSSq_knot, 6), na.rm = T), n = 1) == round(RSSq_knot, 6), arr.ind = T), n = 1)[1]
@@ -991,7 +990,7 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
         }
       }
 
-      if (sum(!(apply(RSSq_knot_both_int_mat, 1, is.na))) > 0 & sum(!(apply(RSSq_knot_one_int_mat, 1, is.na))) > 0) { # This says interactions for one trunc. and both type was OK.
+      if (sum(!(apply(RSSq_knot_both_int_mat, 1, is.na))) > 0 & sum(!(apply(RSSq_knot_one_int_mat, 1, is.na))) > 0) { # This says interactions for one trunc. and both types were OK.
         if (utils::tail(max(RSSq_knot_both_int_mat, na.rm = T), n = 1) > utils::tail(max(RSSq_knot_one_int_mat, na.rm = T), n = 1)) {
           if (sum(!is.na(RSSq_knot_both_add_mat)) > 0) {
             if (utils::tail(max(RSSq_knot_both_add_mat, na.rm = T), n = 1) >= utils::tail(max(RSSq_knot_both_int_mat, na.rm = T), n = 1)) {
@@ -1412,9 +1411,9 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
 #' @return \code{y_pred} : the fitted values from the final selected model (with both penalties).
 #' @return \code{final_mod} : the final selected (with both penalties) model matrix.
 #' @author Jakub Stoklosa and David I. Warton.
-#' @references Friedman, J. (1991). Multivariate adaptive regression splines. \emph{The Annals of Statistics}, 19, 1-67.
-#' @references Stoklosa, J., Gibb, H. and Warton, D.I. (2014). Fast forward selection for generalized estimating equations with a large number of predictor variables. \emph{Biometrics}, 70, 110-120.
-#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
+#' @references Friedman, J. (1991). Multivariate adaptive regression splines. \emph{The Annals of Statistics}, \strong{19}, 1--67.
+#' @references Stoklosa, J., Gibb, H. and Warton, D.I. (2014). Fast forward selection for generalized estimating equations with a large number of predictor variables. \emph{Biometrics}, \strong{70}, 110--120.
+#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, 245--253.
 #' @export
 #' @seealso \code{\link{mars_ls}} and \code{\link{backward_sel_WIC}}
 #' @importFrom gamlss gamlss
@@ -1439,7 +1438,7 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
 #' family <- "binomial"   # The selected "exponential" family for the GLM/GEE.
 #' is.gee <- FALSE        # Is the model a GEE?
 #' nb <- FALSE            # Is this a negative binomial model?
-#' tols_score <- 0.0001   # A set tolerence (stopping condition) in forward pass for MARGE.
+#' tols_score <- 0.0001   # A set tolerance (stopping condition) in forward pass for MARGE.
 #' M <- 21                # A set threshold for the maximum number of basis functions to be used.
 #' print.disp <- FALSE    # Print ALL the output?
 #' pen <- 2               # Penalty to be used in GCV.
@@ -2292,7 +2291,7 @@ getNumberPart <- function(x) {
 #' @return \code{eta.p} : the fitted linear predictor using the new (test) data.
 #' @return \code{basis_new} : the model matrix for the new (test) data.
 #' @author Jakub Stoklosa and David I. Warton.
-#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
+#' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, 245--253.
 #' @export
 #' @importFrom stringr str_extract_all
 #' @importFrom stats binomial poisson
@@ -2316,7 +2315,7 @@ getNumberPart <- function(x) {
 #' family <- "binomial"    # The selected "exponential" family for the GLM/GEE.
 #' is.gee <- FALSE         # Is the model a GEE?
 #' nb <- FALSE             # Is this a negative binomial model?
-#' tols_score <- 0.0001    # A set tolerence (stopping condition) in forward pass for MARGE.
+#' tols_score <- 0.0001    # A set tolerance (stopping condition) in forward pass for MARGE.
 #' M <- 21                 # A set threshold for the maximum number of basis functions to be used.
 #' print.disp <- FALSE     # Print ALL the output?
 #' pen <- 2                # Penalty to be used in GCV.

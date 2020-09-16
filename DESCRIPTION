@@ -6,8 +6,8 @@ Date: 2017-06-01
 Author: Jakub Stoklosa and David Warton
 Maintainer: Jakub Stoklosa <j.stoklosa@unsw.edu.au>
 Description: Fits multivariate adaptive regression splines using generalized estimating equations.
-Depends: R (>= 3.4.0), mvabund, MASS, gamlss, geepack, gsubfn, stringr, BayesTree
+Depends: R (>= 3.4.0), mvabund, MASS, gamlss, geepack, gsubfn, stringr
 Imports: stats, graphics
 License: GPL-2
 LazyData: TRUE
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.1

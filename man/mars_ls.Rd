@@ -4,8 +4,18 @@
 \alias{mars_ls}
 \title{mars_ls}
 \usage{
-mars_ls(X_pred, Y, pen = 2, tols = 1e-05, M = 21, minspan = NULL,
-  print.disp = F, family = "gaussian", nb = F, ...)
+mars_ls(
+  X_pred,
+  Y,
+  pen = 2,
+  tols = 1e-05,
+  M = 21,
+  minspan = NULL,
+  print.disp = F,
+  family = "gaussian",
+  nb = F,
+  ...
+)
 }
 \arguments{
 \item{X_pred}{: a matrix of the predictor variables (note that this matrix excludes the intercept term).}
@@ -61,7 +71,7 @@ X_pred <- dat1[, -c(3:10)]  # Design matrix using only two (of nine) predictors.
 
 family <- "binomial"   # The selected "exponential" family.
 nb <- FALSE            # Is this a negative binomial model?
-tols <- 0.0001         # A set tolerence (stopping condition) in the forward pass for MARS.
+tols <- 0.0001         # A set tolerance (stopping condition) in the forward pass for MARS.
 M <- 21                # A set threshold for the maximum number of basis functions to be used.
 print.disp <- FALSE    # Print ALL the output?
 pen <- 2               # Penalty to be used in GCV.
@@ -72,13 +82,13 @@ minspan <- NULL        # A set minimum span value.
 mod <- mars_ls(X_pred, Y, pen, tols, M, minspan, print.disp, family, nb)
 }
 \references{
-Friedman, J. (1991). Multivariate adaptive regression splines. \emph{The Annals of Statistics}, 19, 1-67.
+Friedman, J. (1991). Multivariate adaptive regression splines. \emph{The Annals of Statistics}, \strong{19}, 1--67.
 
 Milborrow, S. (2017a). Notes on the \code{earth} package. Package vignette. Available at: \url{http://127.0.0.1:31355/library/earth/doc/earth-notes.pdf}.
 
 Milborrow, S. (2017b). \code{earth}: Multivariate Adaptive Regression Splines. R package version 4.4.7. Available at \url{http://CRAN.R-project.org/package = earth.}
 
-Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
+Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, 245--253.
 }
 \seealso{
 \code{\link{marge}}

@@ -11,17 +11,15 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-This tutorial documents fitting multivariate adaptive regression splines using generalized estimating equations (MARGE) via the `marge` R-package. We also fit some addtional models and compare them with MARGE using a predictive squared error (PSE) on test data. Computationanl times for each model fit are also reported.
+This tutorial documents fitting multivariate adaptive regression splines using generalized estimating equations (MARGE) via the `marge` R-package. We also fit some additional models and compare them with MARGE using a predictive squared error (PSE) on test data. Computational times for each model fit are also reported.
 
 For more specific details on the MARGE algorithm see:
 
-Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. *Journal of Computational and Graphical Statistics*, **27**, pp. 245--253.
+Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. *Journal of Computational and Graphical Statistics*, **27**, pp. 245--253. Also, see ```?marge``` for further details on the fitting function, input arguments and output.
 
-Also, see ```?marge``` for futher details on the fitting function, input arguments and output.
+We use the `leptrine` data set which is provided within the `marge` R-package and analyzed in Stoklosa and Warton (2018). These data are binary (presence-absence) data collected on plant species for 8,678 sites located in the Blue Mountains region. These data contain nine environmental predictor variables collected at each site. Our objective is to predict the presence of the species *Leptospermum trinervium* using the environmental predictor variables. There are are 1,751 absences and 6,927 presences. The `leptrine` data consists of training and test sets, such that $N_{train}$ = 4,339. The nine environmental predictor variables have been standardized. See ```?leptrine``` for further details.
 
-We use the `leptrine` data set which is provided within the `marge` R-package and annalysed in Stoklosa and Warton (2016). These data are binary (presence-absence) data collected on plant species for 8,678 sites located in the Blue Mountains region. These data contain nine environmental predictor variables collected at each site. Our objective is to predict the presence of the species *Leptospermum trinervium* using the environmental predictor variables. There are are 1,751 absences and 6,927 presences. The `leptrine` data consists of training and test sets, such that $N_{train}$ = 4,339. The nine environmental predictor variables have been standardized. See ```?leptrine``` for futher details.
-
-Below we fit a MARS model, a generlaized additive model (GAM), a Bayesian additive regression tree (BART) model and MARGE (with two different penalties, $\lambda = 2$ and $\lambda = \log(N)$). We record the computational times (in seconds) and calculate the predictive squared errors (PSE) on test data.
+Below we fit a MARS model, a generalized additive model (GAM), a Bayesian additive regression tree (BART) model and MARGE (with two different penalties, $\lambda = 2$ and $\lambda = \log(N)$). We record the computational times (in seconds) and calculate the predictive squared errors (PSE) on test data.
 
 #### Load the `marge`, `mgcv` and `BayesTree` R-packages.
 
@@ -59,8 +57,8 @@ corstr <- "independence" # The selected "working correlation" structure (used fo
 is.gee <- FALSE       # Is the model a GEE?
 nb <- FALSE           # Is this a negative binomial model?
 
-tols <- 0.0001        # A set tolerence (stopping condition) in the forward pass for MARS.
-tols_score <- 0.0001  # A set tolerence (stopping condition) in forward pass for MARGE.
+tols <- 0.0001        # A set tolerance (stopping condition) in the forward pass for MARS.
+tols_score <- 0.0001  # A set tolerance (stopping condition) in forward pass for MARGE.
 M <- 21               # A set threshold for the maximum no. of basis functions to be used.
 pen <- 2              # Penalty to be used in GCV (required for MARS).
 minspan <- NULL       # A set minimum span value.
@@ -103,8 +101,6 @@ model_own <- mars_ls(X_pred, Y, pen, tols, M, minspan,
 end <- Sys.time()
 t3 <- difftime(end, start, units = "secs")
 ```
-
-\newpage
 
 ```{r fits4, message=FALSE, warning=FALSE, results='hide'}
 # MARGE.

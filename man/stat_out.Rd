@@ -23,19 +23,19 @@ stat_out(Y, B1, TSS, GCV.null, pen = 2, ...)
 \code{stat_out} returns a list of values, consisting of: RSS, RSSq1, GCV1 and GCVq1 values for the fitted model.
 }
 \description{
-Fits a linear regresion model and calculates RSS/GCV measures (used for MARS linear models).
+Fits a linear regression model and calculates RSS/GCV measures (used for MARS linear models).
 }
 \details{
 See the \code{earth} package for more details on the output measures calculated here.
 }
 \references{
-Friedman, J. (1991). Multivariate adaptive regression splines. \emph{The Annals of Statistics}, 19, 1-67.
+Friedman, J. (1991). Multivariate adaptive regression splines. \emph{The Annals of Statistics}, \strong{19}, 1--67.
 
 Milborrow, S. (2017a). Notes on the \code{earth} package. Package vignette. Available at: \url{http://127.0.0.1:31355/library/earth/doc/earth-notes.pdf}.
 
 Milborrow, S. (2017b). \code{earth}: Multivariate Adaptive Regression Splines. R package version 4.4.7. Available at \url{http://CRAN.R-project.org/package = earth.}
 
-Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
+Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, 245--253.
 }
 \seealso{
 \code{\link{stat_out_score_null}} and \code{\link{stat_out_score_glm_null}}

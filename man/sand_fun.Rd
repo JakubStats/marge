@@ -15,13 +15,13 @@ sand_fun(Y, X, N, n_vec, mu.est, V.est, nb = T, omega = 1, ...)
 
 \item{n_vec}{: a vector consisting of the number of cluster sizes.}
 
-\item{mu.est}{: esitmates of the fitted mean function under the null model.}
+\item{mu.est}{: estimates of the fitted mean function under the null model.}
 
-\item{V.est}{: esitmates of the fitted variance function under the null model.}
+\item{V.est}{: estimates of the fitted variance function under the null model.}
 
 \item{nb}{: a logical argument, is the model a negative binomial model? The default is \code{FALSE}.}
 
-\item{omega}{: a regulariztion constant that is applied if your data is of high dimension (n>N). The default is \code{omega = 1}.}
+\item{omega}{: a regularization constant that is applied if your data is of high dimension (n>N). The default is \code{omega = 1}.}
 
 \item{...}{: further arguments passed to or from other methods.}
 }
@@ -35,11 +35,11 @@ A function that calculates the sandwich (or Pan's) standard error using estimate
 This function was used for the Arthropod example.
 }
 \references{
-Liang, K. Y. and Zeger, S. L. (1986). Longitudinal aata analysis using generalized linear models. \emph{Biometrika}, 73, 13-22.
+Liang, K. Y. and Zeger, S. L. (1986). Longitudinal aata analysis using generalized linear models. \emph{Biometrika}, 73, 13--22.
 
-Stoklosa, J., Gibb, H. and Warton, D.I. (2014). Fast forward selection for generalized estimating equations with a large number of predictor variables. \emph{Biometrics}, 70, 110-120.
+Stoklosa, J., Gibb, H. and Warton, D.I. (2014). Fast forward selection for generalized estimating equations with a large number of predictor variables. \emph{Biometrics}, \strong{70}, 110--120.
 
-Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
+Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, 245--253.
 }
 \author{
 Jakub Stoklosa and David I. Warton.

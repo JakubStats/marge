@@ -4,8 +4,19 @@
 \alias{score_fun_glm}
 \title{score_fun_glm}
 \usage{
-score_fun_glm(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B1, XA,
-  nb = F, ...)
+score_fun_glm(
+  Y,
+  N,
+  VS.est_list,
+  A_list,
+  B1_list,
+  mu.est,
+  V.est,
+  B1,
+  XA,
+  nb = F,
+  ...
+)
 }
 \arguments{
 \item{Y}{: the response variable.}
@@ -18,9 +29,9 @@ score_fun_glm(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B1, XA,
 
 \item{B1_list}{: a product of matrices.}
 
-\item{mu.est}{: esitmates of the fitted mean under the null model.}
+\item{mu.est}{: estimates of the fitted mean under the null model.}
 
-\item{V.est}{: esitmates of the fitted variance under the null model.}
+\item{V.est}{: estimates of the fitted variance under the null model.}
 
 \item{B1}{: model matrix under the null model.}
 
@@ -37,9 +48,9 @@ score_fun_glm(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B1, XA,
 Given estimates from the null model fit and the design matrix for alternative model, find the score statistic (this is used for GLMs only).
 }
 \references{
-Stoklosa, J., Gibb, H. and Warton, D.I. (2014). Fast forward selection for generalized estimating equations with a large number of predictor variables. \emph{Biometrics}, 70, 110-120.
+Stoklosa, J., Gibb, H. and Warton, D.I. (2014). Fast forward selection for generalized estimating equations with a large number of predictor variables. \emph{Biometrics}, \strong{70}, 110--120.
 
-Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
+Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, 245--253.
 }
 \seealso{
 \code{\link{score_fun_gee}}

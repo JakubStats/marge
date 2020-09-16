@@ -16,7 +16,7 @@ min_span(X_red, q, minspan = NULL, alpha = 0.05)
 \item{alpha}{: see Friedman (1991) equation (43). The default is 0.05.}
 }
 \value{
-\code{min_span} returns a vector of trauncated predictor variable values.
+\code{min_span} returns a vector of truncated predictor variable values.
 }
 \description{
 A truncation function applied on the predictor variable for knot selection.
@@ -25,9 +25,9 @@ A truncation function applied on the predictor variable for knot selection.
 This function selects a minimum span between the knots to mitigate runs of correlated noise in the input data and hence avoiding estimation issues, this equation comes from Friedman (1991) equation 43.
 }
 \references{
-Friedman, J. (1991). Multivariate adaptive regression splines. \emph{The Annals of Statistics}, 19, 1-67.
+Friedman, J. (1991). Multivariate adaptive regression splines. \emph{The Annals of Statistics}, \strong{19}, 1--67.
 
-Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, pp. 245--253.
+Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, 245--253.
 }
 \author{
 Jakub Stoklosa and David I. Warton.
