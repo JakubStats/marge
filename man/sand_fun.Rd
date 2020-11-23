@@ -35,7 +35,7 @@ A function that calculates the sandwich (or Pan's) standard error using estimate
 This function was used for the Arthropod example.
 }
 \references{
-Liang, K. Y. and Zeger, S. L. (1986). Longitudinal data analysis using generalized linear models. \emph{Biometrika}, 73, 13--22.
+Liang, K. Y. and Zeger, S. L. (1986). Longitudinal data analysis using generalized linear models. \emph{Biometrika}, \strong{73}, 13--22.
 
 Stoklosa, J., Gibb, H. and Warton, D.I. (2014). Fast forward selection for generalized estimating equations with a large number of predictor variables. \emph{Biometrics}, \strong{70}, 110--120.
 

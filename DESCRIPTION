@@ -2,7 +2,7 @@ Package: marge
 Type: Package
 Title: Multivariate Adaptive Regression splines using Generalized estimating Equations
 Version: 1.0.1
-Date: 2017-06-01
+Date: 2020-11-23
 Author: Jakub Stoklosa and David Warton
 Maintainer: Jakub Stoklosa <j.stoklosa@unsw.edu.au>
 Description: Fits multivariate adaptive regression splines using generalized estimating equations.

@@ -443,7 +443,7 @@ score_fun_gee <- function(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma
 #' @return \code{sand_fun} returns the sandwich (or Pan's) standard error using estimates from the fitted GEE under an independent working correlation.
 #' @details This function was used for the Arthropod example.
 #' @author Jakub Stoklosa and David I. Warton.
-#' @references Liang, K. Y. and Zeger, S. L. (1986). Longitudinal data analysis using generalized linear models. \emph{Biometrika}, 73, 13--22.
+#' @references Liang, K. Y. and Zeger, S. L. (1986). Longitudinal data analysis using generalized linear models. \emph{Biometrika}, \strong{73}, 13--22.
 #' @references Stoklosa, J., Gibb, H. and Warton, D.I. (2014). Fast forward selection for generalized estimating equations with a large number of predictor variables. \emph{Biometrics}, \strong{70}, 110--120.
 #' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, 245--253.
 #' @importFrom stats binomial poisson
