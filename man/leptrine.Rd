@@ -41,7 +41,7 @@ id <- rep(1:N, each = n)  # The ID of each cluster.
 
 X_pred <- dat1[, -c(3:10)]  # Design matrix using only two (of nine) predictors.
 
-# Set MARGE tunning parameters.
+# Set MARGE tuning parameters.
 
 family <- "binomial"   # The selected "exponential" family for the GLM/GEE.
 is.gee <- FALSE        # Is the model a GEE?

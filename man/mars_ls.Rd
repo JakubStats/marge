@@ -67,7 +67,7 @@ Y <- dat1$Y            # Response variable.
 
 X_pred <- dat1[, -c(3:10)]  # Design matrix using only two (of nine) predictors.
 
-# Set MARS tunning parameters.
+# Set MARS tuning parameters.
 
 family <- "binomial"   # The selected "exponential" family.
 nb <- FALSE            # Is this a negative binomial model?

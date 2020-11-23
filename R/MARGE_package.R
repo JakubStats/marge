@@ -44,7 +44,7 @@ library(gamlss)
 #'
 #' X_pred <- dat1[, -c(3:10)]  # Design matrix using only two (of nine) predictors.
 #'
-#' # Set MARGE tunning parameters.
+#' # Set MARGE tuning parameters.
 #'
 #' family <- "binomial"   # The selected "exponential" family for the GLM/GEE.
 #' is.gee <- FALSE        # Is the model a GEE?
@@ -127,7 +127,7 @@ tp2 <- function(x, t, p = 1) ((t - x)^p)*(x < t)
 #' @seealso \code{\link{stat_out_score_null}} and \code{\link{stat_out_score_glm_null}}
 stat_out <- function(Y, B1, TSS, GCV.null, pen = 2, ...) {
   N <- length(Y)
-  reg <- stats::lm.fit(B1, Y)
+  reg <- stats::lm.fit(B1, Y, ...)
 
   if (sum(is.na(reg$coef)) > 0) RSS1 = RSSq1 = GCV1 = GCVq1 = NA
   if (sum(is.na(reg$coef)) == 0) {
@@ -170,11 +170,11 @@ stat_out_score_null <- function(Y, N, n, id, family = "gaussian", corstr = "inde
 
   if (is.gee == T) {
     if (family == "gaussian") {
-      ests <- geepack::geeglm(Y ~ B_null - 1, id = id, corstr = corstr)
+      ests <- geepack::geeglm(Y ~ B_null - 1, id = id, corstr = corstr, ...)
       alpha.est <- ests$geese$alpha
     }
     if (family != "gaussian") {
-      ests <- geepack::geeglm(Y ~ B_null - 1, id = id, family = family, corstr = corstr)
+      ests <- geepack::geeglm(Y ~ B_null - 1, id = id, family = family, corstr = corstr, ...)
       alpha.est <- ests$geese$alpha
     }
 
@@ -187,9 +187,9 @@ stat_out_score_null <- function(Y, N, n, id, family = "gaussian", corstr = "inde
       mu.est <- as.matrix(stats::fitted.values(ests))
     }
     if (nb == F) {
-      if (family == "gaussian") ests <- stats::glm.fit(B_null, Y)
-      if (family == "binomial") ests <- stats::glm.fit(B_null, Y, family = binomial(link = "logit"))
-      if (family == "poisson") ests <- stats::glm.fit(B_null, Y, family = poisson(link = "log"))
+      if (family == "gaussian") ests <- stats::glm.fit(B_null, Y, ...)
+      if (family == "binomial") ests <- stats::glm.fit(B_null, Y, family = binomial(link = "logit"), ...)
+      if (family == "poisson") ests <- stats::glm.fit(B_null, Y, family = poisson(link = "log"), ...)
       mu.est <- as.matrix(stats::fitted.values(ests))
     }
     alpha.est <- 1
@@ -213,7 +213,7 @@ stat_out_score_null <- function(Y, N, n, id, family = "gaussian", corstr = "inde
   J11 <- matrix(0, nrow = p, ncol = p)
   Sigma11 <- matrix(0, nrow = p, ncol = p)
 
-  for(i in 1:N) {
+  for (i in 1:N) {
     k <- sum(n_vec[1:i])
     if (corstr == "independence") R_alpha <- diag(1, nrow = n_vec[i], ncol = n_vec[i])
     if (corstr == "exchangeable") R_alpha <- matrix(c(rep(alpha.est, n_vec[i]*n_vec[i])), ncol = n_vec[i]) + diag(c(1 - alpha.est), ncol = n_vec[i], nrow = n_vec[i])
@@ -273,9 +273,9 @@ stat_out_score_glm_null <- function(Y, family = "gaussian", B_null, nb = F, ...)
     mu.est <- as.matrix(stats::fitted.values(ests))
   }
   if (nb == F) {
-    if (family == "gaussian") ests <- stats::glm.fit(B_null, Y)
-    if (family == "binomial") ests <- stats::glm.fit(B_null, Y, family = binomial(link = "logit"))
-    if (family == "poisson") ests <- stats::glm.fit(B_null, Y, family = poisson(link = "log"))
+    if (family == "gaussian") ests <- stats::glm.fit(B_null, Y, ...)
+    if (family == "binomial") ests <- stats::glm.fit(B_null, Y, family = binomial(link = "logit"), ...)
+    if (family == "poisson") ests <- stats::glm.fit(B_null, Y, family = poisson(link = "log"), ...)
     mu.est <- as.matrix(stats::fitted.values(ests))
   }
 
@@ -324,7 +324,7 @@ stat_out_score_glm_null <- function(Y, family = "gaussian", B_null, nb = F, ...)
 #' @export
 #' @seealso \code{\link{score_fun_gee}}
 score_fun_glm <- function(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B1, XA, nb = F, ...) {
-  reg <- try(stats::lm.fit(B1, Y), silent = TRUE)  # This is not the model fit!! It just checks whether any issues occur for a simple linear regression model.
+  reg <- try(stats::lm.fit(B1, Y, ...), silent = TRUE)  # This is not the model fit!! It just checks whether any issues occur for a simple linear regression model.
 
   if (class(reg)[1] == "try-error") score <- NA
 
@@ -382,7 +382,7 @@ score_fun_glm <- function(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B1,
 #' @export
 #' @seealso \code{\link{score_fun_glm}}
 score_fun_gee <- function(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma2_list, J11.inv, JSigma11, mu.est, V.est, B1, XA, nb = F, ...) {
-  reg <- try(stats::lm.fit(B1, Y), silent = TRUE)  # This is not the model fit!! It just checks whether any issues occur for a simple linear regression model.
+  reg <- try(stats::lm.fit(B1, Y, ...), silent = TRUE)  # This is not the model fit!! It just checks whether any issues occur for a simple linear regression model.
 
   if (class(reg)[1] == "try-error") score <- NA
 
@@ -401,7 +401,7 @@ score_fun_gee <- function(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma
     J21 <- matrix(0, nrow = p, ncol = p1)
     Sigma21 <- matrix(0, nrow = p, ncol = p1)
 
-    for(i in 1:N) {
+    for (i in 1:N) {
       k <- sum(n_vec[1:i])
 
       VS.est_i <- VS.est_list[[i]]
@@ -443,7 +443,7 @@ score_fun_gee <- function(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma
 #' @return \code{sand_fun} returns the sandwich (or Pan's) standard error using estimates from the fitted GEE under an independent working correlation.
 #' @details This function was used for the Arthropod example.
 #' @author Jakub Stoklosa and David I. Warton.
-#' @references Liang, K. Y. and Zeger, S. L. (1986). Longitudinal aata analysis using generalized linear models. \emph{Biometrika}, 73, 13--22.
+#' @references Liang, K. Y. and Zeger, S. L. (1986). Longitudinal data analysis using generalized linear models. \emph{Biometrika}, 73, 13--22.
 #' @references Stoklosa, J., Gibb, H. and Warton, D.I. (2014). Fast forward selection for generalized estimating equations with a large number of predictor variables. \emph{Biometrics}, \strong{70}, 110--120.
 #' @references Stoklosa, J. and Warton, D.I. (2018). A generalized estimating equation approach to multivariate adaptive regression splines. \emph{Journal of Computational and Graphical Statistics}, \strong{27}, 245--253.
 #' @importFrom stats binomial poisson
@@ -457,7 +457,7 @@ sand_fun <- function(Y, X, N, n_vec, mu.est, V.est, nb = T, omega = 1, ...) {
   C.est <- matrix(0, nrow = p, ncol = p)
   R_u <- matrix(0, nrow = n, ncol = n)
 
-  for(i in 1:N) {
+  for (i in 1:N) {
     k <- sum(n_vec[1:i])
     V.est_i <- diag(sqrt(V.est[(sum(n_vec1[1:i]) + 1):k]), nrow = n_vec[i], ncol = n_vec[i])%*%diag(n)%*%diag(sqrt(V.est[(sum(n_vec1[1:i]) + 1):k]), nrow = n_vec[i], ncol = n_vec[i])
     if (nb == FALSE) D.est_i <- diag((V.est[(sum(n_vec1[1:i]) + 1):k]), nrow = n_vec[i], ncol = n_vec[i])%*%X[(sum(n_vec1[1:i]) + 1):k, ]
@@ -500,9 +500,9 @@ backward_sel <- function(Y, B_new, pen = 2, GCV.null = 0.001, ...) {
 
   GCV1 <- c()
 
-  for(j in 1:(ncol(B_new) - 1)) {
+  for (j in 1:(ncol(B_new) - 1)) {
     B_new1 <- as.matrix(B_new[, -(j + 1)])
-    mod1 <- stats::lm.fit(B_new1, Y)
+    mod1 <- stats::lm.fit(B_new1, Y, ...)
     RSS_back <- sum((Y - stats::fitted(mod1))^2)
 
     p <- ncol(B_new1) + pen*(ncol(B_new1) - 1)/2  # This matches the earth() package, SAS and Friedman (1991) penalty.
@@ -537,12 +537,12 @@ backward_sel <- function(Y, B_new, pen = 2, GCV.null = 0.001, ...) {
 backward_sel_WIC <- function(Y, N, n, B_new, id, family = "gaussian", corstr = "independence", nb = F, is.gee = F, ...) {
   if (is.gee == F) {
     if (nb == F) {
-      fit <- stats::glm(c(t(Y)) ~ B_new - 1, family = family)
+      fit <- stats::glm(c(t(Y)) ~ B_new - 1, family = family, ...)
       wald1 <- (summary(fit)[12]$coef[-1, 3])^2
     }
     if (nb == T) {
       sink(tempfile())
-      fit <- gamlss::gamlss(Y ~ B_new - 1, family = "NBI", trace = FALSE)
+      fit <- gamlss::gamlss(Y ~ B_new - 1, family = "NBI", trace = FALSE, ...)
       if (n == 1) wald1 <- ((as.matrix(summary(fit))[, 3])[-c(1, nrow(as.matrix(summary(fit))))])^2
       if (n > 1) { # Used for the Arthropod data example.
         n_vec <- rep(n, N)
@@ -556,11 +556,11 @@ backward_sel_WIC <- function(Y, N, n, B_new, id, family = "gaussian", corstr = "
 
   if (is.gee == T) {
     if (family == "gaussian") {
-      fit <- geepack::geeglm(Y ~ B_new - 1, id = id, corstr = corstr)
+      fit <- geepack::geeglm(Y ~ B_new - 1, id = id, corstr = corstr, ...)
       wald1 <- (summary(fit)[6]$coef[-1, 3])^2
     }
     if (family != "gaussian") {
-      fit <- geepack::geeglm(Y ~ B_new - 1, id = id, family = family, corstr = corstr)
+      fit <- geepack::geeglm(Y ~ B_new - 1, id = id, family = family, corstr = corstr, ...)
       wald1 <- (summary(fit)[6]$coef[-1, 3])^2
     }
   }
@@ -671,7 +671,7 @@ min_span <- function(X_red, q, minspan = NULL, alpha = 0.05) {
 #'
 #' X_pred <- dat1[, -c(3:10)]  # Design matrix using only two (of nine) predictors.
 #'
-#' # Set MARS tunning parameters.
+#' # Set MARS tuning parameters.
 #'
 #' family <- "binomial"   # The selected "exponential" family.
 #' nb <- FALSE            # Is this a negative binomial model?
@@ -706,7 +706,7 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
   # Null model setup - find the RSS, GCV and df. So initialize everything!
 
   B_null <- as.matrix(rep(1, N))
-  RSS_term <- c(sum((Y - stats::fitted(stats::lm.fit(B_null, Y)))^2))
+  RSS_term <- c(sum((Y - stats::fitted(stats::lm.fit(B_null, Y, ...)))^2))
   TSS <- sum((Y - mean(Y))^2)
   RSSq_term <- c(1 - RSS_term[1]/TSS)
   df1 <- 1                     # Set DF to 1.
@@ -743,7 +743,7 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
     # Note that variables can be repeated in the model, but cannot interact with itself (it doesn't
     # really makes sense for it too anyway)!
 
-    for(v in 1:q) {
+    for (v in 1:q) {
       var_name <- colnames(X_pred)[v]
       X <- round(X_pred[, v], 4)           # Round to 4 digits (to match earth()). X starts the new basis.
 
@@ -773,7 +773,7 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
       # Loop 3 of algorithm considers ALL the knot locations (after trim) of the chosen variable in the current loop. The stratergy is simple for
       # each knot find the lack-of-fit measures, and compare these with seperate fitted additive and interactions models.
 
-      for(t in 1:length(X_red)) {
+      for (t in 1:length(X_red)) {
         b1_new <- matrix(tp1(X, X_red[t]), ncol = 1)  # Pairs of truncated power basis functions, positive and negative functions (first or both must be considered).
         b2_new <- matrix(tp2(X, X_red[t]), ncol = 1)
 
@@ -792,8 +792,8 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
           B_new_both_add <- cbind(B, b1_new, b2_new)   # Additive model with both truncated functions.
           B_new_one_add <- cbind(B, b1_new)         # Additive model with one truncated function (positive part).
 
-          meas_model_both_add <- stat_out(Y, B_new_both_add, TSS, GCV.null, pen) # Calculates the required stats.
-          meas_model_one_add <- stat_out(Y, B_new_one_add, TSS, GCV.null, pen)
+          meas_model_both_add <- stat_out(Y, B_new_both_add, TSS, GCV.null, pen, ...) # Calculates the required stats.
+          meas_model_one_add <- stat_out(Y, B_new_one_add, TSS, GCV.null, pen, ...)
 
           RSSq_knot_both_add <- c(RSSq_knot_both_add, meas_model_both_add$RSSq1)
           RSSq_knot_one_add <- c(RSSq_knot_one_add, meas_model_one_add$RSSq1)
@@ -813,14 +813,14 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
           if (k != 1 & (sum(!var_name_vec[-1]%in%var_name) > 0)) B2 <- as.matrix(B2[, -1])
           if (ncol(B2) == 0) B2 <- as.matrix(B[, 1])
 
-          for(nn in 1:ncol(B2)) {
+          for (nn in 1:ncol(B2)) {
             B2a <- matrix(rep(B2[, nn], 2), ncol = 2)  # This is a basis function for potential parent basis. Need both part (hinges) here.
             B2b <- matrix(B2[, nn], ncol = 1)
             B_new_both_int <- cbind(B, B2a*cbind(b1_new, b2_new))
             B_new_one_int <- cbind(B, B2b*b1_new)     # Interaction model with one truncated function (the positive part).
 
-            meas_model_both_int <- stat_out(Y, B_new_both_int, TSS, GCV.null, pen)
-            meas_model_one_int <- stat_out(Y, B_new_one_int, TSS, GCV.null, pen)
+            meas_model_both_int <- stat_out(Y, B_new_both_int, TSS, GCV.null, pen, ...)
+            meas_model_one_int <- stat_out(Y, B_new_one_int, TSS, GCV.null, pen, ...)
 
             RSSq_knot_both_int <- c(RSSq_knot_both_int, meas_model_both_int$RSSq1)
             RSSq_knot_one_int <- c(RSSq_knot_one_int, meas_model_one_int$RSSq1)
@@ -830,8 +830,8 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
 
           B_new_both_add <- cbind(B, b1_new, b2_new)
           B_new_one_add <- cbind(B, b1_new)
-          meas_model_both_add <- stat_out(Y, B_new_both_add, TSS, GCV.null, pen)
-          meas_model_one_add <- stat_out(Y, B_new_one_add, TSS, GCV.null, pen)
+          meas_model_both_add <- stat_out(Y, B_new_both_add, TSS, GCV.null, pen, ...)
+          meas_model_one_add <- stat_out(Y, B_new_one_add, TSS, GCV.null, pen, ...)
           RSSq_knot_both_add <- c(RSSq_knot_both_add, meas_model_both_add$RSSq1)
           RSSq_knot_one_add <- c(RSSq_knot_one_add, meas_model_one_add$RSSq1)
           GCVq_knot_both_add <- c(GCVq_knot_both_add, meas_model_both_add$GCVq1)
@@ -1144,7 +1144,7 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
         if (trunc.type == 1) B_names <- B_names
 
         var_name_list1 <- list()
-        for(ll in 1:ncol(B_new)) {
+        for (ll in 1:ncol(B_new)) {
           colnames(B_new)[ll] <- paste(var_name, colnames(B_new)[ll], sep = ":")
           var_name_list1 <- c(var_name_list1, list(colnames(B_new)[ll]))
           int.count1 <- int.count1 + 1
@@ -1172,7 +1172,7 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
         }
       }
 
-      meas_model <- stat_out(Y, B_temp, TSS, GCV.null, pen)
+      meas_model <- stat_out(Y, B_temp, TSS, GCV.null, pen, ...)
       GCVq2 <- meas_model$GCVq1
       RSSq2 <- meas_model$RSSq1
 
@@ -1217,7 +1217,7 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
       X_red_temp <- c(X_red_temp, list(X_red))
       B_temp_list <- c(B_temp_list, list(B_temp))
 
-    } # End the for() v loop here.
+    } # End the for () loop here.
 
     if (breakFlag == TRUE) break
 
@@ -1274,11 +1274,8 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
       ok <- F
     }
 
-    int
-    B_names_vec
-    mod_struct
-    stat_out(Y, B, TSS, GCV.null, pen)
-  }              # The term (m) for() loop ends here.
+    stat_out(Y, B, TSS, GCV.null, pen, ...)
+  }              # The term (m) for () loop ends here.
 
   colnames(B) <- B_names_vec
 
@@ -1288,7 +1285,7 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
 
   p <- ncol(B) + pen*(ncol(B) - 1)/2  # This matches the earth() package, SAS and Friedman (1991) penalty.
 
-  full_RSS <- sum((Y - stats::fitted(stats::lm.fit(B - 1, Y)))^2)
+  full_RSS <- sum((Y - stats::fitted(stats::lm.fit(B - 1, Y, ...)))^2)
   full_GCV <- full_RSS/(N*(1 - p/N)^2)
   full_GCV <- 1 - (full_GCV/GCV.null)
 
@@ -1299,14 +1296,14 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
   colnames(GCV_mat)[(ncol(B) + 1)] <- "Forward pass model"
 
   GCV_mat[1, (ncol(B) + 1)] <- full_GCV
-  GCV1 <- backward_sel(Y, B_new, pen, GCV.null)
+  GCV1 <- backward_sel(Y, B_new, pen, GCV.null, ...)
   GCV_mat[2, 2:(length(GCV1) + 1)] <- GCV1
   variable.lowest <- utils::tail(which(GCV1 == max(GCV1, na.rm = T)), n = 1)
   var.low.vec <- c(colnames(B_new)[variable.lowest + 1])
   B_new <- as.matrix(B_new[, -(variable.lowest + 1)])
 
-  for(i in 2:(ncol(B) - 1)) {
-    GCV1 <- backward_sel(Y, B_new, pen, GCV.null)
+  for (i in 2:(ncol(B) - 1)) {
+    GCV1 <- backward_sel(Y, B_new, pen, GCV.null, ...)
 
     variable.lowest <- utils::tail(which(GCV1 == max(GCV1, na.rm = T)), n = 1)
     var.low.vec <- c(var.low.vec, colnames(B_new)[variable.lowest + 1])
@@ -1332,7 +1329,7 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
   if (!(number.rm1 == 0) & !(number.rm1 == (nrow(GCV_mat) - 1))) {
     number.rm2 <- c()
     var.low.vec_red <- var.low.vec[1:number.rm1]
-    for(k in 1:length(var.low.vec_red)) {
+    for (k in 1:length(var.low.vec_red)) {
       number.rm2 <- c(number.rm2, which(var.low.vec_red[k] == colnames(B)))
     }
     B_final <- B[, -c(number.rm2)]
@@ -1349,14 +1346,14 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
 
   # Some measures to be reported, GCV, RSq, etc. for the final model fit.
 
-  if (nb == F) final_mod <- stats::glm(Y ~ B_final - 1, family = family)
+  if (nb == F) final_mod <- stats::glm(Y ~ B_final - 1, family = family, ...)
 
   if (nb == T) {
-    est.many <- mvabund::manyglm(Y ~ B_final - 1, family = "negative.binomial", maxiter = 1000, maxiter2 = 100)
-    final_mod <- MASS::glm.nb(c(t(Y)) ~ B_final - 1, method = "glm.fit2", init.theta = est.many$theta)
+    est.many <- mvabund::manyglm(Y ~ B_final - 1, family = "negative.binomial", maxiter = 1000, maxiter2 = 100, ...)
+    final_mod <- MASS::glm.nb(c(t(Y)) ~ B_final - 1, method = "glm.fit2", init.theta = est.many$theta, ...)
   }
 
-  final_stats <- stat_out(Y, B_final, TSS, GCV.null, pen)
+  final_stats <- stat_out(Y, B_final, TSS, GCV.null, pen, ...)
 
   if (print.disp == T) {
     writeLines("\n -- Final model was chosen (after pruning/backward selection) for MARS -- \n")
@@ -1433,7 +1430,7 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
 #'
 #' X_pred <- dat1[, -c(3:10)] # Design matrix using only two (of nine) predictors.
 #'
-#' # Set MARGE tunning parameters.
+#' # Set MARGE tuning parameters.
 #'
 #' family <- "binomial"   # The selected "exponential" family for the GLM/GEE.
 #' is.gee <- FALSE        # Is the model a GEE?
@@ -1502,7 +1499,7 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
     # Obtain/calculate the null stats here (speeds things up).
 
     if (is.gee == T | n > 1) {
-      B_null_stats <- stat_out_score_null(Y, N, n, id, family, corstr, B, nb, is.gee)
+      B_null_stats <- stat_out_score_null(Y, N, n, id, family, corstr, B, nb, is.gee, ...)
 
       VS.est_list <- B_null_stats$VS.est_list
       AWA.est_list <- B_null_stats$AWA.est_list
@@ -1514,7 +1511,7 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
       V.est <- B_null_stats$V.est
     }
     if (is.gee == F & n == 1) {
-      B_null_stats <- stat_out_score_glm_null(Y, family, B, nb)
+      B_null_stats <- stat_out_score_glm_null(Y, family, B, nb, ...)
 
       VS.est_list <- B_null_stats$VS.est_list
       A_list <- B_null_stats$A_list
@@ -1523,7 +1520,7 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
       V.est <- B_null_stats$V.est
     }
 
-    for(v in 1:q) {
+    for (v in 1:q) {
       var_name <- colnames(X_pred)[v]
       X <- round(X_pred[, v], 4)
 
@@ -1542,7 +1539,7 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
       if (ncol(B) > 1) in.set <- sum(!var_name_vec%in%var_name)
       if (ncol(B) == 1) in.set <- 0
 
-      for(t in 1:length(X_red)) {
+      for (t in 1:length(X_red)) {
         b1_new <- matrix(tp1(X, X_red[t]), ncol = 1)  # Pairs of truncated functions.
         b2_new <- matrix(tp2(X, X_red[t]), ncol = 1)
 
@@ -1555,10 +1552,10 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
           B_new_both_add <- cbind(B, b1_new, b2_new)   # Additive model with both truncated functions.
           B_new_one_add <- cbind(B, b1_new)         # Additive model with one truncated function (positive part).
 
-          if (is.gee == T | n > 1) meas_model_both_add <- score_fun_gee(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma2_list, J11.inv, JSigma11, mu.est, V.est, B_new_both_add, cbind(b1_new, b2_new), nb)
-          if (is.gee == F & n == 1) meas_model_both_add <- score_fun_glm(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B_new_both_add, cbind(b1_new, b2_new), nb)
-          if (is.gee == T | n > 1) meas_model_one_add <- score_fun_gee(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma2_list, J11.inv, JSigma11, mu.est, V.est, B_new_one_add, b1_new, nb)
-          if (is.gee == F & n == 1) meas_model_one_add <- score_fun_glm(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B_new_one_add, b1_new, nb)
+          if (is.gee == T | n > 1) meas_model_both_add <- score_fun_gee(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma2_list, J11.inv, JSigma11, mu.est, V.est, B_new_both_add, cbind(b1_new, b2_new), nb, ...)
+          if (is.gee == F & n == 1) meas_model_both_add <- score_fun_glm(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B_new_both_add, cbind(b1_new, b2_new), nb, ...)
+          if (is.gee == T | n > 1) meas_model_one_add <- score_fun_gee(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma2_list, J11.inv, JSigma11, mu.est, V.est, B_new_one_add, b1_new, nb, ...)
+          if (is.gee == F & n == 1) meas_model_one_add <- score_fun_glm(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B_new_one_add, b1_new, nb, ...)
 
           score_knot_both_add <- c(score_knot_both_add, meas_model_both_add$score)
           score_knot_one_add <- c(score_knot_one_add, meas_model_one_add$score)
@@ -1573,16 +1570,16 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
           if (k != 1 & (sum(!var_name_vec[-1]%in%var_name) > 0)) B2 <- as.matrix(B2[, -1])
           if (ncol(B2) == 0) B2 <- as.matrix(B[, 1])
 
-          for(nn in 1:ncol(B2)) {
+          for (nn in 1:ncol(B2)) {
             B2a <- matrix(rep(B2[, nn], 2), ncol = 2)
             B2b <- matrix(B2[, nn], ncol = 1)
             B_new_both_int <- cbind(B, B2a*cbind(b1_new, b2_new))
             B_new_one_int <- cbind(B, B2b*b1_new)     # Interaction model with one truncated function (i.e., the positive part).
 
-            if (is.gee == T | n > 1) meas_model_both_int <- score_fun_gee(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma2_list, J11.inv, JSigma11, mu.est, V.est, B_new_both_int, B2a*cbind(b1_new, b2_new), nb)
-            if (is.gee == F & n == 1) meas_model_both_int <- score_fun_glm(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B_new_both_int, B2a*cbind(b1_new, b2_new), nb)
-            if (is.gee == T | n > 1) meas_model_one_int <- score_fun_gee(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma2_list, J11.inv, JSigma11, mu.est, V.est, B_new_one_int, B2b*b1_new, nb)
-            if (is.gee == F & n == 1) meas_model_one_int <- score_fun_glm(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B_new_one_int, B2b*b1_new, nb)
+            if (is.gee == T | n > 1) meas_model_both_int <- score_fun_gee(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma2_list, J11.inv, JSigma11, mu.est, V.est, B_new_both_int, B2a*cbind(b1_new, b2_new), nb, ...)
+            if (is.gee == F & n == 1) meas_model_both_int <- score_fun_glm(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B_new_both_int, B2a*cbind(b1_new, b2_new), nb, ...)
+            if (is.gee == T | n > 1) meas_model_one_int <- score_fun_gee(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma2_list, J11.inv, JSigma11, mu.est, V.est, B_new_one_int, B2b*b1_new, nb, ...)
+            if (is.gee == F & n == 1) meas_model_one_int <- score_fun_glm(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B_new_one_int, B2b*b1_new, nb, ...)
 
             score_knot_both_int <- c(score_knot_both_int, meas_model_both_int$score)
             score_knot_one_int <- c(score_knot_one_int, meas_model_one_int$score)
@@ -1591,10 +1588,10 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
           B_new_both_add <- cbind(B, b1_new, b2_new)
           B_new_one_add <- cbind(B, b1_new)
 
-          if (is.gee == T | n > 1) meas_model_both_add <- score_fun_gee(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma2_list, J11.inv, JSigma11, mu.est, V.est, B_new_both_add, cbind(b1_new, b2_new), nb)
-          if (is.gee == F & n == 1) meas_model_both_add <- score_fun_glm(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B_new_both_add, cbind(b1_new, b2_new), nb)
-          if (is.gee == T | n > 1) meas_model_one_add <- score_fun_gee(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma2_list, J11.inv, JSigma11, mu.est, V.est, B_new_one_add, b1_new, nb)
-          if (is.gee == F & n == 1) meas_model_one_add <- score_fun_glm(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B_new_one_add, b1_new, nb)
+          if (is.gee == T | n > 1) meas_model_both_add <- score_fun_gee(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma2_list, J11.inv, JSigma11, mu.est, V.est, B_new_both_add, cbind(b1_new, b2_new), nb, ...)
+          if (is.gee == F & n == 1) meas_model_both_add <- score_fun_glm(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B_new_both_add, cbind(b1_new, b2_new), nb, ...)
+          if (is.gee == T | n > 1) meas_model_one_add <- score_fun_gee(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma2_list, J11.inv, JSigma11, mu.est, V.est, B_new_one_add, b1_new, nb, ...)
+          if (is.gee == F & n == 1) meas_model_one_add <- score_fun_glm(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B_new_one_add, b1_new, nb, ...)
 
           score_knot_both_add <- c(score_knot_both_add, meas_model_both_add$score)
           score_knot_one_add <- c(score_knot_one_add, meas_model_one_add$score)
@@ -1893,7 +1890,7 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
         if (trunc.type == 1) B_names <- B_names
 
         var_name_list1 <- list()
-        for(ll in 1:ncol(B_new)) {
+        for (ll in 1:ncol(B_new)) {
           colnames(B_new)[ll] <- paste(var_name, colnames(B_new)[ll], sep = ":")
           var_name_list1 <- c(var_name_list1, list(colnames(B_new)[ll]))
           int.count1 <- int.count1 + 1
@@ -1917,12 +1914,12 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
         }
       }
 
-      if (is.gee == T | n > 1) meas_model <- score_fun_gee(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma2_list, J11.inv, JSigma11, mu.est, V.est, B_temp, B_new, nb)
-      if (is.gee == F & n == 1) meas_model <- score_fun_glm(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B_temp, B_new, nb)
+      if (is.gee == T | n > 1) meas_model <- score_fun_gee(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma2_list, J11.inv, JSigma11, mu.est, V.est, B_temp, B_new, nb, ...)
+      if (is.gee == F & n == 1) meas_model <- score_fun_glm(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B_temp, B_new, nb, ...)
 
       score2 <- meas_model$score
 
-      meas_model0 <- stat_out(Y, B_temp, TSS, GCV.null, pen)
+      meas_model0 <- stat_out(Y, B_temp, TSS, GCV.null, pen, ...)
       GCVq2 <- meas_model0$GCVq1
 
       if (GCVq2 < (-10) | round(score2, 4) <= 0) {
@@ -1962,7 +1959,7 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
       X_red_temp <- c(X_red_temp, list(X_red))
       B_temp_list <- c(B_temp_list, list(B_temp))
 
-    }  # Terminate the for() loop to end v (variables) here.
+    }  # Terminate the for () loop to end v (variables) here.
 
     if (breakFlag == TRUE) break
 
@@ -2055,8 +2052,8 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
 
   wic_mat_2[1, (ncol(B) + 1)] = wic_mat_log[1, (ncol(B) + 1)] = full.wic
 
-  wic1_2 <- backward_sel_WIC(Y, N, n, B_new, id, family, corstr, nb, is.gee)
-  wic1_log <- backward_sel_WIC(Y, N, n, B_new, id, family, corstr, nb, is.gee)
+  wic1_2 <- backward_sel_WIC(Y, N, n, B_new, id, family, corstr, nb, is.gee, ...)
+  wic1_log <- backward_sel_WIC(Y, N, n, B_new, id, family, corstr, nb, is.gee, ...)
 
   wic_mat_2[2, 2:(length(wic1_2) + 1)] <- wic1_2
   wic_mat_log[2, 2:(length(wic1_log) + 1)] <- wic1_log
@@ -2077,10 +2074,10 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
   cnames_2 <- c(cnames_2, list(colnames(B_new_2)))
   cnames_log <- c(cnames_log, list(colnames(B_new_log)))
 
-  for(i in 2:(ncol(B) - 1)) {
+  for (i in 2:(ncol(B) - 1)) {
     if (i != (ncol(B) - 1)) {
-      wic1_2 <- backward_sel_WIC(Y, N, n, B_new_2, id, family, corstr, nb, is.gee)
-      wic1_log <- backward_sel_WIC(Y, N, n, B_new_log, id, family, corstr, nb, is.gee)
+      wic1_2 <- backward_sel_WIC(Y, N, n, B_new_2, id, family, corstr, nb, is.gee, ...)
+      wic1_log <- backward_sel_WIC(Y, N, n, B_new_log, id, family, corstr, nb, is.gee, ...)
 
       wic_mat_2[(i + 1), colnames(B_new_2)[-1]] <- wic1_2
       wic_mat_log[(i + 1), colnames(B_new_log)[-1]] <- wic1_log
@@ -2103,8 +2100,8 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
     if (i == (ncol(B) - 1)) {
       if (is.gee == F) {
         if (nb == F) {
-          full.fit_2 <- stats::glm(Y ~ B_new_2 - 1, family = family)
-          full.fit_log <- stats::glm(Y ~ B_new_log - 1, family = family)
+          full.fit_2 <- stats::glm(Y ~ B_new_2 - 1, family = family, ...)
+          full.fit_log <- stats::glm(Y ~ B_new_log - 1, family = family, ...)
           full.wald_2 <- (summary(full.fit_2)[12]$coef[-1, 3])^2
           full.wald_log <- (summary(full.fit_log)[12]$coef[-1, 3])^2
 
@@ -2112,8 +2109,8 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
           wic1_log <- full.wald_log
         }
         if (nb == T) {
-          full.fit_2 <- gamlss::gamlss(Y ~ B_new_2 - 1, family = "NBI", trace = FALSE)
-          full.fit_log <- gamlss::gamlss(Y ~ B_new_log - 1, family = "NBI", trace = FALSE)
+          full.fit_2 <- gamlss::gamlss(Y ~ B_new_2 - 1, family = "NBI", trace = FALSE, ...)
+          full.fit_log <- gamlss::gamlss(Y ~ B_new_log - 1, family = "NBI", trace = FALSE, ...)
           sink(tempfile())
           full.wald_2 <- ((as.matrix(summary(full.fit_2))[, 3])[-c(1, nrow(as.matrix(summary(full.fit_2))))])^2
           full.wald_log <- ((as.matrix(summary(full.fit_log))[, 3])[-c(1, nrow(as.matrix(summary(full.fit_log))))])^2
@@ -2126,15 +2123,15 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
 
       if (is.gee == T) {
         if (family == "gaussian") {
-          full.fit_2 <- geepack::geeglm(Y ~ B_new_2 - 1, id = id, corstr = corstr)
-          full.fit_log <- geepack::geeglm(Y ~ B_new_log - 1, id = id, corstr = corstr)
+          full.fit_2 <- geepack::geeglm(Y ~ B_new_2 - 1, id = id, corstr = corstr, ...)
+          full.fit_log <- geepack::geeglm(Y ~ B_new_log - 1, id = id, corstr = corstr, ...)
 
           full.wald_2 <- (summary(full.fit_2)[6]$coef[-1, 3])^2
           full.wald_log <- (summary(full.fit_log)[6]$coef[-1, 3])^2
         }
         if (family != "gaussian") {
-          full.fit_2 <- geepack::geeglm(Y ~ B_new_2 - 1, id = id, family = family, corstr = corstr)
-          full.fit_log <- geepack::geeglm(Y ~ B_new_log - 1, id = id, family = family, corstr = corstr)
+          full.fit_2 <- geepack::geeglm(Y ~ B_new_2 - 1, id = id, family = family, corstr = corstr, ...)
+          full.fit_log <- geepack::geeglm(Y ~ B_new_log - 1, id = id, family = family, corstr = corstr, ...)
 
           full.wald_2 <- (summary(full.fit_2)[6]$coef[-1, 3])^2
           full.wald_log <- (summary(full.fit_log)[6]$coef[-1, 3])^2
@@ -2183,26 +2180,26 @@ marge <- function(X_pred, Y, N, n = 1, id = c(1:length(Y)), family = "gaussian",
 
   if (is.gee == T) {
     B_final <- as.matrix(B[, colnames(B)%in%cnames_2[[which.min(WIC_vec_2)]]])
-    final_mod_2 <- geepack::geeglm(Y ~ B_final - 1, id = id, family = family, corstr = corstr)
+    final_mod_2 <- geepack::geeglm(Y ~ B_final - 1, id = id, family = family, corstr = corstr, ...)
 
     B_final <- as.matrix(B[, colnames(B)%in%cnames_log[[which.min(WIC_vec_log)]]])
-    final_mod_log <- geepack::geeglm(Y ~ B_final - 1, id = id, family = family, corstr = corstr)
+    final_mod_log <- geepack::geeglm(Y ~ B_final - 1, id = id, family = family, corstr = corstr, ...)
   }
   if (is.gee == F) {
     if (nb == F) {
       B_final <- as.matrix(B[, colnames(B)%in%cnames_2[[which.min(WIC_vec_2)]]])
-      final_mod_2 <- stats::glm(Y ~ B_final - 1, family = family)
+      final_mod_2 <- stats::glm(Y ~ B_final - 1, family = family, ...)
       B_final <- as.matrix(B[, colnames(B)%in%cnames_log[[which.min(WIC_vec_log)]]])
-      final_mod_log <- stats::glm(Y ~ B_final - 1, family = family)
+      final_mod_log <- stats::glm(Y ~ B_final - 1, family = family, ...)
     }
     if (nb == T) {
       B_final <- as.matrix(B[, colnames(B)%in%cnames_2[[which.min(WIC_vec_2)]]])
       final_mod.many_2 <- mvabund::manyglm(c(t(Y)) ~ B_final - 1, family = "negative.binomial", maxiter = 1000, maxiter2 = 100)
-      final_mod_2 <- MASS::glm.nb(c(t(Y)) ~ B_final - 1, method = "glm.fit2", init.theta = final_mod.many_2$theta)
+      final_mod_2 <- MASS::glm.nb(c(t(Y)) ~ B_final - 1, method = "glm.fit2", init.theta = final_mod.many_2$theta, ...)
 
       B_final <- as.matrix(B[, colnames(B)%in%cnames_log[[which.min(WIC_vec_log)]]])
       final_mod.many_log <- mvabund::manyglm(c(t(Y)) ~ B_final-1, family = "negative.binomial", maxiter = 1000, maxiter2 = 100)
-      final_mod_log <- MASS::glm.nb(c(t(Y)) ~ B_final - 1, method = "glm.fit2", init.theta = final_mod.many_log$theta)
+      final_mod_log <- MASS::glm.nb(c(t(Y)) ~ B_final - 1, method = "glm.fit2", init.theta = final_mod.many_log$theta, ...)
     }
   }
 
@@ -2310,7 +2307,7 @@ getNumberPart <- function(x) {
 #' X_pred <- dat1[, -c(3:10)]    # Design matrix using only two (of nine) predictors.
 #' X_predt <- dat1_t[, -c(4:11)]
 #'
-#' # Set MARGE tunning parameters.
+#' # Set MARGE tuning parameters.
 #'
 #' family <- "binomial"    # The selected "exponential" family for the GLM/GEE.
 #' is.gee <- FALSE         # Is the model a GEE?
@@ -2358,14 +2355,14 @@ predict.marge <- function(object, newdata, X_pred, is.marge = F, pen = "2", ...)
 
     basis_new <- rep(1, nrow(newdata))
 
-    for(ww in 1:qq1) {
+    for (ww in 1:qq1) {
       var1 <- var_name_list[[ww]]
       qq2 <- length(var1)
 
       if (qq2 == 1) {  # For additive structures.
         var.vec_new1 <- c()
 
-        for(vv in 1:pp1) {
+        for (vv in 1:pp1) {
           var.vec_new1 <- c(var.vec_new1, unique(unlist(stringr::str_extract_all(var1, newdat_var[vv]))))
         }
 
@@ -2418,12 +2415,12 @@ predict.marge <- function(object, newdata, X_pred, is.marge = F, pen = "2", ...)
       if (qq2 == 2) {  # For interaction structures.
         basis_new1 <- c()
 
-        for(yy in 1:qq2) {
+        for (yy in 1:qq2) {
           var2 <- var1[yy]
 
           var.vec_new1 <- c()
 
-          for(vv in 1:pp1) {
+          for (vv in 1:pp1) {
             var.vec_new1 <- c(var.vec_new1, unique(unlist(stringr::str_extract_all(var2, newdat_var[vv]))))
           }
 
