@@ -1418,7 +1418,54 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
 #' @importFrom mvabund manyglm
 #' @importFrom MASS glm.nb
 #' @importFrom stats binomial poisson
-#' @examples # Load the "leptrine" presence-absence data.
+#' @examples
+#' # Example 1: Tree growth data from Wood (2006) monograph
+#'
+#' library(mgcv)
+#'
+#' N <- 14                            # Sample size (number of clusters).
+#' n <- 6                             # Cluster size.
+#' id <- factor(rep(1:N, each = n))   # The ID of each cluster.
+#'
+#' Y0 <- matrix(log(Loblolly$height), ncol = n, byrow = TRUE) # Response variable.
+#' Y <- c(t(Y0))
+#' X_pred0 <- matrix(log(Loblolly$age), ncol = n, byrow = TRUE) # Predictor variable.
+#' X_pred <- scale(c(t(X_pred0)))  # Standarize the predictor.
+#' colnames(X_pred) <- c("age")
+#'
+#' dat1 <- as.data.frame(cbind(X_pred, c(t(Y)), id))
+#' colnames(dat1) <- c("age", "Y", "id")
+#' dat1$age1 <- c(t(X_pred0))
+#' dat1$id <- factor(dat1$id)
+#'
+#' family <- "gaussian"   # The selected "exponential" family for the GLM/GEE.
+#'
+#' is.gee <- TRUE         # Is the model a GEE?
+#' nb <- FALSE            # Is this a negative binomial model?
+#'
+#' tols_score <- 0.00001  # Tolerance for stopping condition in forward pass for GEE.
+#' M <- 21                # Max. no. of terms.
+#' pen <- 2               # Penalty to be used in GCV.
+#' minspan <- NULL        # A set minimum span value.
+#' print.disp <- FALSE    # Print ALL the output?
+#'
+#' # Start model fitting functions here.
+#'
+#' corstr <- "independence"  # Independent working correlation structure.
+#' model_marge_ind <- marge(X_pred, Y, N, n, id, family, corstr, pen, tols_score,
+#' M, minspan, print.disp, nb, is.gee)
+#'
+#' corstr <- "ar1"           # AR1 working correlation structure.
+#' model_marge_ar1 <- marge(X_pred, Y, N, n, id, family, corstr, pen, tols_score,
+#' M, minspan, print.disp, nb, is.gee)
+#'
+#' corstr <- "exchangeable"  # Exchangeable working correlation structure.
+#' model_marge_exch <- marge(X_pred, Y, N, n, id, family, corstr, pen, tols_score,
+#' M, minspan, print.disp, nb, is.gee)
+#'
+#' # Example 2: Presence-absence data
+#'
+#' # Load the "leptrine" presence-absence data.
 #'
 #' data(leptrine)
 #'
@@ -1435,6 +1482,7 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
 #' family <- "binomial"   # The selected "exponential" family for the GLM/GEE.
 #' is.gee <- FALSE        # Is the model a GEE?
 #' nb <- FALSE            # Is this a negative binomial model?
+#'
 #' tols_score <- 0.0001   # A set tolerance (stopping condition) in forward pass for MARGE.
 #' M <- 21                # A set threshold for the maximum number of basis functions to be used.
 #' print.disp <- FALSE    # Print ALL the output?

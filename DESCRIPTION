@@ -1,13 +1,21 @@
 Package: marge
 Type: Package
 Title: Multivariate Adaptive Regression splines using Generalized estimating Equations
-Version: 1.0.1
-Date: 2020-11-23
-Author: Jakub Stoklosa and David Warton
-Maintainer: Jakub Stoklosa <j.stoklosa@unsw.edu.au>
-Description: Fits multivariate adaptive regression splines using generalized estimating equations.
-Depends: R (>= 3.4.0), mvabund, MASS, gamlss, geepack, gsubfn, stringr
-Imports: stats, graphics
+Version: 1.0.2
+Date: 2021-09-03
+Authors@R: 
+  c(person(given = "Jakub",
+           family = "Stoklosa",
+           role = c("aut", "cre"),
+           email = "j.stoklosa@unsw.edu.au",
+           comment = c(ORCID = "0000-0002-6523-4524")),
+    person(given = "David",
+           family = "Warton",
+           role = c("aut", "ctb")))
+Description: Fits multivariate adaptive regression splines using generalized estimating equations. For specific details on the methodology, see: Jakub Stoklosa & David I. Warton (2018) A generalised estimating equation approach to multivariate adaptive regression splines, Journal of Computational and Graphical Statistics, 27:1, 245-253 <doi:10.1080/10618600.2017.1360780> For more examples on on using marge, see the 'RMarkdown' vignette: "MARGE: Vignette using the marge R-package".
+Depends: R (>= 4.1.0) 
+Imports: stats, graphics, mvabund, MASS, gamlss, geepack, gsubfn, stringr, mgcv, earth, BayesTree, glm2
 License: GPL-2
+Encoding: UTF-8
 LazyData: TRUE
 RoxygenNote: 7.1.1
