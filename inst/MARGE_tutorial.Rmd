@@ -71,7 +71,7 @@ print.disp <- FALSE    # Print ALL the output?
 dat2 <- groupedData(Y ~ age|id, data = dat1)
 
 model_gamm <- lme(Y ~ age + I(age^2) + I(age^3), data = dat2, 
-                  correlation = corAR1(form =  ~ age|id), random =  ~ 1)
+                  correlation = corAR1(form =  ~ age|id), random = ~ 1)
 
 # MARGE.
 
