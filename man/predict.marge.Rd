@@ -4,7 +4,7 @@
 \alias{predict.marge}
 \title{predict.marge}
 \usage{
-\method{predict}{marge}(object, newdata, X_pred, is.marge = F, pen = "2", ...)
+\method{predict}{marge}(object, newdata, X_pred, is.marge = FALSE, pen = "2", ...)
 }
 \arguments{
 \item{object}{: the final selected MARS/MARGE model. Only works for \code{mars_ls} and \code{marge} model objects.}

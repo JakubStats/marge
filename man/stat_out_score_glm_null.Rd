@@ -4,7 +4,7 @@
 \alias{stat_out_score_glm_null}
 \title{stat_out_score_glm_null}
 \usage{
-stat_out_score_glm_null(Y, family = "gaussian", B_null, nb = F, ...)
+stat_out_score_glm_null(Y, family = "gaussian", B_null, nb = FALSE, ...)
 }
 \arguments{
 \item{Y}{: the response variable.}

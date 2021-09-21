@@ -16,9 +16,9 @@ marge(
   tols_score = 1e-05,
   M = 21,
   minspan = NULL,
-  print.disp = F,
-  nb = F,
-  is.gee = F,
+  print.disp = FALSE,
+  nb = FALSE,
+  is.gee = FALSE,
   ...
 )
 }
@@ -29,11 +29,11 @@ marge(
 
 \item{N}{: the number of clusters.}
 
-\item{n}{: the cluster size.}
+\item{n}{: the maximum cluster size.}
 
 \item{id}{: a vector which identifies the clusters. The length of \code{id} should be the same as the number of observations. Data are assumed to be sorted so that observations on a cluster are contiguous rows for all entities in the formula.}
 
-\item{family}{: the specified family for the GLM/GEE. The default is \code{family = "gaussian"}. The current available families are: "gaussian", "binomial", "poisson" and the "negative binomial" (to get that use family = "poisson" and nb = T).}
+\item{family}{: the specified family for the GLM/GEE. The default is \code{family = "gaussian"}. The current available families are: "gaussian", "binomial", "poisson" and the "negative binomial" (to get that use family = "poisson" and nb = TRUE).}
 
 \item{corstr}{: the specified "working correlation" structure for the GEE. The default is \code{corstr = "independence"}.}
 

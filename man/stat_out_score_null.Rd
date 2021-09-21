@@ -12,8 +12,8 @@ stat_out_score_null(
   family = "gaussian",
   corstr = "independence",
   B_null,
-  nb = F,
-  is.gee = F,
+  nb = FALSE,
+  is.gee = FALSE,
   ...
 )
 }
@@ -22,7 +22,7 @@ stat_out_score_null(
 
 \item{N}{: the number of clusters.}
 
-\item{n}{: the cluster size.}
+\item{n}{: the maximum cluster size.}
 
 \item{id}{: the ID for each individual in the cluster.}
 

@@ -11,9 +11,9 @@ mars_ls(
   tols = 1e-05,
   M = 21,
   minspan = NULL,
-  print.disp = F,
+  print.disp = FALSE,
   family = "gaussian",
-  nb = F,
+  nb = FALSE,
   ...
 )
 }

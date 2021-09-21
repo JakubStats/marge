@@ -4,7 +4,7 @@
 \alias{sand_fun}
 \title{sand_fun}
 \usage{
-sand_fun(Y, X, N, n_vec, mu.est, V.est, nb = T, omega = 1, ...)
+sand_fun(Y, X, N, n_vec, mu.est, V.est, nb = TRUE, omega = 1, ...)
 }
 \arguments{
 \item{Y}{: the response variable.}
@@ -13,7 +13,7 @@ sand_fun(Y, X, N, n_vec, mu.est, V.est, nb = T, omega = 1, ...)
 
 \item{N}{: the number of clusters.}
 
-\item{n_vec}{: a vector consisting of the number of cluster sizes.}
+\item{n_vec}{: a vector consisting of the cluster sizes for each cluster.}
 
 \item{mu.est}{: estimates of the fitted mean function under the null model.}
 
@@ -21,7 +21,7 @@ sand_fun(Y, X, N, n_vec, mu.est, V.est, nb = T, omega = 1, ...)
 
 \item{nb}{: a logical argument, is the model a negative binomial model? The default is \code{FALSE}.}
 
-\item{omega}{: a regularization constant that is applied if your data is of high dimension (n>N). The default is \code{omega = 1}.}
+\item{omega}{: a regularization constant that is applied if data is of high dimension (n>N). The default is \code{omega = 1}.}
 
 \item{...}{: further arguments passed to or from other methods.}
 }

@@ -14,7 +14,7 @@ score_fun_glm(
   V.est,
   B1,
   XA,
-  nb = F,
+  nb = FALSE,
   ...
 )
 }

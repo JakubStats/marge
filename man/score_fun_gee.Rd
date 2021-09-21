@@ -18,7 +18,7 @@ score_fun_gee(
   V.est,
   B1,
   XA,
-  nb = F,
+  nb = FALSE,
   ...
 )
 }
@@ -27,7 +27,7 @@ score_fun_gee(
 
 \item{N}{: the number of clusters.}
 
-\item{n_vec}{: a vector of the number of cluster sizes.}
+\item{n_vec}{: a vector consisting of the cluster sizes for each cluster.}
 
 \item{VS.est_list}{: a product of matrices.}
 

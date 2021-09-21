@@ -12,8 +12,8 @@ backward_sel_WIC(
   id,
   family = "gaussian",
   corstr = "independence",
-  nb = F,
-  is.gee = F,
+  nb = FALSE,
+  is.gee = FALSE,
   ...
 )
 }
@@ -22,7 +22,7 @@ backward_sel_WIC(
 
 \item{N}{: the number of clusters.}
 
-\item{n}{: the cluster size.}
+\item{n}{: the maximum cluster size.}
 
 \item{B_new}{: the model matrix.}
 
