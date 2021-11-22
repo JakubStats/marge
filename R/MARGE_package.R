@@ -588,7 +588,7 @@ max_span <- function(X_pred, q, alpha = 0.05) {
 
   maxspan <- round((3 - log2(alpha/q)))
 
-  x_new <- x[-c(1:maxspan, floor(N - maxspan + 1):N)]
+  x_new <- x[-c(1:maxspan, abs(floor(N - maxspan + 1):N))]
 
   if (length(x_new) == 0) return(x)
   if (length(x_new) > 0) return(x_new)
@@ -701,7 +701,7 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
   cut_vec <- c("Intercept")
   trunc.type_vec <- c(1)
   is.int_vec <- c("FALSE")
-  mod_struct <- c(1)          # Univariate (1) or interaction (2).
+  mod_struct <- c(1)      # Univariate (1) or interaction (2).
 
   # Null model setup - find the RSS, GCV and df. So initialize everything!
 
