@@ -18,4 +18,4 @@ Imports: stats, graphics, mvabund, MASS, gamlss, geepack, gsubfn, stringr, mgcv,
 License: GPL-2
 Encoding: UTF-8
 LazyData: TRUE
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.0
