@@ -943,7 +943,7 @@ marge <- function(formula, data, N, n = 1, id = c(1:nrow(data)), family = "gauss
   z$terms <- terms(formula)
   z$call <- match.call()
   z$y <- Y
-  # z$x <- X_pred
+  z$is.gee <- is.gee
 
   class(z) <- "marge"
 
