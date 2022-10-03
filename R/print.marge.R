@@ -12,12 +12,9 @@
 #' dat1 <- leptrine[[1]]
 #' mod <- marge(Y ~ RAIN_DRY_QTR + FC, data = dat1, family = "binomial", N = nrow(dat1), n = 1)
 #' mod
-print.marge <- function(x, pen = c("2", "logN"), ...) {
-  pen <- match.arg(pen)
-  mod.id <- switch(pen,
-                   "2" = 1,
-                   "logN" = 2)
-  mod <- x$final_mod[[mod.id]]
+print.marge <- function(x, ...) {
+
+  mod <- x$final_mod
   # get the coefficients
   tmp.coefs <- data.frame(mod$coefficients)
   dimnames(tmp.coefs)[[2]] <- dimnames(attr(x$terms, "factors"))[[1]][1]
@@ -35,7 +32,7 @@ print.marge <- function(x, pen = c("2", "logN"), ...) {
   cat("Call: ", deparse(x$call), "\n\nCoefficients:\n")
   print(mod$family)
   print(tmp.stats)
-  cat("MARGE GCV ", x$GCV[[mod.id]])
+  cat("MARGE GCV ", x$GCV)
   # cat("Null dev: ", mod$deviance, " Residual deviance: " mod)
 
 }

@@ -9,13 +9,14 @@
 #' @param id : a vector which identifies the clusters. The length of \code{id} should be the same as the number of observations. Data are assumed to be sorted so that observations on a cluster are contiguous rows for all entities in the formula.
 #' @param family : the specified family for the GLM/GEE. The default is \code{family = "gaussian"}. The current available families are: "gaussian", "binomial", "poisson" and the "negative binomial" (to get that use family = "poisson" and nb = TRUE).
 #' @param corstr : the specified "working correlation" structure for the GEE. The default is \code{corstr = "independence"}.
-#' @param pen : a set penalty used for the GCV (note: MARGE doesn't actually use this). The default is 2.
+#' @param pen : a character string describing the penalty used for the GCV (note: MARGE doesn't actually use this). The default is 2.
 #' @param tols_score : the set tolerance for monitoring the convergence for the difference in score statistics between the parent and candidate model (this is the lack-of-fit criterion used for MARGE). The default is 0.00001
 #' @param M : a set threshold for the number of basis functions to be used. The default is 21.
 #' @param minspan : a set minimum span value. The default is \code{minspan = NULL}.
 #' @param print.disp : a logical argument, do you want to print the output? The default is \code{FALSE}.
 #' @param nb : a logical argument, is the model a negative binomial model? The default is \code{FALSE}.
 #' @param is.gee : is this a GEE model? The default is \code{FALSE}.
+#' @param plot.wic : a logical indicating whether the WIC should be plotted for the backward path. The default is \code{FALSE}.
 #' @param ... : further arguments passed to or from other methods.
 #' @details For further details please look at the \code{mars_ls} function - there are more details on the general MARS algorithm. MARGE will produce output for two penalties: 2 and log(N). A figure is automatically generated plotting WIC against the no. of parameters.
 #' @return \code{marge} returns a list of calculated values consisting of:
@@ -111,8 +112,10 @@
 #'
 #' mod <- marge(Y ~ RAIN_DRY_QTR + FC, data = dat1, N, n, id, family, corstr, pen, tols_score,
 #'              M, minspan, print.disp, nb, is.gee)
-marge <- function(formula, data, N, n = 1, id = c(1:nrow(data)), family = "gaussian", corstr = "independence", pen = 2, tols_score = 0.00001, M = 21, minspan = NULL, print.disp = FALSE, nb = FALSE, is.gee = FALSE, ...) {
+marge <- function(formula, data, N, n = 1, id = c(1:nrow(data)), family = "gaussian", corstr = "independence", pen = c("two", "log"), tols_score = 0.00001, M = 21, minspan = NULL, print.disp = FALSE, nb = FALSE, is.gee = FALSE, plot.wic = FALSE, ...) {
 
+  # changing 'pen' argument
+  pen <- match.arg(pen)
   preds <- all.vars(formula[[3]])
   resp <- all.vars(formula[[2]])
   if (!all(preds %in% colnames(data))) {
@@ -121,8 +124,11 @@ marge <- function(formula, data, N, n = 1, id = c(1:nrow(data)), family = "gauss
   if (!resp %in% colnames(data)) {
     stop("Response term not found in the data provided")
   }
-  X_pred <- data[ , preds]
-  Y <- data[ , resp]
+  if (!is.logical(is.gee)) {
+    stop("'is.gee' must be either TRUE or FALSE")
+  }
+  X_pred <- data.frame(data[ , preds])
+  Y <- as.vector(data[ , resp])
 
   NN <- length(Y)    # Total sample size = N*n.
 
@@ -159,7 +165,7 @@ marge <- function(formula, data, N, n = 1, id = c(1:nrow(data)), family = "gauss
   int.count <- 0
 
   while(ok) {
-    if (breakFlag == TRUE) break
+    if (breakFlag) break
 
     var.mod_temp <- c()
     score_term_temp <- c()
@@ -176,8 +182,8 @@ marge <- function(formula, data, N, n = 1, id = c(1:nrow(data)), family = "gauss
 
     # Obtain/calculate the null stats here (speeds things up).
 
-    if (is.gee == TRUE | n > 1) {
-      B_null_stats <- stat_out_score_null(Y, N, n, id, family, corstr, B, nb, is.gee, ...)
+    if (is.gee | n > 1) {
+      B_null_stats <- stat_out_score_null(Y, N, n, id, family, corstr, B, nb, is.gee, ...) # ED: I have done some optimisation of this
 
       VS.est_list <- B_null_stats$VS.est_list
       AWA.est_list <- B_null_stats$AWA.est_list
@@ -188,8 +194,8 @@ marge <- function(formula, data, N, n = 1, id = c(1:nrow(data)), family = "gauss
       mu.est <- B_null_stats$mu.est
       V.est <- B_null_stats$V.est
     }
-    if (is.gee == FALSE & n == 1) {
-      B_null_stats <- stat_out_score_glm_null(Y, family, B, nb, ...)
+    if (!is.gee & n == 1) {
+      B_null_stats <- stat_out_score_glm_null(Y, family, B, nb, ...) # ED: seems quicker in this setting though
 
       VS.est_list <- B_null_stats$VS.est_list
       A_list <- B_null_stats$A_list
@@ -202,8 +208,8 @@ marge <- function(formula, data, N, n = 1, id = c(1:nrow(data)), family = "gauss
       var_name <- colnames(X_pred)[v]
       X <- round(X_pred[, v], 4)
 
-      X_red1 <- min_span(c(round(X, 4)), q, minspan)  # Reduce the space between knots.
-      X_red2 <- max_span(c(round(X, 4)), q)  # Truncate the ends of data to avoid extreme values.
+      X_red1 <- min_span(X, q, minspan)  # Reduce the space between knots.
+      X_red2 <- max_span(X, q)  # Truncate the ends of data to avoid extreme values.
 
       X_red <- intersect(X_red1, X_red2)
 
@@ -214,8 +220,11 @@ marge <- function(formula, data, N, n = 1, id = c(1:nrow(data)), family = "gauss
 
       int.count1 <- 0
 
-      if (ncol(B) > 1) in.set <- sum(!var_name_vec%in%var_name)
-      if (ncol(B) == 1) in.set <- 0
+      if (ncol(B) > 1) {
+        in.set <- sum(!var_name_vec%in%var_name)
+      } else {
+        in.set <- 0
+      }
 
       for (t in 1:length(X_red)) {
         b1_new <- matrix(tp1(X, X_red[t]), ncol = 1)  # Pairs of truncated functions.
@@ -226,21 +235,7 @@ marge <- function(formula, data, N, n = 1, id = c(1:nrow(data)), family = "gauss
         score_knot_one_int <- c()
         score_knot_one_add <- c()
 
-        if (in.set == 0) {
-          B_new_both_add <- cbind(B, b1_new, b2_new)   # Additive model with both truncated functions.
-          B_new_one_add <- cbind(B, b1_new)       # Additive model with one truncated function (positive part).
-
-          if (is.gee == TRUE | n > 1) meas_model_both_add <- score_fun_gee(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma2_list, J11.inv, JSigma11, mu.est, V.est, B_new_both_add, cbind(b1_new, b2_new), nb, ...)
-          if (is.gee == FALSE & n == 1) meas_model_both_add <- score_fun_glm(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B_new_both_add, cbind(b1_new, b2_new), nb, ...)
-          if (is.gee == TRUE | n > 1) meas_model_one_add <- score_fun_gee(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma2_list, J11.inv, JSigma11, mu.est, V.est, B_new_one_add, b1_new, nb, ...)
-          if (is.gee == FALSE & n == 1) meas_model_one_add <- score_fun_glm(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B_new_one_add, b1_new, nb, ...)
-
-          score_knot_both_add <- c(score_knot_both_add, meas_model_both_add$score)
-          score_knot_one_add <- c(score_knot_one_add, meas_model_one_add$score)
-
-          score_knot_both_int = score_knot_one_int = -100000   # Interaction set is impossible since there is nothing to interact with, so let the LOF measure be a huge negative number.
-        }
-
+        # ED: work out the "in.set > 0" scenario first as aspects of "in.set == 0" are shared by both
         if (in.set > 0) {
           var_name_struct <- which(((var_name != var_name_vec)*mod_struct) == 1)
           colnames(B)[1] <- c("")
@@ -262,18 +257,74 @@ marge <- function(formula, data, N, n = 1, id = c(1:nrow(data)), family = "gauss
             score_knot_both_int <- c(score_knot_both_int, meas_model_both_int$score)
             score_knot_one_int <- c(score_knot_one_int, meas_model_one_int$score)
           }
-
-          B_new_both_add <- cbind(B, b1_new, b2_new)
-          B_new_one_add <- cbind(B, b1_new)
-
-          if (is.gee == TRUE | n > 1) meas_model_both_add <- score_fun_gee(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma2_list, J11.inv, JSigma11, mu.est, V.est, B_new_both_add, cbind(b1_new, b2_new), nb, ...)
-          if (is.gee == FALSE & n == 1) meas_model_both_add <- score_fun_glm(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B_new_both_add, cbind(b1_new, b2_new), nb, ...)
-          if (is.gee == TRUE | n > 1) meas_model_one_add <- score_fun_gee(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma2_list, J11.inv, JSigma11, mu.est, V.est, B_new_one_add, b1_new, nb, ...)
-          if (is.gee == FALSE & n == 1) meas_model_one_add <- score_fun_glm(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B_new_one_add, b1_new, nb, ...)
-
-          score_knot_both_add <- c(score_knot_both_add, meas_model_both_add$score)
-          score_knot_one_add <- c(score_knot_one_add, meas_model_one_add$score)
+        } else  if (in.set == 0) {
+          score_knot_both_int = score_knot_one_int = -100000   # Interaction set is impossible since there is nothing to interact with, so let the LOF measure be a huge negative number.
         }
+
+        B_new_both_add <- cbind(B, b1_new, b2_new)   # Additive model with both truncated functions.
+        B_new_one_add <- cbind(B, b1_new)       # Additive model with one truncated function (positive part).
+
+        # ED: reducing # if statements
+        if (is.gee == TRUE | n > 1) {
+          meas_model_both_add <- score_fun_gee(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma2_list, J11.inv, JSigma11, mu.est, V.est, B_new_both_add, cbind(b1_new, b2_new), nb, ...)
+          meas_model_one_add <- score_fun_gee(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma2_list, J11.inv, JSigma11, mu.est, V.est, B_new_one_add, b1_new, nb, ...)
+        } else if (is.gee == FALSE & n == 1) {
+          meas_model_both_add <- score_fun_glm(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B_new_both_add, cbind(b1_new, b2_new), nb, ...)
+          meas_model_one_add <- score_fun_glm(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B_new_one_add, b1_new, nb, ...)
+        }
+
+        score_knot_both_add <- c(score_knot_both_add, meas_model_both_add$score)
+        score_knot_one_add <- c(score_knot_one_add, meas_model_one_add$score)
+        # ED: this last part of the code is the same for either scenario - compare to commented out code below
+
+        # if (in.set == 0) {
+        #   B_new_both_add <- cbind(B, b1_new, b2_new)   # Additive model with both truncated functions.
+        #   B_new_one_add <- cbind(B, b1_new)       # Additive model with one truncated function (positive part).
+        #
+        #   if (is.gee == TRUE | n > 1) meas_model_both_add <- score_fun_gee(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma2_list, J11.inv, JSigma11, mu.est, V.est, B_new_both_add, cbind(b1_new, b2_new), nb, ...)
+        #   if (is.gee == FALSE & n == 1) meas_model_both_add <- score_fun_glm(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B_new_both_add, cbind(b1_new, b2_new), nb, ...)
+        #   if (is.gee == TRUE | n > 1) meas_model_one_add <- score_fun_gee(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma2_list, J11.inv, JSigma11, mu.est, V.est, B_new_one_add, b1_new, nb, ...)
+        #   if (is.gee == FALSE & n == 1) meas_model_one_add <- score_fun_glm(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B_new_one_add, b1_new, nb, ...)
+        #
+        #   score_knot_both_add <- c(score_knot_both_add, meas_model_both_add$score)
+        #   score_knot_one_add <- c(score_knot_one_add, meas_model_one_add$score)
+        #
+        #   score_knot_both_int = score_knot_one_int = -100000   # Interaction set is impossible since there is nothing to interact with, so let the LOF measure be a huge negative number.
+        # }
+        #
+        # if (in.set > 0) {
+        #   var_name_struct <- which(((var_name != var_name_vec)*mod_struct) == 1)
+        #   colnames(B)[1] <- c("")
+        #   B2 <- as.matrix(B[, var_name_struct])
+        #   if (k != 1 & (sum(!var_name_vec[-1]%in%var_name) > 0)) B2 <- as.matrix(B2[, -1])
+        #   if (ncol(B2) == 0) B2 <- as.matrix(B[, 1])
+        #
+        #   for (nn in 1:ncol(B2)) {
+        #     B2a <- matrix(rep(B2[, nn], 2), ncol = 2)
+        #     B2b <- matrix(B2[, nn], ncol = 1)
+        #     B_new_both_int <- cbind(B, B2a*cbind(b1_new, b2_new))
+        #     B_new_one_int <- cbind(B, B2b*b1_new)     # Interaction model with one truncated function (i.e., the positive part).
+        #
+        #     if (is.gee == TRUE | n > 1) meas_model_both_int <- score_fun_gee(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma2_list, J11.inv, JSigma11, mu.est, V.est, B_new_both_int, B2a*cbind(b1_new, b2_new), nb, ...)
+        #     if (is.gee == FALSE & n == 1) meas_model_both_int <- score_fun_glm(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B_new_both_int, B2a*cbind(b1_new, b2_new), nb, ...)
+        #     if (is.gee == TRUE | n > 1) meas_model_one_int <- score_fun_gee(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma2_list, J11.inv, JSigma11, mu.est, V.est, B_new_one_int, B2b*b1_new, nb, ...)
+        #     if (is.gee == FALSE & n == 1) meas_model_one_int <- score_fun_glm(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B_new_one_int, B2b*b1_new, nb, ...)
+        #
+        #     score_knot_both_int <- c(score_knot_both_int, meas_model_both_int$score)
+        #     score_knot_one_int <- c(score_knot_one_int, meas_model_one_int$score)
+        #   }
+        #
+        #   B_new_both_add <- cbind(B, b1_new, b2_new)
+        #   B_new_one_add <- cbind(B, b1_new)
+        #
+        #   if (is.gee == TRUE | n > 1) meas_model_both_add <- score_fun_gee(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma2_list, J11.inv, JSigma11, mu.est, V.est, B_new_both_add, cbind(b1_new, b2_new), nb, ...)
+        #   if (is.gee == FALSE & n == 1) meas_model_both_add <- score_fun_glm(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B_new_both_add, cbind(b1_new, b2_new), nb, ...)
+        #   if (is.gee == TRUE | n > 1) meas_model_one_add <- score_fun_gee(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma2_list, J11.inv, JSigma11, mu.est, V.est, B_new_one_add, b1_new, nb, ...)
+        #   if (is.gee == FALSE & n == 1) meas_model_one_add <- score_fun_glm(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B_new_one_add, b1_new, nb, ...)
+        #
+        #   score_knot_both_add <- c(score_knot_both_add, meas_model_both_add$score)
+        #   score_knot_one_add <- c(score_knot_one_add, meas_model_one_add$score)
+        # }
 
         score_knot_both_int_mat <- rbind(score_knot_both_int_mat, score_knot_both_int)
         score_knot_both_add_mat <- rbind(score_knot_both_add_mat, score_knot_both_add)
@@ -703,150 +754,260 @@ marge <- function(formula, data, N, n = 1, id = c(1:nrow(data)), family = "gauss
 
   # Algorithm 3 (backward pass) as in Friedman (1991) but for GLM/GEE use WIC.
 
-  WIC_vec_2 = WIC_vec_log = NA
+  # WIC_vec_2 = WIC_vec_log = NA
+  # ED: removing the use of both penalties
+  WIC_vec = NA
 
   if (is.gee == FALSE) {
-    if (nb == FALSE) full.fit <- stats::glm(Y ~ B - 1, family = family)
-    if (nb == TRUE) full.fit <- gamlss::gamlss(Y ~ B - 1, family = "NBI", trace = FALSE)
+    # if (nb == FALSE) full.fit <- stats::glm(Y ~ B - 1, family = family)
+    # if (nb == TRUE) full.fit <- gamlss::gamlss(Y ~ B - 1, family = "NBI", trace = FALSE)
+    if (nb == TRUE) {
+      full.fit <- gamlss::gamlss(Y ~ B - 1, family = "NBI", trace = FALSE)
+    } else {
+      stats::glm(Y ~ B - 1, family = family)
+    }
+  } else {
+    full.fit <- geepack::geeglm(Y ~ B - 1, id = id, family = family, corstr = corstr)
+    # ED: we can just pass the family argument and avoid the switch below
   }
 
-  if (is.gee == TRUE) {
-    if (family == "gaussian") full.fit <- geepack::geeglm(Y ~ B - 1, id = id, corstr = corstr)
-    if (family != "gaussian") full.fit <- geepack::geeglm(Y ~ B - 1, id = id, family = family, corstr = corstr)
-  }
+  # if (is.gee == TRUE) {
+  #   if (family == "gaussian") full.fit <- geepack::geeglm(Y ~ B - 1, id = id, corstr = corstr)
+  #   if (family != "gaussian") full.fit <- geepack::geeglm(Y ~ B - 1, id = id, family = family, corstr = corstr)
+  # }
 
   full.wic <- 0
 
   B_new <- B
-  cnames_2 <- list(colnames(B_new))
-  cnames_log <- list(colnames(B_new))
+  # cnames_2 <- list(colnames(B_new))
+  # cnames_log <- list(colnames(B_new))
+  # ED: removing the use of both penalties
+  cnames <- list(colnames(B_new))
 
-  wic_mat_2 <- matrix(NA, ncol = ncol(B), nrow = ncol(B))
-  wic_mat_log <- matrix(NA, ncol = ncol(B), nrow = ncol(B))
-  colnames(wic_mat_2) = colnames(wic_mat_log) = colnames(B)
-  wic_mat_2 <- cbind(wic_mat_2, rep(NA, ncol(B)))
-  wic_mat_log <- cbind(wic_mat_log, rep(NA, ncol(B)))
-  colnames(wic_mat_2)[(ncol(B) + 1)] = colnames(wic_mat_log)[(ncol(B) + 1)] = "Forward pass model"
+  # wic_mat_2 <- matrix(NA, ncol = ncol(B), nrow = ncol(B))
+  # wic_mat_log <- matrix(NA, ncol = ncol(B), nrow = ncol(B))
+  # ED: removing the use of both penalties
+  wic_mat <- matrix(NA, ncol = ncol(B), nrow = ncol(B))
 
-  wic_mat_2[1, (ncol(B) + 1)] = wic_mat_log[1, (ncol(B) + 1)] = full.wic
+  # colnames(wic_mat_2) = colnames(wic_mat_log) = colnames(B)
+  # ED: removing the use of both penalties
+  colnames(wic_mat) = colnames(B)
 
-  wic1_2 <- backward_sel_WIC(Y, N, n, B_new, id, family, corstr, nb, is.gee, ...)
-  wic1_log <- backward_sel_WIC(Y, N, n, B_new, id, family, corstr, nb, is.gee, ...)
+  # wic_mat_2 <- cbind(wic_mat_2, rep(NA, ncol(B)))
+  # wic_mat_log <- cbind(wic_mat_log, rep(NA, ncol(B)))
+  # ED: removing the use of both penalties
+  wic_mat <- cbind(wic_mat, rep(NA, ncol(B)))
 
-  wic_mat_2[2, 2:(length(wic1_2) + 1)] <- wic1_2
-  wic_mat_log[2, 2:(length(wic1_log) + 1)] <- wic1_log
+  # colnames(wic_mat_2)[(ncol(B) + 1)] = colnames(wic_mat_log)[(ncol(B) + 1)] = "Forward pass model"
+  # ED: removing the use of both penalties
+  colnames(wic_mat)[(ncol(B) + 1)] = "Forward pass model"
 
-  WIC_2 <- sum(apply(wic_mat_2[1:2, ], 1, min, na.rm = TRUE)) + 2*ncol(B_new)
-  WIC_log <- sum(apply(wic_mat_log[1:2, ], 1, min, na.rm = TRUE)) + log(N)*ncol(B_new)
+  # wic_mat_2[1, (ncol(B) + 1)] = wic_mat_log[1, (ncol(B) + 1)] = full.wic
+  # ED: removing the use of both penalties
+  wic_mat[1, (ncol(B) + 1)] = full.wic
 
-  WIC_vec_2 <- c(WIC_vec_2, WIC_2)
-  WIC_vec_log <- c(WIC_vec_log, WIC_log)
+  # wic1_2 <- backward_sel_WIC(Y, N, n, B_new, id, family, corstr, nb, is.gee, ...)
+  # wic1_log <- backward_sel_WIC(Y, N, n, B_new, id, family, corstr, nb, is.gee, ...)
+  # ED: removing the use of both penalties
+  wic1 <- backward_sel_WIC(Y, N, n, B_new, id, family, corstr, nb, is.gee, ...)
 
-  variable.lowest_2 <- as.numeric(which(wic1_2 == min(wic1_2, na.rm = TRUE))[1])
-  variable.lowest_log <- as.numeric(which(wic1_log == min(wic1_log, na.rm = TRUE))[1])
-  var.low.vec_2 <- c(colnames(B_new)[variable.lowest_2 + 1])
-  var.low.vec_log <- c(colnames(B_new)[variable.lowest_log + 1])
-  B_new_2 <- as.matrix(B_new[, -(variable.lowest_2 + 1)])
-  B_new_log <- as.matrix(B_new[, -(variable.lowest_log + 1)])
+  # wic_mat_2[2, 2:(length(wic1_2) + 1)] <- wic1_2
+  # wic_mat_log[2, 2:(length(wic1_log) + 1)] <- wic1_log
+  # ED: removing the use of both penalties
+  wic_mat[2, 2:(length(wic1) + 1)] <- wic1
 
-  cnames_2 <- c(cnames_2, list(colnames(B_new_2)))
-  cnames_log <- c(cnames_log, list(colnames(B_new_log)))
+  # WIC_2 <- sum(apply(wic_mat_2[1:2, ], 1, min, na.rm = TRUE)) + 2*ncol(B_new)
+  # WIC_log <- sum(apply(wic_mat_log[1:2, ], 1, min, na.rm = TRUE)) + log(N)*ncol(B_new)
+  # ED: removing the use of both penalties
+  WIC <- switch(pen,
+                two = sum(apply(wic_mat[1:2, ], 1, min, na.rm = TRUE)) + 2*ncol(B_new),
+                log = sum(apply(wic_mat[1:2, ], 1, min, na.rm = TRUE)) + log(N)*ncol(B_new)
+  )
+
+
+  # WIC_vec_2 <- c(WIC_vec_2, WIC_2)
+  # WIC_vec_log <- c(WIC_vec_log, WIC_log)
+  # ED: removing the use of both penalties
+  WIC_vec <- c(WIC_vec, WIC)
+
+  # variable.lowest_2 <- as.numeric(which(wic1_2 == min(wic1_2, na.rm = TRUE))[1])
+  # variable.lowest_log <- as.numeric(which(wic1_log == min(wic1_log, na.rm = TRUE))[1])
+  # ED: removing the use of both penalties
+  variable.lowest <- as.numeric(which(wic1 == min(wic1, na.rm = TRUE))[1])
+
+  # var.low.vec_2 <- c(colnames(B_new)[variable.lowest_2 + 1])
+  # var.low.vec_log <- c(colnames(B_new)[variable.lowest_log + 1])
+  # ED: removing the use of both penalties
+  var.low.vec <- c(colnames(B_new)[variable.lowest + 1])
+
+  # B_new_2 <- as.matrix(B_new[, -(variable.lowest_2 + 1)])
+  # B_new_log <- as.matrix(B_new[, -(variable.lowest_log + 1)])
+  # ED: removing the use of both penalties
+  B_new_0 <- as.matrix(B_new[, -(variable.lowest + 1)])
+
+  # cnames_2 <- c(cnames_2, list(colnames(B_new_2)))
+  # cnames_log <- c(cnames_log, list(colnames(B_new_log)))
+  # ED: removing the use of both penalties
+  cnames <- c(cnames, list(colnames(B_new_0)))
+
 
   for (i in 2:(ncol(B) - 1)) {
     if (i != (ncol(B) - 1)) {
-      wic1_2 <- backward_sel_WIC(Y, N, n, B_new_2, id, family, corstr, nb, is.gee, ...)
-      wic1_log <- backward_sel_WIC(Y, N, n, B_new_log, id, family, corstr, nb, is.gee, ...)
+      # wic1_2 <- backward_sel_WIC(Y, N, n, B_new_2, id, family, corstr, nb, is.gee, ...)
+      # wic1_log <- backward_sel_WIC(Y, N, n, B_new_log, id, family, corstr, nb, is.gee, ...)
+      # ED: removing the use of both penalties
+      wic1 <- backward_sel_WIC(Y, N, n, B_new_0, id, family, corstr, nb, is.gee, ...)
 
-      wic_mat_2[(i + 1), colnames(B_new_2)[-1]] <- wic1_2
-      wic_mat_log[(i + 1), colnames(B_new_log)[-1]] <- wic1_log
+      # wic_mat_2[(i + 1), colnames(B_new_2)[-1]] <- wic1_2
+      # wic_mat_log[(i + 1), colnames(B_new_log)[-1]] <- wic1_log
+      # ED: removing the use of both penalties
+      wic_mat[(i + 1), colnames(B_new_0)[-1]] <- wic1
 
-      WIC_2 <- sum(apply(wic_mat_2[1:(i + 1), ], 1, min, na.rm = TRUE)) + 2*ncol(B_new_2)
-      WIC_log <- sum(apply(wic_mat_log[1:(i + 1), ], 1, min, na.rm = TRUE)) + log(N)*ncol(B_new_log)
+      # WIC_2 <- sum(apply(wic_mat_2[1:(i + 1), ], 1, min, na.rm = TRUE)) + 2*ncol(B_new_2)
+      # WIC_log <- sum(apply(wic_mat_log[1:(i + 1), ], 1, min, na.rm = TRUE)) + log(N)*ncol(B_new_log)
+      # ED: removing the use of both penalties
+      WIC <- switch(pen,
+                    two = sum(apply(wic_mat[1:(i + 1), ], 1, min, na.rm = TRUE)) + 2*ncol(B_new_0),
+                    log = sum(apply(wic_mat[1:(i + 1), ], 1, min, na.rm = TRUE)) + log(N)*ncol(B_new_0)
+      )
 
-      WIC_vec_2 <- c(WIC_vec_2, WIC_2)
-      WIC_vec_log <- c(WIC_vec_log, WIC_log)
+      # WIC_vec_2 <- c(WIC_vec_2, WIC_2)
+      # WIC_vec_log <- c(WIC_vec_log, WIC_log)
+      # ED: removing the use of both penalties
+      WIC_vec <- c(WIC_vec, WIC)
 
-      variable.lowest_2 <- as.numeric(which(wic1_2 == min(wic1_2, na.rm = TRUE))[1])
-      variable.lowest_log <- as.numeric(which(wic1_log == min(wic1_log, na.rm = TRUE))[1])
-      var.low.vec_2 <- c(var.low.vec_2, colnames(B_new_2)[variable.lowest_2 + 1])
-      var.low.vec_log <- c(var.low.vec_log, colnames(B_new_log)[variable.lowest_log + 1])
+      # variable.lowest_2 <- as.numeric(which(wic1_2 == min(wic1_2, na.rm = TRUE))[1])
+      # variable.lowest_log <- as.numeric(which(wic1_log == min(wic1_log, na.rm = TRUE))[1])
+      # ED: removing the use of both penalties
+      variable.lowest <- as.numeric(which(wic1 == min(wic1, na.rm = TRUE))[1])
 
-      B_new_2 <- as.matrix(B_new_2[, -(variable.lowest_2 + 1)])
-      B_new_log <- as.matrix(B_new_log[, -(variable.lowest_log + 1)])
+      # var.low.vec_2 <- c(var.low.vec_2, colnames(B_new_2)[variable.lowest_2 + 1])
+      # var.low.vec_log <- c(var.low.vec_log, colnames(B_new_log)[variable.lowest_log + 1])
+      # ED: removing the use of both penalties
+      var.low.vec <- c(var.low.vec, colnames(B_new_0)[variable.lowest + 1])
+
+      # B_new_2 <- as.matrix(B_new_2[, -(variable.lowest_2 + 1)])
+      # B_new_log <- as.matrix(B_new_log[, -(variable.lowest_log + 1)])
+      # ED: removing the use of both penalties
+      B_new_0 <- as.matrix(B_new_0[, -(variable.lowest + 1)])
     }
 
     if (i == (ncol(B) - 1)) {
       if (is.gee == FALSE) {
         if (nb == FALSE) {
-          full.fit_2 <- stats::glm(Y ~ B_new_2 - 1, family = family, ...)
-          full.fit_log <- stats::glm(Y ~ B_new_log - 1, family = family, ...)
-          full.wald_2 <- (summary(full.fit_2)[12]$coef[-1, 3])^2
-          full.wald_log <- (summary(full.fit_log)[12]$coef[-1, 3])^2
+          # full.fit_2 <- stats::glm(Y ~ B_new_2 - 1, family = family, ...)
+          # full.fit_log <- stats::glm(Y ~ B_new_log - 1, family = family, ...)
+          # ED: removing the use of both penalties
+          full.fit <- stats::glm(Y ~ B_new_0 - 1, family = family, ...)
 
-          wic1_2 <- full.wald_2
-          wic1_log <- full.wald_log
+          # full.wald_2 <- (summary(full.fit_2)[12]$coef[-1, 3])^2
+          # full.wald_log <- (summary(full.fit_log)[12]$coef[-1, 3])^2
+          # ED: removing the use of both penalties
+          full.wald <- (summary(full.fit)[12]$coef[-1, 3])^2
+
+          # wic1_2 <- full.wald_2
+          # wic1_log <- full.wald_log
+          # ED: removing the use of both penalties
+          wic1 <- full.wald
         }
         if (nb == TRUE) {
-          full.fit_2 <- gamlss::gamlss(Y ~ B_new_2 - 1, family = "NBI", trace = FALSE, ...)
-          full.fit_log <- gamlss::gamlss(Y ~ B_new_log - 1, family = "NBI", trace = FALSE, ...)
+          # full.fit_2 <- gamlss::gamlss(Y ~ B_new_2 - 1, family = "NBI", trace = FALSE, ...)
+          # full.fit_log <- gamlss::gamlss(Y ~ B_new_log - 1, family = "NBI", trace = FALSE, ...)
+          # ED: removing the use of both penalties
+          full.fit <- gamlss::gamlss(Y ~ B_new_0 - 1, family = "NBI", trace = FALSE, ...)
+
           sink(tempfile())
-          full.wald_2 <- ((as.matrix(summary(full.fit_2))[, 3])[-c(1, nrow(as.matrix(summary(full.fit_2))))])^2
-          full.wald_log <- ((as.matrix(summary(full.fit_log))[, 3])[-c(1, nrow(as.matrix(summary(full.fit_log))))])^2
+          # full.wald_2 <- ((as.matrix(summary(full.fit_2))[, 3])[-c(1, nrow(as.matrix(summary(full.fit_2))))])^2
+          # full.wald_log <- ((as.matrix(summary(full.fit_log))[, 3])[-c(1, nrow(as.matrix(summary(full.fit_log))))])^2
+          # ED: removing the use of both penalties
+          full.wald <- ((as.matrix(summary(full.fit))[, 3])[-c(1, nrow(as.matrix(summary(full.fit))))])^2
           sink()
 
-          wic1_2 <- full.wald_2
-          wic1_log <- full.wald_log
+          # wic1_2 <- full.wald_2
+          # wic1_log <- full.wald_log
+          # ED: removing the use of both penalties
+          wic1 <- full.wald
         }
       }
 
       if (is.gee == TRUE) {
         if (family == "gaussian") {
-          full.fit_2 <- geepack::geeglm(Y ~ B_new_2 - 1, id = id, corstr = corstr, ...)
-          full.fit_log <- geepack::geeglm(Y ~ B_new_log - 1, id = id, corstr = corstr, ...)
+          # full.fit_2 <- geepack::geeglm(Y ~ B_new_2 - 1, id = id, corstr = corstr, ...)
+          # full.fit_log <- geepack::geeglm(Y ~ B_new_log - 1, id = id, corstr = corstr, ...)
+          # ED: removing the use of both penalties
+          full.fit <- geepack::geeglm(Y ~ B_new_0 - 1, id = id, corstr = corstr, ...)
 
-          full.wald_2 <- (summary(full.fit_2)[6]$coef[-1, 3])^2
-          full.wald_log <- (summary(full.fit_log)[6]$coef[-1, 3])^2
+          # full.wald_2 <- (summary(full.fit_2)[6]$coef[-1, 3])^2
+          # full.wald_log <- (summary(full.fit_log)[6]$coef[-1, 3])^2
+          # ED: removing the use of both penalties
+          full.wald <- (summary(full.fit)[6]$coef[-1, 3])^2
         }
         if (family != "gaussian") {
-          full.fit_2 <- geepack::geeglm(Y ~ B_new_2 - 1, id = id, family = family, corstr = corstr, ...)
-          full.fit_log <- geepack::geeglm(Y ~ B_new_log - 1, id = id, family = family, corstr = corstr, ...)
+          # full.fit_2 <- geepack::geeglm(Y ~ B_new_2 - 1, id = id, family = family, corstr = corstr, ...)
+          # full.fit_log <- geepack::geeglm(Y ~ B_new_log - 1, id = id, family = family, corstr = corstr, ...)
+          # ED: removing the use of both penalties
+          full.fit <- geepack::geeglm(Y ~ B_new_0 - 1, id = id, family = family, corstr = corstr, ...)
 
-          full.wald_2 <- (summary(full.fit_2)[6]$coef[-1, 3])^2
-          full.wald_log <- (summary(full.fit_log)[6]$coef[-1, 3])^2
+          # full.wald_2 <- (summary(full.fit_2)[6]$coef[-1, 3])^2
+          # full.wald_log <- (summary(full.fit_log)[6]$coef[-1, 3])^2
+          # ED: removing the use of both penalties
+          full.wald <- (summary(full.fit)[6]$coef[-1, 3])^2
         }
 
-        wic1_2 <- full.wald_2
-        wic1_log <- full.wald_log
+        # wic1_2 <- full.wald_2
+        # wic1_log <- full.wald_log
+        # ED: removing the use of both penalties
+        wic1 <- full.wald
       }
 
-      wic_mat_2[(i + 1), colnames(B_new_2)[-1]] <- wic1_2
-      wic_mat_log[(i + 1), colnames(B_new_log)[-1]] <- wic1_log
+      # wic_mat_2[(i + 1), colnames(B_new_2)[-1]] <- wic1_2
+      # wic_mat_log[(i + 1), colnames(B_new_log)[-1]] <- wic1_log
+      # ED: removing the use of both penalties
+      wic_mat[(i + 1), colnames(B_new_0)[-1]] <- wic1
 
-      WIC_2 <- sum(apply(wic_mat_2[1:(ncol(B)), ], 1, min, na.rm = TRUE)) + 2*ncol(B_new_2)
-      WIC_log <- sum(apply(wic_mat_log[1:(ncol(B)), ], 1, min, na.rm = TRUE)) + log(N)*ncol(B_new_log)
+      # WIC_2 <- sum(apply(wic_mat_2[1:(ncol(B)), ], 1, min, na.rm = TRUE)) + 2*ncol(B_new_2)
+      # WIC_log <- sum(apply(wic_mat_log[1:(ncol(B)), ], 1, min, na.rm = TRUE)) + log(N)*ncol(B_new_log)
+      # ED: removing the use of both penalties
+      WIC <- switch(pen,
+                    two = sum(apply(wic_mat[1:(ncol(B)), ], 1, min, na.rm = TRUE)) + 2*ncol(B_new_0),
+                    log = sum(apply(wic_mat[1:(ncol(B)), ], 1, min, na.rm = TRUE)) + log(N)*ncol(B_new_0)
+      )
 
-      WIC_vec_2 <- c(WIC_vec_2, WIC_2)
-      WIC_vec_log <- c(WIC_vec_log, WIC_log)
+      # WIC_vec_2 <- c(WIC_vec_2, WIC_2)
+      # WIC_vec_log <- c(WIC_vec_log, WIC_log)
+      # ED: removing the use of both penalties
+      WIC_vec <- c(WIC_vec, WIC)
 
-      B_new_2 <- as.matrix(B_new_2[, -(variable.lowest_2)])
-      B_new_log <- as.matrix(B_new_log[, -(variable.lowest_log)])
+      # B_new_2 <- as.matrix(B_new_2[, -(variable.lowest_2)])
+      # B_new_log <- as.matrix(B_new_log[, -(variable.lowest_log)])
+      # ED: removing the use of both penalties
+      B_new_0 <- as.matrix(B_new_0[, -(variable.lowest)])
 
-      colnames(B_new_2) <- "Intercept"
-      colnames(B_new_log) <- "Intercept"
+      # colnames(B_new_2) <- "Intercept"
+      # colnames(B_new_log) <- "Intercept"
+      # ED: removing the use of both penalties
+      colnames(B_new_0) <- "Intercept"
     }
 
-    cnames_2 <- c(cnames_2, list(colnames(B_new_2)))
-    cnames_log <- c(cnames_log, list(colnames(B_new_log)))
+    # cnames_2 <- c(cnames_2, list(colnames(B_new_2)))
+    # cnames_log <- c(cnames_log, list(colnames(B_new_log)))
+    # ED: removing the use of both penalties
+    cnames <- c(cnames, list(colnames(B_new_0)))
   }
 
-  graphics::par(mfrow = c(1, 2), las = 0)
-  graphics::plot(rev(WIC_vec_2), type = "l", lwd = 2, ylab = "", xlab = "backward path", cex.lab = 2)
-  graphics::mtext(text = "WIC", line = 2, side = 2, cex = 2, las = 0)
-  graphics::title(main = bquote(paste( ~ paste(lambda) == .(2))), cex.main = 2.2, line = 1.4)
-  graphics::plot(rev(WIC_vec_log), type = "l", lwd = 2, ylab = "", xlab = "backward path", cex.lab = 2)
-  graphics::mtext(text = "WIC", line = 2, side = 2, cex = 2, las = 0)
-  graphics::title(main = bquote(paste( ~ paste(lambda) ~ " =  log(N)")), cex.main = 2.2, line = 1.4)
-  graphics::par(mfrow = c(1, 1))
+  # plot wic if required
+  if (plot.wic) {
+    # graphics::par(mfrow = c(1, 2), las = 0)
+    # graphics::plot(rev(WIC_vec_2), type = "l", lwd = 2, ylab = "", xlab = "backward path", cex.lab = 2)
+    # graphics::mtext(text = "WIC", line = 2, side = 2, cex = 2, las = 0)
+    # graphics::title(main = bquote(paste( ~ paste(lambda) == .(2))), cex.main = 2.2, line = 1.4)
+    # graphics::plot(rev(WIC_vec_log), type = "l", lwd = 2, ylab = "", xlab = "backward path", cex.lab = 2)
+    # graphics::mtext(text = "WIC", line = 2, side = 2, cex = 2, las = 0)
+    # graphics::title(main = bquote(paste( ~ paste(lambda) ~ " =  log(N)")), cex.main = 2.2, line = 1.4)
+    # graphics::par(mfrow = c(1, 1))
+    graphics::plot(rev(WIC_vec), type = "l", lwd = 2, ylab = "", xlab = "backward path", cex.lab = 2)
+    graphics::mtext(text = "WIC", line = 2, side = 2, cex = 2, las = 0)
+  }
 
   if (print.disp == TRUE) {
     writeLines("\n Forward pass output: \n")
@@ -857,51 +1018,73 @@ marge <- function(formula, data, N, n = 1, id = c(1:nrow(data)), family = "gauss
 
   # Some final model output, WIC, GCV etc.
 
-  if (is.gee == TRUE) {
-    B_final <- as.matrix(B[, colnames(B)%in%cnames_2[[which.min(WIC_vec_2)]]])
-    final_mod_2 <- geepack::geeglm(Y ~ B_final - 1, id = id, family = family, corstr = corstr, ...)
+  # ED: calculate the final B matrix (same for all model types)
+  B_final <- as.matrix(B[, colnames(B)%in%cnames[[which.min(WIC_vec)]]])
 
-    B_final <- as.matrix(B[, colnames(B)%in%cnames_log[[which.min(WIC_vec_log)]]])
-    final_mod_log <- geepack::geeglm(Y ~ B_final - 1, id = id, family = family, corstr = corstr, ...)
+  if (is.gee == TRUE) {
+    # B_final <- as.matrix(B[, colnames(B)%in%cnames_2[[which.min(WIC_vec_2)]]])
+    # final_mod_2 <- geepack::geeglm(Y ~ B_final - 1, id = id, family = family, corstr = corstr, ...)
+    #
+    # B_final <- as.matrix(B[, colnames(B)%in%cnames_log[[which.min(WIC_vec_log)]]])
+    # final_mod_log <- geepack::geeglm(Y ~ B_final - 1, id = id, family = family, corstr = corstr, ...)
+    # ED: removing the use of both penalties
+    final_mod <- geepack::geeglm(Y ~ B_final - 1, id = id, family = family, corstr = corstr, ...)
+
   }
   if (is.gee == FALSE) {
     if (nb == FALSE) {
-      B_final <- as.matrix(B[, colnames(B)%in%cnames_2[[which.min(WIC_vec_2)]]])
-      final_mod_2 <- stats::glm(Y ~ B_final - 1, family = family, ...)
-      B_final <- as.matrix(B[, colnames(B)%in%cnames_log[[which.min(WIC_vec_log)]]])
-      final_mod_log <- stats::glm(Y ~ B_final - 1, family = family, ...)
+      # B_final <- as.matrix(B[, colnames(B)%in%cnames_2[[which.min(WIC_vec_2)]]])
+      # final_mod_2 <- stats::glm(Y ~ B_final - 1, family = family, ...)
+      # B_final <- as.matrix(B[, colnames(B)%in%cnames_log[[which.min(WIC_vec_log)]]])
+      # final_mod_log <- stats::glm(Y ~ B_final - 1, family = family, ...)
+      # ED: removing the use of both penalties
+      final_mod <- stats::glm(Y ~ B_final - 1, family = family, ...)
     }
     if (nb == TRUE) {
-      B_final <- as.matrix(B[, colnames(B)%in%cnames_2[[which.min(WIC_vec_2)]]])
-      final_mod.many_2 <- mvabund::manyglm(c(t(Y)) ~ B_final - 1, family = "negative.binomial", maxiter = 1000, maxiter2 = 100)
-      final_mod_2 <- MASS::glm.nb(c(t(Y)) ~ B_final - 1, method = "glm.fit2", init.theta = final_mod.many_2$theta, ...)
-
-      B_final <- as.matrix(B[, colnames(B)%in%cnames_log[[which.min(WIC_vec_log)]]])
-      final_mod.many_log <- mvabund::manyglm(c(t(Y)) ~ B_final-1, family = "negative.binomial", maxiter = 1000, maxiter2 = 100)
-      final_mod_log <- MASS::glm.nb(c(t(Y)) ~ B_final - 1, method = "glm.fit2", init.theta = final_mod.many_log$theta, ...)
+      # B_final <- as.matrix(B[, colnames(B)%in%cnames_2[[which.min(WIC_vec_2)]]])
+      # final_mod.many_2 <- mvabund::manyglm(c(t(Y)) ~ B_final - 1, family = "negative.binomial", maxiter = 1000, maxiter2 = 100)
+      # final_mod_2 <- MASS::glm.nb(c(t(Y)) ~ B_final - 1, method = "glm.fit2", init.theta = final_mod.many_2$theta, ...)
+      #
+      # B_final <- as.matrix(B[, colnames(B)%in%cnames_log[[which.min(WIC_vec_log)]]])
+      # final_mod.many_log <- mvabund::manyglm(c(t(Y)) ~ B_final-1, family = "negative.binomial", maxiter = 1000, maxiter2 = 100)
+      # final_mod_log <- MASS::glm.nb(c(t(Y)) ~ B_final - 1, method = "glm.fit2", init.theta = final_mod.many_log$theta, ...)
+      # ED: removing the use of both penalties
+      final_mod.many <- mvabund::manyglm(c(t(Y)) ~ B_final-1, family = "negative.binomial", maxiter = 1000, maxiter2 = 100)
+      final_mod <- MASS::glm.nb(c(t(Y)) ~ B_final - 1, method = "glm.fit2", init.theta = final_mod.many$theta, ...)
     }
   }
 
   NN <- length(Y)
 
-  p_2 <- ncol(as.matrix(B[, colnames(B)%in%cnames_2[[which.min(WIC_vec_2)]]]))
-  df1a_2 <- p_2 + pen*(p_2 - 1)/2  # This matches the earth() package, SAS and Friedman (1991) penalty.
-  p_log <- ncol(as.matrix(B[, colnames(B)%in%cnames_log[[which.min(WIC_vec_log)]]]))
-  df1a_log <- p_log + pen*(p_log - 1)/2  # This matches the earth() package, SAS and Friedman (1991) penalty.
+  # p_2 <- ncol(as.matrix(B[, colnames(B)%in%cnames_2[[which.min(WIC_vec_2)]]]))
+  # df1a_2 <- p_2 + 2*(p_2 - 1)/2  # This matches the earth() package, SAS and Friedman (1991) penalty.
+  # p_log <- ncol(as.matrix(B[, colnames(B)%in%cnames_log[[which.min(WIC_vec_log)]]]))
+  # df1a_log <- p_log + log(p_log - 1)/2  # This matches the earth() package, SAS and Friedman (1991) penalty.
+  # ED: removing the use of both penalties
+  p_0 <- ncol(as.matrix(B[, colnames(B)%in%cnames[[which.min(WIC_vec)]]]))
+  df1a <- switch(pen,
+                 two = p_0 + 2*(p_0 - 1)/2, # This matches the earth() package, SAS and Friedman (1991) penalty.
+                 log = p_0 + log(p_log - 1)/2 # THIS NEEDS CHECKING
+  )
 
-  RSS1_2 <- sum((Y - stats::fitted(final_mod_2))^2)
-  RSS1_log <- sum((Y - stats::fitted(final_mod_log))^2)
-  RSSq1_2 <- 1 - RSS1_2/sum((Y - mean(Y))^2)
-  RSSq1_log <- 1 - RSS1_log/sum((Y - mean(Y))^2)
-  GCV1_2 <- RSS1_2/(NN*(1 - df1a_2/NN)^2)
-  GCV1_log <- RSS1_log/(NN*(1 - df1a_log/NN)^2)
+  # RSS1_2 <- sum((Y - stats::fitted(final_mod_2))^2)
+  # RSS1_log <- sum((Y - stats::fitted(final_mod_log))^2)
+  # RSSq1_2 <- 1 - RSS1_2/sum((Y - mean(Y))^2)
+  # RSSq1_log <- 1 - RSS1_log/sum((Y - mean(Y))^2)
+  # GCV1_2 <- RSS1_2/(NN*(1 - df1a_2/NN)^2)
+  # GCV1_log <- RSS1_log/(NN*(1 - df1a_log/NN)^2)
+  # ED: removing the use of both penalties
+  RSS1 <- sum((Y - stats::fitted(final_mod))^2)
+  RSSq1 <- 1 - RSS1/sum((Y - mean(Y))^2)
+  GCV1 <- RSS1/(NN*(1 - df1a/NN)^2)
 
   if (print.disp == TRUE) {
-    B_final <- as.matrix(B[, colnames(B)%in%cnames_2[[which.min(WIC_vec_2)]]])
-    final_mod <- final_mod_2
-    wic_mat <- wic_mat_2
-    RSSq1 <- RSSq1_2
-    GCV1 <- GCV1_2
+    # B_final <- as.matrix(B[, colnames(B)%in%cnames_2[[which.min(WIC_vec_2)]]])
+    # final_mod <- final_mod_2
+    # wic_mat <- wic_mat_2
+    # RSSq1 <- RSSq1_2
+    # GCV1 <- GCV1_2
+    # ED: the above is no longer needed
 
     writeLines("\n -- Final model (after pruning/backward selection) for MARGE -- \n")
 
@@ -919,22 +1102,21 @@ marge <- function(formula, data, N, n = 1, id = c(1:nrow(data)), family = "gauss
     print(matrix(stats::coef(final_mod), dimnames = list(final_mat)))
   }
 
-  B_final <- list(as.matrix(B[, colnames(B)%in%cnames_2[[which.min(WIC_vec_2)]]]), as.matrix(B[, colnames(B)%in%cnames_log[[which.min(WIC_vec_log)]]]))
+  # B_final <- list(as.matrix(B[, colnames(B)%in%cnames_2[[which.min(WIC_vec_2)]]]), as.matrix(B[, colnames(B)%in%cnames_log[[which.min(WIC_vec_log)]]]))
+  # ED: no longer needed
 
-  wic_mat <- list(wic_mat_2, wic_mat_log)
-  min_wic_own <- list(min(wic_mat_2, na.rm = TRUE), (min(wic_mat_log, na.rm = TRUE)))
-  GCV1 <- list(GCV1_2, GCV1_log)
-  y_pred <- list(stats::predict(final_mod_2), stats::predict(final_mod_log))
-  ## ED: add the original predictor data frame to the final model so plotmo can find it (as "object$x")
-  # final_mod_2$x <- data.frame(X_pred)
-  # final_mod_log$x <- data.frame(X_pred)
-  ## ED
-  final_mod <- list(final_mod_2, final_mod_log)
+  # wic_mat <- list(wic_mat_2, wic_mat_log)
+  # min_wic_own <- list(min(wic_mat_2, na.rm = TRUE), (min(wic_mat_log, na.rm = TRUE)))
+  # min_wic_own <-wic_mat
+  # GCV1 <- list(GCV1_2, GCV1_log)
+  # y_pred <- list(stats::predict(final_mod_2), stats::predict(final_mod_log))
+  # final_mod <- list(final_mod_2, final_mod_log)
+  y_pred <- stats::predict(final_mod)
 
   z <- NULL
   z$bx <- B_final
   z$wic_mat <- wic_mat
-  z$min_wic_own <- min_wic_own
+  z$min_wic_own <- min(wic_mat, na.rm = TRUE)
   z$GCV <- GCV1
   z$y_pred <- y_pred
   z$final_mod <- final_mod
@@ -944,6 +1126,7 @@ marge <- function(formula, data, N, n = 1, id = c(1:nrow(data)), family = "gauss
   z$call <- match.call()
   z$y <- Y
   z$is.gee <- is.gee
+  z$pen <- pen
 
   class(z) <- "marge"
 

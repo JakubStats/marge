@@ -51,26 +51,24 @@
 #' pred_marge_2_y <- predict(model_marge, X_predt, X_pred, TRUE, "2")
 #'
 #' pred_marge_log_y <- predict(model_marge, X_predt, X_pred, TRUE, "logN")
-predict.marge <- function(object, newdata, is.marge = TRUE, pen = c("2", "logN"), ...) {
-  pen <- match.arg(pen)
-  # obtain the appropriate model based on penalty (pen)
-  if (is.marge) {
-    mod <- switch(pen,
-                  "2" = object$final_mod[[1]],
-                  "logN" = object$final_mod[[2]])
-  } else {
-    mod <- object$final_mod
-  }
+predict.marge <- function(object, newdata, is.marge = TRUE, ...) {
 
-  # assign "newdata" as the training data - will just produce fitted values if newdata is missing
-  if (missing(newdata)) {
-    newdata <- object$data
-  }
+  # NEED TO CHECK HOW FACTORS ARE HANDLED
+  mod <- object$final_mod
+
+
   # obtain the variables
   newdat_var <- attr(object$terms, "term.labels")
+  # assign "newdata" as the training data - will just produce fitted values if newdata is missing
+  if (missing(newdata)) {
+    newdata <- data.frame(object$data[ , colnames(object$data) %in% newdat_var])
+    colnames(newdata) <- colnames(object$data)[colnames(object$data) %in% newdat_var]
+  }
+  # check that all are present
   if (!all(newdat_var %in% colnames(newdata))) {
     stop("Original predictor terms from the model are not all found within 'newdata'")
   }
+
 
   if (length(mod$coefficients) == 1) {
     basis_new <- stats::model.matrix(mod)
@@ -78,7 +76,11 @@ predict.marge <- function(object, newdata, is.marge = TRUE, pen = c("2", "logN")
 
     # newdat_var <- colnames(newdata)[-1]  # Remove intercept term (1st column).
 
-    fitted_dat <- round(object$data, digits = 4) # Original input data (need the variable names). ## ED why do we round here?
+    tmp.data <- data.frame(object$data[ , colnames(object$data) %in% newdat_var])
+    colnames(tmp.data) <- colnames(object$data)[colnames(object$data) %in% newdat_var]
+
+    fitted_dat <- round(tmp.data, digits = 4) # Original input data (need the variable names).
+    ## ED why do we round here? This seems to stuff things up when factors are in the data
 
     # Extract the variable names and cuts from the final model basis.
 
@@ -146,7 +148,9 @@ predict.marge <- function(object, newdata, is.marge = TRUE, pen = c("2", "logN")
         if (temp_name == var1) b1_new <- matrix(tp1(var_chosen, as.numeric(cut3)), ncol = 1)
         if (temp_name != var1) b1_new <- matrix(tp2(var_chosen, as.numeric(cut3)), ncol = 1)
 
-        basis_new <- cbind(basis_new, round(b1_new, digits = 4))
+        # basis_new <- cbind(basis_new, round(b1_new, digits = 4))
+        ## ED: again removing the rounding would help stuff-ups when there are factors present in the data
+        basis_new <- cbind(basis_new, b1_new)
       }
 
       if (qq2 == 2) {  # For interaction structures.
