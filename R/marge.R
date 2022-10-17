@@ -1121,6 +1121,7 @@ marge <- function(formula, data, N, n = 1, id = c(1:nrow(data)), family = "gauss
   z$y_pred <- y_pred
   z$final_mod <- final_mod
   ## ED: adding some info required for predict.marge (and in turn, plotmo)
+  z$coefficients <- final_mod$coefficients
   z$data <- data
   z$terms <- terms(formula)
   z$call <- match.call()
