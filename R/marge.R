@@ -182,7 +182,9 @@ marge <- function(formula, data, N, n = 1, id = c(1:nrow(data)), family = "gauss
 
     # Obtain/calculate the null stats here (speeds things up).
 
-    if (is.gee | n > 1) {
+    # if (is.gee | n > 1) {
+    # ED: altered logical gates
+    if (is.gee) {
       B_null_stats <- stat_out_score_null(Y, N, n, id, family, corstr, B, nb, is.gee, ...) # ED: I have done some optimisation of this
 
       VS.est_list <- B_null_stats$VS.est_list
@@ -193,8 +195,7 @@ marge <- function(formula, data, N, n = 1, id = c(1:nrow(data)), family = "gauss
       JSigma11 <- B_null_stats$JSigma11
       mu.est <- B_null_stats$mu.est
       V.est <- B_null_stats$V.est
-    }
-    if (!is.gee & n == 1) {
+    } else {
       B_null_stats <- stat_out_score_glm_null(Y, family, B, nb, ...) # ED: seems quicker in this setting though
 
       VS.est_list <- B_null_stats$VS.est_list
@@ -203,6 +204,15 @@ marge <- function(formula, data, N, n = 1, id = c(1:nrow(data)), family = "gauss
       mu.est <- B_null_stats$mu.est
       V.est <- B_null_stats$V.est
     }
+    # if (!is.gee & n == 1) {
+    #   B_null_stats <- stat_out_score_glm_null(Y, family, B, nb, ...) # ED: seems quicker in this setting though
+    #
+    #   VS.est_list <- B_null_stats$VS.est_list
+    #   A_list <- B_null_stats$A_list
+    #   B1_list <- B_null_stats$B1_list
+    #   mu.est <- B_null_stats$mu.est
+    #   V.est <- B_null_stats$V.est
+    # }
 
     for (v in 1:q) {
       var_name <- colnames(X_pred)[v]
@@ -249,10 +259,18 @@ marge <- function(formula, data, N, n = 1, id = c(1:nrow(data)), family = "gauss
             B_new_both_int <- cbind(B, B2a*cbind(b1_new, b2_new))
             B_new_one_int <- cbind(B, B2b*b1_new)     # Interaction model with one truncated function (i.e., the positive part).
 
-            if (is.gee == TRUE | n > 1) meas_model_both_int <- score_fun_gee(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma2_list, J11.inv, JSigma11, mu.est, V.est, B_new_both_int, B2a*cbind(b1_new, b2_new), nb, ...)
-            if (is.gee == FALSE & n == 1) meas_model_both_int <- score_fun_glm(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B_new_both_int, B2a*cbind(b1_new, b2_new), nb, ...)
-            if (is.gee == TRUE | n > 1) meas_model_one_int <- score_fun_gee(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma2_list, J11.inv, JSigma11, mu.est, V.est, B_new_one_int, B2b*b1_new, nb, ...)
-            if (is.gee == FALSE & n == 1) meas_model_one_int <- score_fun_glm(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B_new_one_int, B2b*b1_new, nb, ...)
+            # if (is.gee == TRUE | n > 1) meas_model_both_int <- score_fun_gee(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma2_list, J11.inv, JSigma11, mu.est, V.est, B_new_both_int, B2a*cbind(b1_new, b2_new), nb, ...)
+            # if (is.gee == FALSE & n == 1) meas_model_both_int <- score_fun_glm(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B_new_both_int, B2a*cbind(b1_new, b2_new), nb, ...)
+            # if (is.gee == TRUE | n > 1) meas_model_one_int <- score_fun_gee(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma2_list, J11.inv, JSigma11, mu.est, V.est, B_new_one_int, B2b*b1_new, nb, ...)
+            # if (is.gee == FALSE & n == 1) meas_model_one_int <- score_fun_glm(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B_new_one_int, B2b*b1_new, nb, ...)
+            # ED: altered logical gates
+            if (is.gee) {
+              meas_model_both_int <- score_fun_gee(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma2_list, J11.inv, JSigma11, mu.est, V.est, B_new_both_int, B2a*cbind(b1_new, b2_new), nb, ...)
+              meas_model_one_int <- score_fun_gee(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma2_list, J11.inv, JSigma11, mu.est, V.est, B_new_one_int, B2b*b1_new, nb, ...)
+            } else {
+              meas_model_both_int <- score_fun_glm(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B_new_both_int, B2a*cbind(b1_new, b2_new), nb, ...)
+              meas_model_one_int <- score_fun_glm(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B_new_one_int, B2b*b1_new, nb, ...)
+            }
 
             score_knot_both_int <- c(score_knot_both_int, meas_model_both_int$score)
             score_knot_one_int <- c(score_knot_one_int, meas_model_one_int$score)
@@ -265,10 +283,18 @@ marge <- function(formula, data, N, n = 1, id = c(1:nrow(data)), family = "gauss
         B_new_one_add <- cbind(B, b1_new)       # Additive model with one truncated function (positive part).
 
         # ED: reducing # if statements
-        if (is.gee == TRUE | n > 1) {
+        # if (is.gee == TRUE | n > 1) {
+        #   meas_model_both_add <- score_fun_gee(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma2_list, J11.inv, JSigma11, mu.est, V.est, B_new_both_add, cbind(b1_new, b2_new), nb, ...)
+        #   meas_model_one_add <- score_fun_gee(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma2_list, J11.inv, JSigma11, mu.est, V.est, B_new_one_add, b1_new, nb, ...)
+        # } else if (is.gee == FALSE & n == 1) {
+        #   meas_model_both_add <- score_fun_glm(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B_new_both_add, cbind(b1_new, b2_new), nb, ...)
+        #   meas_model_one_add <- score_fun_glm(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B_new_one_add, b1_new, nb, ...)
+        # }
+        # ED: altered logical gates
+        if (is.gee) {
           meas_model_both_add <- score_fun_gee(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma2_list, J11.inv, JSigma11, mu.est, V.est, B_new_both_add, cbind(b1_new, b2_new), nb, ...)
           meas_model_one_add <- score_fun_gee(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma2_list, J11.inv, JSigma11, mu.est, V.est, B_new_one_add, b1_new, nb, ...)
-        } else if (is.gee == FALSE & n == 1) {
+        } else {
           meas_model_both_add <- score_fun_glm(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B_new_both_add, cbind(b1_new, b2_new), nb, ...)
           meas_model_one_add <- score_fun_glm(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B_new_one_add, b1_new, nb, ...)
         }
@@ -643,8 +669,14 @@ marge <- function(formula, data, N, n = 1, id = c(1:nrow(data)), family = "gauss
         }
       }
 
-      if (is.gee == TRUE | n > 1) meas_model <- score_fun_gee(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma2_list, J11.inv, JSigma11, mu.est, V.est, B_temp, B_new, nb, ...)
-      if (is.gee == FALSE & n == 1) meas_model <- score_fun_glm(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B_temp, B_new, nb, ...)
+      # if (is.gee == TRUE | n > 1) meas_model <- score_fun_gee(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma2_list, J11.inv, JSigma11, mu.est, V.est, B_temp, B_new, nb, ...)
+      # if (is.gee == FALSE & n == 1) meas_model <- score_fun_glm(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B_temp, B_new, nb, ...)
+      # ED: altered logical gates
+      if (is.gee) {
+        meas_model <- score_fun_gee(Y, N, n_vec, VS.est_list, AWA.est_list, J2_list, Sigma2_list, J11.inv, JSigma11, mu.est, V.est, B_temp, B_new, nb, ...)
+      } else {
+        meas_model <- score_fun_glm(Y, N, VS.est_list, A_list, B1_list, mu.est, V.est, B_temp, B_new, nb, ...)
+      }
 
       score2 <- meas_model$score
 

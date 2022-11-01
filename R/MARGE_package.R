@@ -693,7 +693,10 @@ min_span <- function(X_red, q, minspan = NULL, alpha = 0.05) {
 #' # Fit the MARS models (about ~ 20 secs.)
 #'
 #' mod <- mars_ls(X_pred, Y, pen, tols, M, minspan, print.disp, family, nb)
-mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, print.disp = FALSE, family = "gaussian", nb = FALSE, ...) {
+mars_ls <- function(X_pred, Y, pen = c("two", "log"), tols = 0.00001, M = 21, minspan = NULL, print.disp = FALSE, family = "gaussian", nb = FALSE, ...) {
+
+  pen <- match.arg(pen)
+
   N <- length(Y)    # Sample size.
   q <- ncol(X_pred)  # No. of predictor variables.
 
@@ -1292,7 +1295,11 @@ mars_ls <- function(X_pred, Y, pen = 2, tols = 0.00001, M = 21, minspan = NULL, 
 
   # Algorithm 3 (backward pass), as in Friedman (1991). This uses GCV as the selection criterion.
 
-  p <- ncol(B) + pen*(ncol(B) - 1)/2  # This matches the earth() package, SAS and Friedman (1991) penalty.
+  # p <- ncol(B) + pen*(ncol(B) - 1)/2  # This matches the earth() package, SAS and Friedman (1991) penalty.
+  p <- switch(pen,
+              two = ncol(B) + 2*(ncol(B) - 1)/2,  # This matches the earth() package, SAS and Friedman (1991) penalty.)
+              log = ncol(B) + log(ncol(B) - 1)/2  # This NEEDS CHECKING
+  )
 
   full_RSS <- sum((Y - stats::fitted(stats::lm.fit(B - 1, Y, ...)))^2)
   full_GCV <- full_RSS/(N*(1 - p/N)^2)
