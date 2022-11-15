@@ -4,8 +4,6 @@
 #' @name marge
 #' @param formula : an object of class "formula" (or one that can be coerced to that class): a symbolic description of first order terms to be included in the model to be fitted. See GLM function for further formula details.
 #' @param data : a data frame containing all the terms found in \code{formula}. Should have n by N rows.
-#' @param N : the number of clusters.
-#' @param n : the maximum cluster size.
 #' @param id : a vector which identifies the clusters. The length of \code{id} should be the same as the number of observations. Data are assumed to be sorted so that observations on a cluster are contiguous rows for all entities in the formula.
 #' @param family : the specified family for the GLM/GEE. The default is \code{family = "gaussian"}. The current available families are: "gaussian", "binomial", "poisson" and the "negative binomial" (to get that use family = "poisson" and nb = TRUE).
 #' @param corstr : the specified "working correlation" structure for the GEE. The default is \code{corstr = "independence"}.
@@ -64,22 +62,22 @@
 #'
 #' tols_score <- 0.00001  # Tolerance for stopping condition in forward pass for GEE.
 #' M <- 21                # Max. no. of terms.
-#' pen <- 2               # Penalty to be used in GCV.
+#' pen <- "two"           # Penalty to be used in GCV.
 #' minspan <- NULL        # A set minimum span value.
 #' print.disp <- FALSE    # Print ALL the output?
 #'
 #' # Start model fitting functions here.
 #'
 #' corstr <- "independence"  # Independent working correlation structure.
-#' model_marge_ind <- marge(X_pred, Y, N, n, id, family, corstr, pen, tols_score,
+#' model_marge_ind <- marge(Y ~ age, dat1, id, family, corstr, pen, tols_score,
 #' M, minspan, print.disp, nb, is.gee)
 #'
 #' corstr <- "ar1"           # AR1 working correlation structure.
-#' model_marge_ar1 <- marge(X_pred, Y, N, n, id, family, corstr, pen, tols_score,
+#' model_marge_ar1 <- marge(Y ~ age, dat1, id, family, corstr, pen, tols_score,
 #' M, minspan, print.disp, nb, is.gee)
 #'
 #' corstr <- "exchangeable"  # Exchangeable working correlation structure.
-#' model_marge_exch <- marge(X_pred, Y, N, n, id, family, corstr, pen, tols_score,
+#' model_marge_exch <- marge(Y ~ age, dat1, id, family, corstr, pen, tols_score,
 #' M, minspan, print.disp, nb, is.gee)
 #'
 #' # Example 2: Presence-absence data
@@ -89,12 +87,9 @@
 #' data(leptrine)
 #'
 #' dat1 <- leptrine[[1]]  # Training data.
-#' Y <- dat1$Y            # Response variable.
 #' N <- length(Y)         # Sample size (number of clusters).
 #' n <- 1                 # Cluster size.
 #' id <- rep(1:N, each = n)  # The ID of each cluster.
-#'
-#' X_pred <- dat1[, -c(3:10)] # Design matrix using only two (of nine) predictors.
 #'
 #' # Set MARGE tuning parameters.
 #'
@@ -105,17 +100,23 @@
 #' tols_score <- 0.0001   # A set tolerance (stopping condition) in forward pass for MARGE.
 #' M <- 21                # A set threshold for the maximum number of basis functions to be used.
 #' print.disp <- FALSE    # Print ALL the output?
-#' pen <- 2               # Penalty to be used in GCV.
+#' pen <- "two"              # Penalty to be used in GCV.
 #' minspan <- NULL        # A set minimum span value.
 #'
 #' # Fit the MARGE models (about ~ 30 secs.)
 #'
-#' mod <- marge(Y ~ RAIN_DRY_QTR + FC, data = dat1, N, n, id, family, corstr, pen, tols_score,
+#' mod <- marge(Y ~ RAIN_DRY_QTR + FC, data = dat1, id, family, corstr, pen, tols_score,
 #'              M, minspan, print.disp, nb, is.gee)
-marge <- function(formula, data, N, n = 1, id = c(1:nrow(data)), family = "gaussian", corstr = "independence", pen = c("two", "log"), tols_score = 0.00001, M = 21, minspan = NULL, print.disp = FALSE, nb = FALSE, is.gee = FALSE, plot.wic = FALSE, ...) {
+marge <- function(formula, data, id = c(1:nrow(data)), family = "gaussian", corstr = "independence", pen = c("two", "log"), tols_score = 0.00001, M = 21, minspan = NULL, print.disp = FALSE, nb = FALSE, is.gee = FALSE, plot.wic = FALSE, ...) {
 
-  # changing 'pen' argument
+  # check 'pen' argument
   pen <- match.arg(pen)
+
+  # set the parameters, previously N and n supplied
+  N <- length(unique(id))
+  n <- max(table(id))
+
+  # checks #
   preds <- all.vars(formula[[3]])
   resp <- all.vars(formula[[2]])
   if (!all(preds %in% colnames(data))) {
@@ -127,7 +128,25 @@ marge <- function(formula, data, N, n = 1, id = c(1:nrow(data)), family = "gauss
   if (!is.logical(is.gee)) {
     stop("'is.gee' must be either TRUE or FALSE")
   }
+  if (is.gee & n == 1) {
+    warning("model specified as a GEE however, n = 1. Consider re-running using a GLM formulation by setting 'is.gee' = FALSE for greater efficiency.")
+  }
+
+  ## Existing MARGE code ##
+
   X_pred <- data.frame(data[ , preds])
+  colnames(X_pred) <- preds
+
+  # check that the predictors supplied in the formula are indeed covariates
+  covariate.check <- unlist(lapply(X_pred, is.numeric))
+  if (all(!covariate.check)) {
+    stop("none of the predictors supplied in 'formula' are continuous variables.")
+  } else if (!all(covariate.check)) {
+    warning(paste0("'", colnames(X_pred)[!covariate.check], "' is not a covariate. Dropping this term from the marge procedure."))
+    preds <- colnames(X_pred)[covariate.check]
+    X_pred <- data.frame(X_pred[ , preds])
+    colnames(X_pred) <- preds
+  }
   Y <- as.vector(data[ , resp])
 
   NN <- length(Y)    # Total sample size = N*n.
@@ -1039,6 +1058,11 @@ marge <- function(formula, data, N, n = 1, id = c(1:nrow(data)), family = "gauss
     # graphics::par(mfrow = c(1, 1))
     graphics::plot(rev(WIC_vec), type = "l", lwd = 2, ylab = "", xlab = "backward path", cex.lab = 2)
     graphics::mtext(text = "WIC", line = 2, side = 2, cex = 2, las = 0)
+    if (pen == "two") {
+      graphics::title(main = bquote(paste( ~ paste(lambda) == .(2))), cex.main = 2.2, line = 1.4)
+    } else {
+      graphics::title(main = bquote(paste( ~ paste(lambda) ~ " =  log(N)")), cex.main = 2.2, line = 1.4)
+    }
   }
 
   if (print.disp == TRUE) {
@@ -1096,7 +1120,7 @@ marge <- function(formula, data, N, n = 1, id = c(1:nrow(data)), family = "gauss
   p_0 <- ncol(as.matrix(B[, colnames(B)%in%cnames[[which.min(WIC_vec)]]]))
   df1a <- switch(pen,
                  two = p_0 + 2*(p_0 - 1)/2, # This matches the earth() package, SAS and Friedman (1991) penalty.
-                 log = p_0 + log(p_log - 1)/2 # THIS NEEDS CHECKING
+                 log = p_0 + log(p_0 - 1)/2 # THIS NEEDS CHECKING
   )
 
   # RSS1_2 <- sum((Y - stats::fitted(final_mod_2))^2)

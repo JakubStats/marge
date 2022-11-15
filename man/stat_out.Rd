@@ -4,7 +4,7 @@
 \alias{stat_out}
 \title{stat_out}
 \usage{
-stat_out(Y, B1, TSS, GCV.null, pen = 2, ...)
+stat_out(Y, B1, TSS, GCV.null, pen = c("two", "log"), ...)
 }
 \arguments{
 \item{Y}{: the response variable.}

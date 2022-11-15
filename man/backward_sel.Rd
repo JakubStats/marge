@@ -4,7 +4,7 @@
 \alias{backward_sel}
 \title{backward_sel}
 \usage{
-backward_sel(Y, B_new, pen = 2, GCV.null = 0.001, ...)
+backward_sel(Y, B_new, pen = c("two", "log"), GCV.null = 0.001, ...)
 }
 \arguments{
 \item{Y}{: the response variable.}

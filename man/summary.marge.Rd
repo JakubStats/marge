@@ -4,14 +4,14 @@
 \alias{summary.marge}
 \title{Summary for objects of class 'marge'}
 \usage{
-\method{summary}{marge}(object, pen = c("2", "logN"), ...)
+\method{summary}{marge}(object, ...)
 }
 \arguments{
 \item{object}{a marge model object}
 
-\item{pen}{a set penalty used for the GCV (which model information to return). The default is "2".}
-
 \item{...}{}
+
+\item{pen}{a set penalty used for the GCV (which model information to return). The default is "2".}
 }
 \value{
 printed argument

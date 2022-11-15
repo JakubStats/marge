@@ -4,7 +4,7 @@
 \alias{predict.marge}
 \title{predict.marge}
 \usage{
-\method{predict}{marge}(object, newdata, is.marge = TRUE, pen = c("2", "logN"), ...)
+\method{predict}{marge}(object, newdata, is.marge = TRUE, ...)
 }
 \arguments{
 \item{object}{: the final selected MARS/MARGE model. Only works for \code{mars_ls} and \code{marge} model objects.}
@@ -13,9 +13,9 @@
 
 \item{is.marge}{: a logical argument, is this a MARGE model? The default is \code{FALSE}.}
 
-\item{pen}{: the penalty used for the MARGE model (only applicable if \code{marge} was used). The default is \code{pen = "2"}.}
-
 \item{...}{: further arguments passed to or from other methods.}
+
+\item{pen}{: the penalty used for the MARGE model (only applicable if \code{marge} was used). The default is \code{pen = "2"}.}
 }
 \value{
 \code{predict.marge} returns a list of calculated values consisting of:

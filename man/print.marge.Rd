@@ -4,14 +4,14 @@
 \alias{print.marge}
 \title{Print for objects of class 'marge'}
 \usage{
-\method{print}{marge}(x, pen = c("2", "logN"), ...)
+\method{print}{marge}(x, ...)
 }
 \arguments{
 \item{x}{a marge model object}
 
-\item{pen}{a set penalty used for the GCV (which model information to return). The default is "2".}
-
 \item{...}{}
+
+\item{pen}{a set penalty used for the GCV (which model information to return). The default is "2".}
 }
 \value{
 printed argument

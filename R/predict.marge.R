@@ -80,7 +80,7 @@ predict.marge <- function(object, newdata, is.marge = TRUE, ...) {
     colnames(tmp.data) <- colnames(object$data)[colnames(object$data) %in% newdat_var]
 
     fitted_dat <- round(tmp.data, digits = 4) # Original input data (need the variable names).
-    ## ED why do we round here? This seems to stuff things up when factors are in the data
+    ## ED Why rounding?
 
     # Extract the variable names and cuts from the final model basis.
 

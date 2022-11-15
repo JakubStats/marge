@@ -7,7 +7,7 @@
 mars_ls(
   X_pred,
   Y,
-  pen = 2,
+  pen = c("two", "log"),
   tols = 1e-05,
   M = 21,
   minspan = NULL,
